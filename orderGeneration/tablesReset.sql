@@ -76,7 +76,16 @@ INSERT INTO "Inventory" ("InventoryId", "Ingredient", "Quantity", "QuantityUnit"
 (19, 'Soda', 100, 'orders remaining'),
 (20, 'Cups', 100, 'orders remaining'),
 (21, 'Mexican Coke', 100, 'orders remaining'),
-(22, 'Apple Juice', 100, 'orders remaining');
+(22, 'Apple Juice', 100, 'orders remaining'),
+(23, 'Water Bottle', 100, 'orders remaining'),
+(24, 'Bourbon Mix', 100, 'orders remaining'),
+(25, 'Honey Sesame Mix', 100, 'orders remaining'),
+(26, 'Mushroom Mix', 100, 'orders remaining'),
+(27, 'String Bean Mix', 100, 'orders remaining'),
+(28, 'Super Greens', 100, 'orders remaining'),
+(29, 'Cream Cheese Rangoons', 100, 'orders remaining'),
+(30, 'Apple Pie Rolls', 100, 'orders remaining'),
+(31, 'Mushrooms', 100, 'orders remaining');
 
 CREATE TABLE "MenuItems" (
   "MenuItemId" int PRIMARY KEY,
@@ -87,23 +96,32 @@ CREATE TABLE "MenuItems" (
   "Category" varchar
 );
 INSERT INTO "MenuItems" ("MenuItemId", "Name", "Price", "Seasonal", "Calories", "Category") VALUES
-(1, 'Orange Chicken', 5.20, FALSE, 490, 'Entree'),
-(2, 'Beijing Beef', 5.20, FALSE, 470, 'Entree'),
-(3, 'Kung Pao Chicken', 5.20, FALSE, 290, 'Entree'),
-(4, 'Honey Walnut Shrimp', 5.20, TRUE, 360, 'Entree'),
-(5, 'Teriyaki Chicken', 5.20, FALSE, 300, 'Entree'),
+(1, 'Orange Chicken', 5.20, FALSE, 510, 'Entree'),
+(2, 'Beijing Beef', 5.20, FALSE, 480, 'Entree'),
+(3, 'Kung Pao Chicken', 5.20, FALSE, 320, 'Entree'),
+(4, 'Honey Walnut Shrimp', 5.20, TRUE, 430, 'Entree'),
+(5, 'Teriyaki Chicken', 5.20, FALSE, 275, 'Entree'),
 (6, 'SweetFire Chicken Breast', 5.20, FALSE, 380, 'Entree'),
-(7, 'Black Pepper Chicken', 5.20, FALSE, 280, 'Entree'),
+(7, 'Black Pepper Steak', 5.20, FALSE, 180, 'Entree'),
 (8, 'Broccoli Beef', 5.20, FALSE, 150, 'Entree'),
 (9, 'Sweet and Sour Chicken Breast', 5.20, FALSE, 300, 'Entree'),
-(10, 'Fried Rice', 4.40, FALSE, 520, 'Side'),
-(11, 'Chow Mein', 4.40, FALSE, 510, 'Side'),
-(12, 'White Rice', 4.40, FALSE, 380, 'Side'),
+(10, 'Fried Rice', 4.40, FALSE, 620, 'Side'),
+(11, 'Chow Mein', 4.40, FALSE, 600, 'Side'),
+(12, 'White Rice', 4.40, FALSE, 520, 'Side'),
 (13, 'Egg Roll', 1.75, FALSE, 200, 'Appetizer'),
-(14, 'Spring Roll', 1.75, FALSE, 190, 'Appetizer'),
-(15, 'Fountain Soda', 2.50, FALSE, 200, 'Drinks'),
+(14, 'Spring Roll', 1.75, FALSE, 240, 'Appetizer'),
+(15, 'Fountain Soda', 2.50, FALSE, 250, 'Drinks'),
 (16, 'Coke', 2.50, FALSE, 150, 'Drinks'),
-(17, 'Apple Juice', 2.50, FALSE, 180, 'Drinks');
+(17, 'Apple Juice', 2.50, FALSE, 180, 'Drinks'),
+--New for project 3
+(18, 'Bourbon Chicken', 5.20, FALSE, 400, 'Entree'),
+(19, 'Honey Sesame Chicken', 5.20, FALSE, 340, 'Entree'),
+(20, 'Mushroom Chicken', 5.20, FALSE, 220, 'Entree'),
+(21, 'String Bean Chicken', 5.20, FALSE, 210, 'Entree'),
+(22, 'Super Greens', 4.40, FALSE, 130, 'Side'),
+(23, 'Cream Cheese Rangoons', 1.75, FALSE, 190, 'Appetizer'),
+(24, 'Apple Pie Roll', 1.75, FALSE, 150, 'Appetizer'),
+(25, 'Water Bottle', 2.50, FALSE, 0, 'Drinks');
 
 CREATE TABLE "MenuInventoryJunction" (
   "MenuItemId" int,
@@ -129,7 +147,7 @@ INSERT INTO "MenuInventoryJunction" ("MenuItemId", "InventoryId") VALUES
 (5, 8),
 (6, 1),
 (6, 9),
-(7, 1),
+(7, 3),
 (7, 10),
 (8, 3),
 (8, 11),
@@ -145,7 +163,20 @@ INSERT INTO "MenuInventoryJunction" ("MenuItemId", "InventoryId") VALUES
 (15, 19),
 (15, 20),
 (16, 21),
-(17, 22);
+(17, 22),
+(18, 1),
+(18, 13),
+(19, 1),
+(19, 25),
+(20, 1),
+(20, 26),
+(20, 31),
+(21, 1),
+(21, 27),
+(22, 28),
+(23, 29),
+(24, 30),
+(25, 23);
 
 CREATE TABLE "MenuOrderJunction" (
   "OrderId" int,

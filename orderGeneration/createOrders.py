@@ -4,21 +4,32 @@ from datetime import timedelta, datetime
 
 # Menu items (MenuItemId, Name, Price, Seasonal, Calories, Category)
 menu_items = [
-    (1, 'Orange Chicken', 5.20, False, 490, 'Entree'),
-    (2, 'Beijing Beef', 5.20, False, 470, 'Entree'),
-    (3, 'Kung Pao Chicken', 5.20, False, 290, 'Entree'),
-    (4, 'Honey Walnut Shrimp', 5.20, True, 360, 'Entree'),
-    (5, 'Teriyaki Chicken', 5.20, False, 300, 'Entree'),
+    (1, 'Orange Chicken', 5.20, False, 510, 'Entree'),
+    (2, 'Beijing Beef', 5.20, False, 480, 'Entree'),
+    (3, 'Kung Pao Chicken', 5.20, False, 320, 'Entree'),
+    (4, 'Honey Walnut Shrimp', 5.20, True, 430, 'Entree'),
+    (5, 'Teriyaki Chicken', 5.20, False, 275, 'Entree'),
     (6, 'SweetFire Chicken Breast', 5.20, False, 380, 'Entree'),
-    (7, 'Black Pepper Chicken', 5.20, False, 280, 'Entree'),
+    (7, 'Black Pepper Steak', 5.20, False, 180, 'Entree'),
     (8, 'Broccoli Beef', 5.20, False, 150, 'Entree'),
     (9, 'Sweet and Sour Chicken Breast', 5.20, False, 300, 'Entree'),
-    (10, 'Fried Rice', 4.40, False, 520, 'Side'),
-    (11, 'Chow Mein', 4.40, False, 510, 'Side'),
-    (12, 'White Rice', 4.40, False, 380, 'Side'),
+    (10, 'Fried Rice', 4.40, False, 620, 'Side'),
+    (11, 'Chow Mein', 4.40, False, 600, 'Side'),
+    (12, 'White Rice', 4.40, False, 520, 'Side'),
     (13, 'Egg Roll', 1.75, False, 200, 'Appetizer'),
-    (14, 'Spring Roll', 1.75, False, 190, 'Appetizer'),
-    (15, 'Fountain Soda', 2.50, False, 200, 'Drinks')
+    (14, 'Spring Roll', 1.75, False, 240, 'Appetizer'),
+    (15, 'Fountain Soda', 2.50, False, 250, 'Drinks'),
+    (16, 'Coke', 2.50, False, 150, 'Drinks'),
+    (17, 'Apple Juice', 2.50, False, 180, 'Drinks'),
+    # New items for project 3
+    (18, 'Bourbon Chicken', 5.20, False, 400, 'Entree'),
+    (19, 'Honey Sesame Chicken', 5.20, False, 340, 'Entree'),
+    (20, 'Mushroom Chicken', 5.20, False, 220, 'Entree'),
+    (21, 'String Bean Chicken', 5.20, False, 210, 'Entree'),
+    (22, 'Super Greens', 4.40, False, 130, 'Side'),
+    (23, 'Cream Cheese Rangoons', 1.75, False, 190, 'Appetizer'),
+    (24, 'Apple Pie Roll', 1.75, False, 150, 'Appetizer'),
+    (25, 'Water Bottle', 2.50, False, 0, 'Drinks')
 ]
 
 # Order generation
@@ -26,20 +37,22 @@ order_data = []
 order_id_counter = 1
 
 # Date range
-start_date = datetime(2023, 12, 1)
-end_date = datetime(2024, 10, 20)
+start_date = datetime(2024, 10, 28)
+end_date = datetime(2024, 12, 6)
 current_date = start_date
 
-rand_date = datetime(2024, 10, 1)
+rand_date = datetime(2024, 11, 6)
 
-christmas_date = datetime(2023, 12, 25)
-new_years_date = datetime(2024, 1, 1)
-new_yearsEve_date = datetime(2023, 12, 31)
+haloween_date = datetime(2024, 10, 31)
+veterans_day_date = datetime(2024, 11, 11)
+thanksgiving_eve_date = datetime(2024, 11, 27)
+thanksgiving_date = datetime(2024, 11, 28)
+black_friday_date = datetime(2024, 11, 29)
 
 # Loop through each day in the date range
 while current_date <= end_date:
     # Skip Christmas, New Year's Eve, and New Year's Day
-    if current_date == christmas_date or current_date == new_years_date or current_date == new_yearsEve_date:
+    if current_date == haloween_date or current_date == veterans_day_date or current_date == thanksgiving_eve_date or current_date == thanksgiving_date or current_date == black_friday_date:
         current_date += timedelta(days=1)
         continue
 
