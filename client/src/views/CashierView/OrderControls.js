@@ -7,7 +7,7 @@ const OrderControls = () => {
       <button>Add Discount</button>
       <button>Split Bill</button>
       <button>No Tax</button>
-      <button>Pay / Close Order</button>
+      <button className="checkout-button">Pay / Close Order</button>
     </div>
   );
 };
