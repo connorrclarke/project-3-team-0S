@@ -3,6 +3,7 @@ import Receipt from './Receipt';
 import CategoryTabs from './CategoryTabs';
 import OrderControls from './OrderControls';
 import './CashierView.css';
+import Pay from './Pay';
 
 const CashierView = () => {
   const [selectedCategory, setSelectedCategory] = useState('Bowl');
@@ -39,6 +40,13 @@ const CashierView = () => {
 
   const toggleTax = () => {
     setApplyTax(!applyTax); // Toggle the applyTax state
+  };
+
+  const handlePay = () => {
+    // Logic to handle payment confirmation
+    alert('Your order has been placed!'); // Simple alert as a placeholder
+    setReceipt([]); // Clear receipt
+    setTotal(0); // Reset total
   };
 
   return (
@@ -93,6 +101,7 @@ const CashierView = () => {
           ))}
         </div>
 
+        <OrderControls onPay={handlePay} />
         <OrderControls toggleTax={toggleTax} applyTax={applyTax} />
       </div>
     </div>
