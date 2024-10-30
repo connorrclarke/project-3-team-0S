@@ -1,9 +1,9 @@
 import React from 'react';
 
-const Receipt = ({ receipt, onRemove }) => {
+const Receipt = ({ receipt, onRemove, applyTax }) => {
   const subtotal = receipt.reduce((acc, item) => acc + item.price, 0);
   const taxRate = 0.0825;
-  const taxAmount = subtotal * taxRate;
+  const taxAmount = applyTax ? subtotal * taxRate : 0;
   const total = subtotal + taxAmount;
 
   return (

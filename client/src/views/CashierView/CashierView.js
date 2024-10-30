@@ -7,6 +7,7 @@ import './CashierView.css';
 const CashierView = () => {
   const [selectedCategory, setSelectedCategory] = useState('Bowl');
   const [receipt, setReceipt] = useState([]);
+  const [applyTax, setApplyTax] = useState(true);
 
   const categories = ['Bowl', 'Plate', 'Bigger Plate', 'Appetizers', 'Drinks', 'À la carte'];
   const entrees = [
@@ -36,10 +37,14 @@ const CashierView = () => {
     setReceipt(updatedReceipt);
   };
 
+  const toggleTax = () => {
+    setApplyTax(!applyTax); // Toggle the applyTax state
+  };
+
   return (
     <div className="cashier-layout">
       <div className="receipt-section">
-        <Receipt receipt={receipt} onRemove={removeItemFromReceipt} />
+        <Receipt receipt={receipt} onRemove={removeItemFromReceipt} applyTax={applyTax} />
       </div>
 
       <div className="main-section">
@@ -67,7 +72,7 @@ const CashierView = () => {
         {selectedCategory === 'À la carte' && (
           <p className="selection-message">Each Item Will be Added Individually to the Receipt</p>
         )}
-
+        
         <div className="item-grid">
           {items[selectedCategory].map((item) => (
             <button
@@ -88,7 +93,7 @@ const CashierView = () => {
           ))}
         </div>
 
-        <OrderControls />
+        <OrderControls toggleTax={toggleTax} applyTax={applyTax} />
       </div>
     </div>
   );
