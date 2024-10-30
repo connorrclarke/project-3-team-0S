@@ -63,7 +63,15 @@
 }
 
 .manager-view button {
-  width: 200px; /* Set button width */
+  width: 800px; /* Set button width */
+  height: 100px;
+  padding: 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+button.managerButtons {
+  width: 800px;
+  color: red;
   padding: 1rem;
   font-size: 1rem;
   cursor: pointer;
