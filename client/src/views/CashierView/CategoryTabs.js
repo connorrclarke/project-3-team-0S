@@ -1,6 +1,8 @@
 import React from 'react';
 
-const CategoryTabs = ({ categories, selectedCategory, setSelectedCategory }) => {
+
+
+const CategoryTabs = ({ categories, selectedCategory, setSelectedCategory , goToManagerView}) => {
   return (
     <div className="category-tabs">
       {categories.map((category) => (
@@ -12,7 +14,7 @@ const CategoryTabs = ({ categories, selectedCategory, setSelectedCategory }) => 
           {category}
         </button>
       ))}
-      <button className="manager-button">Manager</button>
+      <button className="manager-button" onClick={goToManagerView }>Manager</button>
     </div>
   );
 };
