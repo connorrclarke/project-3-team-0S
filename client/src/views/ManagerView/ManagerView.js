@@ -8,10 +8,10 @@ const ManagerView = ({ setView }) => {
     return (
         <div className="manager-view">
             <button onClick={() => navigate('/')}>Return to CashierView</button>
-            <button>Button 1</button>
-            <button>Button 2</button>
-            <button>Button 3</button>
-            <button>Button 4</button>
+            <button classname = "managerButtons">Manage Employees</button>
+            <button>Manage Inventory</button>
+            <button>Manage Items</button>
+            <button>Monthly Statistics</button>
         </div>
     );
 };
