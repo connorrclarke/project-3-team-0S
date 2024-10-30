@@ -1,34 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import CashierView from './views/CashierView/CashierView';
 
 function App() {
-
-  const [backendData, setBackendData] = useState([{}])
-
-  useEffect(() => {
-    fetch("/api").then(
-      response => response.json()
-    ).then(
-      data => setBackendData(data)
-    )
-  }, [])
-
   return (
-    <div>
-      {/* <h1>Users</h1>
-      <ul>
-        {backendData.users && backendData.users.map((user, index) => (
-          <li key={index}>{user}</li>
-        ))}
-      </ul> */}
-      {(typeof backendData.users === 'undefined') ? (
-        <h1>Loading...</h1> 
-        ): (
-          backendData.users.map((user, i) => (
-            <p key={i}>{user}</p>
-          ))
-        )}
-    </div>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<CashierView />} />
+        {/* Add other routes here for different views */}
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
