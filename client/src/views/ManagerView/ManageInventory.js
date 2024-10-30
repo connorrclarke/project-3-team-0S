@@ -1,15 +1,16 @@
 // ManagerView.js
-import React from 'react';
+import React, { useState } from 'react';
 import '../../App.css';
 import {useNavigate} from "react-router-dom";
 
-const ManagerView = ({ setView }) => {
 
+const ManageInventory = ({ setView }) => {
+const [count,setCount] = useState(0);
     const navigate = useNavigate();
     return (
         <div className="manager-view">
             <button onClick={() => navigate('/')}>Return to CashierView</button>
-            <button onClick={ () => navigate('/employees')}>Manage Employees</button>
+            <button classname = "managerButtons">Manage Employees</button>
             <button>Manage Inventory</button>
             <button>Manage Items</button>
             <button>Monthly Statistics</button>
@@ -17,4 +18,4 @@ const ManagerView = ({ setView }) => {
     );
 };
 
-export default ManagerView;
+export default ManageInventory;
