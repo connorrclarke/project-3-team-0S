@@ -8,17 +8,14 @@ import Pay from './Pay';
 const CashierView = () => {
   const [selectedCategory, setSelectedCategory] = useState('Bowl');
   const [receipt, setReceipt] = useState([]);
-  const [total, setTotal] = useState(0);
+  const [applyTax, setApplyTax] = useState(true);
 
-  const categories = ['Bowl', 'Plate', 'Bigger Plate', 'Appetizers', 'Drinks'];
-
+  const categories = ['Bowl', 'Plate', 'Bigger Plate', 'Appetizers', 'Drinks', 'À la carte'];
   const entrees = [
-    "Bourbon Chicken", "Orange Chicken", "Honey Walnut Shrimp",
-    "Teriyaki Chicken", "Broccoli Beef", "Kung Pao Chicken",
-    "Honey Sesame Chicken", "Beijing Beef", "Sweet Fire Chicken",
-    "Mushroom Chicken", "String Bean Chicken", "Black Pepper Steak"
+    "Bourbon Chicken", "Orange Chicken", "Honey Walnut Shrimp", "Teriyaki Chicken",
+    "Broccoli Beef", "Kung Pao Chicken", "Honey Sesame Chicken", "Beijing Beef",
+    "Sweet Fire Chicken", "Mushroom Chicken", "String Bean Chicken", "Black Pepper Steak"
   ];
-
   const sides = ['Chow Mein', 'Fried Rice', 'White Rice', 'Super Greens'];
 
   const items = {
@@ -26,14 +23,23 @@ const CashierView = () => {
     Plate: [...sides, ...entrees],
     "Bigger Plate": [...sides, ...entrees],
     Appetizers: ['Egg Roll', 'Spring Roll', 'Cream Cheese Rangoon', 'Apple Pie Roll'],
-    Drinks: ['Fountain Drink', 'Mexican Coke', 'Apple Juice', 'Water Bottle']
+    Drinks: ['Fountain Drink', 'Mexican Coke', 'Apple Juice', 'Water Bottle'],
+    'À la carte': [...sides, ...entrees]
   };
 
   const addItemToReceipt = (item) => {
     const price = 8.30; // Example price
     const newItem = { name: item, price };
-    setReceipt([...receipt, newItem]);
-    setTotal(total + price);
+    setReceipt((prevReceipt) => [...prevReceipt, newItem]);
+  };
+
+  const removeItemFromReceipt = (index) => {
+    const updatedReceipt = receipt.filter((_, i) => i !== index);
+    setReceipt(updatedReceipt);
+  };
+
+  const toggleTax = () => {
+    setApplyTax(!applyTax); // Toggle the applyTax state
   };
 
   const handlePay = () => {
@@ -46,14 +52,14 @@ const CashierView = () => {
   return (
     <div className="cashier-layout">
       <div className="receipt-section">
-        <Receipt receipt={receipt} total={total} />
+        <Receipt receipt={receipt} onRemove={removeItemFromReceipt} applyTax={applyTax} />
       </div>
 
       <div className="main-section">
-        <CategoryTabs 
-          categories={categories} 
-          selectedCategory={selectedCategory} 
-          setSelectedCategory={setSelectedCategory} 
+        <CategoryTabs
+          categories={categories}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
         />
 
         {selectedCategory === 'Bowl' && (
@@ -71,7 +77,10 @@ const CashierView = () => {
         {selectedCategory === 'Drinks' && (
           <p className="selection-message">Select the Customer's Drink</p>
         )}
-
+        {selectedCategory === 'À la carte' && (
+          <p className="selection-message">Each Item Will be Added Individually to the Receipt</p>
+        )}
+        
         <div className="item-grid">
           {items[selectedCategory].map((item) => (
             <button
@@ -93,6 +102,7 @@ const CashierView = () => {
         </div>
 
         <OrderControls onPay={handlePay} />
+        <OrderControls toggleTax={toggleTax} applyTax={applyTax} />
       </div>
     </div>
   );

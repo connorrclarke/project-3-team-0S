@@ -137,13 +137,16 @@ body {
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.checkout-button {
-  background-color: #90ee90;
+.order-controls button {
   border: none;
   padding: 15px;
   font-weight: bold;
   cursor: pointer;
   border-radius: 5px;
+}
+
+.checkout-button {
+  background-color: #90ee90;
 }
 
 .checkout-button:hover {
@@ -168,4 +171,33 @@ body {
   padding: 20px;
   border-radius: 8px;
   text-align: center;
+  
+/* Receipt styling */
+.receipt {
+  background-color: #f8f8f8;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.receipt-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Remove button styling */
+.remove-button {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  margin-left: 10px;
+  transition: transform 0.2s;
+}
+
+.remove-button:hover {
+  transform: scale(1.2);
 }
