@@ -27,8 +27,34 @@ const CashierView = () => {
     'À la carte': [...sides, ...entrees]
   };
 
+  // Set fixed prices based on category
+  const getPriceByCategory = (category) => {
+    switch (category) {
+      case 'Entree':
+        return 5.2;
+      case 'Side':
+        return 4.4;
+      case 'Appetizers':
+        return 1.75;
+      case 'Drinks':
+        return 2.5;
+      default:
+        return 0;
+    }
+  };
+
   const addItemToReceipt = (item) => {
-    const price = 8.30; // Example price
+    let price;
+    if (sides.includes(item)) {
+      price = getPriceByCategory('Side');
+    } else if (items.Appetizers.includes(item)) {
+      price = getPriceByCategory('Appetizers');
+    } else if (items.Drinks.includes(item)) {
+      price = getPriceByCategory('Drinks');
+    } else {
+      price = getPriceByCategory('Entree');
+    }
+
     const newItem = { name: item, price };
     setReceipt((prevReceipt) => [...prevReceipt, newItem]);
   };
