@@ -1,8 +1,7 @@
 import React from 'react';
 
 
-const OrderControls = ({ onPay }) => {
-const OrderControls = ({ toggleTax, applyTax }) => {
+const OrderControls = ({ toggleTax, applyTax, onPay }) => {
   return (
     <div className="order-controls">
       <button>Print Last Receipt</button>

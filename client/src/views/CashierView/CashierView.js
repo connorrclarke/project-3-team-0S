@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import Receipt from './Receipt';
 import CategoryTabs from './CategoryTabs';
 import OrderControls from './OrderControls';
-import './CashierView.css';
 import Pay from './Pay';
+import './CashierView.css';
 
 const CashierView = () => {
-  const [selectedCategory, setSelectedCategory] = useState('Bowl');
+  const [selectedCategory, setSelectedCategory] = useState('Bowl'); // Default to Bowl
   const [receipt, setReceipt] = useState([]);
   const [applyTax, setApplyTax] = useState(true);
+  const [showPay, setShowPay] = useState(false);
 
   const categories = ['Bowl', 'Plate', 'Bigger Plate', 'Appetizers', 'Drinks', 'À la carte'];
   const entrees = [
@@ -27,7 +28,6 @@ const CashierView = () => {
     'À la carte': [...sides, ...entrees]
   };
 
-  // Set fixed prices based on category
   const getPriceByCategory = (category) => {
     switch (category) {
       case 'Entree':
@@ -65,71 +65,96 @@ const CashierView = () => {
   };
 
   const toggleTax = () => {
-    setApplyTax(!applyTax); // Toggle the applyTax state
+    setApplyTax(!applyTax);
   };
 
+  const subtotal = receipt.reduce((acc, item) => acc + item.price, 0);
+  const taxRate = 0.0825;
+  const taxAmount = applyTax ? subtotal * taxRate : 0;
+  const total = subtotal + taxAmount;
+
   const handlePay = () => {
-    // Logic to handle payment confirmation
-    alert('Your order has been placed!'); // Simple alert as a placeholder
-    setReceipt([]); // Clear receipt
-    setTotal(0); // Reset total
+    setShowPay(true);
+  };
+
+  const handleBack = () => {
+    setShowPay(false);
+  };
+
+  const handleConfirmPayment = () => {
+    setShowPay(false);
+    setReceipt([]);
+    setSelectedCategory('Bowl'); 
   };
 
   return (
     <div className="cashier-layout">
-      <div className="receipt-section">
-        <Receipt receipt={receipt} onRemove={removeItemFromReceipt} applyTax={applyTax} />
-      </div>
-
-      <div className="main-section">
-        <CategoryTabs
-          categories={categories}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
+      {showPay ? (
+        <Pay
+          receipt={receipt}
+          total={total}
+          applyTax={applyTax}
+          onClose={handleBack}
+          onConfirmPayment={handleConfirmPayment}
         />
+      ) : (
+        <>
+          <div className="receipt-section">
+            <Receipt receipt={receipt} onRemove={removeItemFromReceipt} applyTax={applyTax} />
+          </div>
 
-        {selectedCategory === 'Bowl' && (
-          <p className="selection-message">Select 1-2 Side(s) and 1 Entree</p>
-        )}
-        {selectedCategory === 'Plate' && (
-          <p className="selection-message">Select 1-2 Side(s) and 2 Entrees</p>
-        )}
-        {selectedCategory === 'Bigger Plate' && (
-          <p className="selection-message">Select 1-2 Side(s) and 3 Entrees</p>
-        )}
-        {selectedCategory === 'Appetizers' && (
-          <p className="selection-message">Select the Customer's Appetizer</p>
-        )}
-        {selectedCategory === 'Drinks' && (
-          <p className="selection-message">Select the Customer's Drink</p>
-        )}
-        {selectedCategory === 'À la carte' && (
-          <p className="selection-message">Each Item Will be Added Individually to the Receipt</p>
-        )}
-        
-        <div className="item-grid">
-          {items[selectedCategory].map((item) => (
-            <button
-              key={item}
-              onClick={() => addItemToReceipt(item)}
-              className={`item-button ${
-                selectedCategory === 'Appetizers'
-                  ? 'appetizer-button'
-                  : selectedCategory === 'Drinks'
-                  ? 'drink-button'
-                  : sides.includes(item)
-                  ? 'side-button'
-                  : 'entree-button'
-              }`}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
+          <div className="main-section">
+            <CategoryTabs
+              categories={categories}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
 
-        <OrderControls onPay={handlePay} />
-        <OrderControls toggleTax={toggleTax} applyTax={applyTax} />
-      </div>
+            {selectedCategory === 'Bowl' && (
+              <p className="selection-message">Select 1-2 Side(s) and 1 Entree</p>
+            )}
+            {selectedCategory === 'Plate' && (
+              <p className="selection-message">Select 1-2 Side(s) and 2 Entrees</p>
+            )}
+            {selectedCategory === 'Bigger Plate' && (
+              <p className="selection-message">Select 1-2 Side(s) and 3 Entrees</p>
+            )}
+            {selectedCategory === 'Appetizers' && (
+              <p className="selection-message">Select the Customer's Appetizer</p>
+            )}
+            {selectedCategory === 'Drinks' && (
+              <p className="selection-message">Select the Customer's Drink</p>
+            )}
+            {selectedCategory === 'À la carte' && (
+              <p className="selection-message">
+                Each Item Will be Added Individually to the Receipt
+              </p>
+            )}
+
+            <div className="item-grid">
+              {items[selectedCategory].map((item) => (
+                <button
+                  key={item}
+                  onClick={() => addItemToReceipt(item)}
+                  className={`item-button ${
+                    selectedCategory === 'Appetizers'
+                      ? 'appetizer-button'
+                      : selectedCategory === 'Drinks'
+                      ? 'drink-button'
+                      : sides.includes(item)
+                      ? 'side-button'
+                      : 'entree-button'
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+
+            <OrderControls onPay={handlePay} toggleTax={toggleTax} applyTax={applyTax} />
+          </div>
+        </>
+      )}
     </div>
   );
 };

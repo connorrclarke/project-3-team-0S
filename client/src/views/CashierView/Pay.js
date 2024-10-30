@@ -1,34 +1,39 @@
 import React, { useState } from 'react';
-import OrderControls from './OrderControls';
 import Receipt from './Receipt';
 import './CashierView.css';
 
-const Pay = () => {
+const Pay = ({ receipt, total, applyTax, onClose, onConfirmPayment }) => {
   const [showPopup, setShowPopup] = useState(false);
-  const [receipt, setReceipt] = useState([
-    { name: 'Item 1', price: 8.99 },
-    { name: 'Item 2', price: 5.49 }
-  ]); // Example receipt items
-  const [total, setTotal] = useState(14.48); // Example total
 
   const handlePay = () => {
-    console.log('Pay button clicked'); // Log for debugging
-    setShowPopup(true); // Show the popup message
-    setReceipt([]);     // Clear receipt after payment
-    setTotal(0);       // Reset total
+    console.log('Pay button clicked');
+    setShowPopup(true);
   };
 
   const handleClosePopup = () => {
-    setShowPopup(false); // Hide the popup when user clicks OK
+    setShowPopup(false);
+    onConfirmPayment();
   };
 
   return (
     <div className="pay-view">
       <h1>Order Summary</h1>
-      <Receipt receipt={receipt} total={total} />
-      <OrderControls onPay={handlePay} />
+      <Receipt receipt={receipt} applyTax={applyTax} />
 
-      {/* Popup for payment confirmation */}
+      <div className="order-controls">
+        <button
+          className="back-button"
+          onClick={onClose}
+          style={{ backgroundColor: 'red', color: 'white' }}
+        >
+          Back
+        </button>
+
+        <button className="checkout-button" onClick={handlePay}>
+          Pay / Close Order
+        </button>
+      </div>
+
       {showPopup && (
         <div className="popup">
           <div className="popup-content">
