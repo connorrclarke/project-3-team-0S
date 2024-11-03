@@ -69,10 +69,20 @@
   font-size: 1rem;
   cursor: pointer;
 }
-button.managerButtons {
-  width: 800px;
-  color: red;
-  padding: 1rem;
-  font-size: 1rem;
-  cursor: pointer;
+
+
+table {
+  width: 80%;
+
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+th {
+  background-color: #f2f2f2;
 }

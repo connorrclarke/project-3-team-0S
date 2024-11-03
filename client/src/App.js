@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import CashierView from './views/CashierView/CashierView';
 import ManagerView from './views/ManagerView/ManagerView';
-import ManageEmployees from './views/ManagerView/ManagerView';
+import ManageEmployees from './views/ManagerView/ManageEmployees';
 
 function App() {
   return (

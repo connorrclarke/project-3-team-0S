@@ -1,9 +1,14 @@
 const express = require('express');
 const { Pool } = require('pg');
+const cors = require('cors'); // Import CORS
+
+
 const dotenv = require('dotenv').config();
 
 const app = express();
-const port = 3000;
+app.use(cors());
+
+const port = 5000;
 
 // Create pool
 const pool = new Pool({
@@ -36,7 +41,7 @@ app.get('/', (req, res) => {
 //             }
 //             const data = {teammembers: teammembers};
 //             console.log(teammembers);
-//             res.render('user', data);        
+//             res.render('user', data);
 //         });
 // });
 
@@ -62,6 +67,16 @@ app.get('/', (req, res) => {
 app.get('/api/menu-items', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM "MenuItems";');
+        res.json(result.rows); // Send data as JSON response
+    } catch (error) {
+        console.error('Error fetching menu items:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/api/employees', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM "Employees";');
         res.json(result.rows); // Send data as JSON response
     } catch (error) {
         console.error('Error fetching menu items:', error);
