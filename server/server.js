@@ -84,6 +84,18 @@ app.get('/api/employees', async (req, res) => {
     }
 });
 
+app.get('/api/fire/:employeeId', async (req, res) => {
+    try {
+        const employeeId = req.params.employeeId; // Get EmployeeId from URL parameter
+        const result = await pool.query('UPDATE "Employees" SET "Employed" = false WHERE "EmployeeId" = $1', [employeeId]); // Use $1 for parameterized query
+        res.status(200).json({ message: 'Employee fired successfully' });
+    } catch (error) {
+        console.error('Error firing employee:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
 app.listen(port, () => {
     console.log(`Server started on http://localhost:${port}`);
 });

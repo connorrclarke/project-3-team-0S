@@ -1,88 +1,115 @@
-.app-container {
+  .app-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 80%;
+      margin: 0 auto;
+    }
+
+    .category-tabs {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .category-tabs button {
+      padding: 10px;
+      border: none;
+      background-color: lightgray;
+      cursor: pointer;
+    }
+
+    .category-tabs .active {
+      background-color: darkgray;
+      font-weight: bold;
+    }
+
+    .manager-button {
+      background-color: orange;
+      font-weight: bold;
+    }
+
+    .item-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .receipt {
+      width: 100%;
+      max-width: 300px;
+      margin: 10px 0;
+      border: 1px solid black;
+      padding: 10px;
+    }
+
+    .order-controls {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+  /* ManagerView.css */
+  .manager-view {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 80%;
-    margin: 0 auto;
+    justify-content: center;
+    height: 100vh; /* Full viewport height */
+    gap: 1rem; /* Space between buttons */
   }
-  
-  .category-tabs {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    margin: 10px 0;
-  }
-  
-  .category-tabs button {
-    padding: 10px;
-    border: none;
-    background-color: lightgray;
+
+  .manager-view button {
+    width: 800px; /* Set button width */
+    height: 100px;
+    padding: 1rem;
+    font-size: 1rem;
     cursor: pointer;
   }
-  
-  .category-tabs .active {
-    background-color: darkgray;
-    font-weight: bold;
-  }
-  
-  .manager-button {
-    background-color: orange;
-    font-weight: bold;
-  }
-  
-  .item-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin: 20px 0;
-  }
-  
-  .receipt {
-    width: 100%;
-    max-width: 300px;
-    margin: 10px 0;
-    border: 1px solid black;
-    padding: 10px;
-  }
-  
-  .order-controls {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    margin-top: 20px;
+
+  .manageEmployee button{
+    width: 200px; /* Set button width */
+    height: 100px;
+    padding: 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+
   }
 
-/* ManagerView.css */
-.manager-view {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh; /* Full viewport height */
-  gap: 1rem; /* Space between buttons */
-}
+  table {
+    width: 80%;
 
-.manager-view button {
-  width: 800px; /* Set button width */
-  height: 100px;
-  padding: 1rem;
-  font-size: 1rem;
-  cursor: pointer;
-}
+    border-collapse: collapse;
+  }
 
+  th, td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
 
-table {
-  width: 80%;
+  th {
+    background-color: #f2f2f2;
+  }
+    td .manageEmployeeGreen{
+        width: 200px;
+        height: 100px;
+        padding: 1rem;
+        font-size: 3rem;
+        cursor: pointer;
+        color: black;
+        background-color: green;
 
-  border-collapse: collapse;
-}
+    }
+  td .manageEmployeeRed {
+    width: 50px;
+    height: 20px;
+    padding: 0rem;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: red;
+  }
 
-th, td {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
-}
-
-th {
-  background-color: #f2f2f2;
-}
