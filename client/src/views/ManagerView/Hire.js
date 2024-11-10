@@ -1,6 +1,20 @@
 import React, { useState } from 'react';
 import '../../App.css';
 
+/**
+ * A component for hiring a new employee, including a form to input employee details.
+ *
+ * @component
+ * @example
+ * // Usage Example:
+ * <Hire onClose={handleClose} onSubmit={handleSubmit} />
+ *
+ * @param {Object} props - The component's props.
+ * @param {Function} props.onClose - A callback function to close the modal.
+ * @param {Function} props.onSubmit - A callback function to handle form submission.
+ * @author Luke Lopez
+ * @returns {JSX.Element} The rendered Hire component.
+ */
 const Hire = ({ onClose, onSubmit }) => {
     const [formData, setFormData] = useState({
         firstName: '',
@@ -10,6 +24,16 @@ const Hire = ({ onClose, onSubmit }) => {
         employed: true, // Set employed to true by default
     });
 
+    /**
+     * Handles the change of input values in the form.
+     *
+     * @param {Object} e - The event object for the change event.
+     * @param {string} e.target.name - The name of the input field.
+     * @param {string} e.target.value - The value entered in the input field.
+     * @param {boolean} e.target.checked - The checked state of the checkbox.
+     *
+     * @returns {void}
+     */
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
@@ -18,6 +42,16 @@ const Hire = ({ onClose, onSubmit }) => {
         }));
     };
 
+    /**
+     * Handles the form submission to hire a new employee.
+     * Sends the form data to the server and logs the response.
+     *
+     * @async
+     * @function
+     * @param {Object} e - The submit event object.
+     * @returns {void}
+     * @throws {Error} If there is an error during the submission or if the server returns an error.
+     */
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission
 

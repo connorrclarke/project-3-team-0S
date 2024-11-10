@@ -1,8 +1,6 @@
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors'); // Import CORS
-
-
 const dotenv = require('dotenv').config();
 
 const app = express();
@@ -21,50 +19,26 @@ const pool = new Pool({
     ssl: {rejectUnauthorized: false}
 });
 
-// Add process hook to shutdown pool
+/**
+ * Handles server shutdown and cleans up database connections.
+ *
+ * @returns {void}
+ */
 process.on('SIGINT', function() {
     pool.end();
     console.log('Application successfully shutdown');
     process.exit(0);
 });
 
-app.get('/', (req, res) => {
-    res.send('Server Started!');
-});
-
-// app.get('/user', (req, res) => {
-//     teammembers = []
-//     pool
-//         .query('SELECT * FROM teammembers;')
-//         .then(query_res => {
-//             for (let i = 0; i < query_res.rowCount; i++){
-//                 teammembers.push(query_res.rows[i]);
-//             }
-//             const data = {teammembers: teammembers};
-//             console.log(teammembers);
-//             res.render('user', data);
-//         });
-// });
-
-// app.get('/api/menu_items', (req, res) => {
-//     const menuItems = []; // Use const for a fixed reference
-//     pool
-//         .query('SELECT * FROM "MenuItems" WHERE "Category" = \'Entree\';')
-//         .then(query_res => {
-//             for (let i = 0; i < query_res.rowCount; i++) {
-//                 menuItems.push(query_res.rows[i]);
-//             }
-//             const data = { menuItems: menuItems };
-//             console.log(menuItems);
-//             //res.json(data);
-//             res.render('menu_items', data);
-//         })
-//         .catch(err => {
-//             console.error('Error executing query', err.stack);
-//             res.status(500).send('Something went wrong');
-//         });
-// });
-
+/**
+ * Endpoint to get all menu items.
+ *
+ * @async
+ * @function
+ * @name getMenuItems
+ * @returns {Object} JSON object containing menu items.
+ * @throws {Error} If there is an issue fetching menu items from the database.
+ */
 app.get('/api/menu-items', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM "MenuItems";');
@@ -75,16 +49,36 @@ app.get('/api/menu-items', async (req, res) => {
     }
 });
 
+/**
+ * Endpoint to get all employees.
+ *
+ * @async
+ * @function
+ * @name getEmployees
+ * @returns {Object} JSON object containing employee details.
+ * @throws {Error} If there is an issue fetching employee data from the database.
+ */
 app.get('/api/employees', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM "Employees";');
         res.json(result.rows); // Send data as JSON response
     } catch (error) {
-        console.error('Error fetching menu items:', error);
+        console.error('Error fetching employees:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
+/**
+ * Endpoint to fire an employee by updating their employment status.
+ *
+ * @async
+ * @function
+ * @name fireEmployee
+ * @param {Object} req - The request object containing the employee's ID.
+ * @param {Object} res - The response object that will send the status of the operation.
+ * @returns {Object} A message confirming the firing of the employee.
+ * @throws {Error} If there is an issue with the database operation.
+ */
 app.get('/api/fire/:employeeId', async (req, res) => {
     try {
         const employeeId = req.params.employeeId; // Get EmployeeId from URL parameter
@@ -96,9 +90,20 @@ app.get('/api/fire/:employeeId', async (req, res) => {
     }
 });
 
+/**
+ * Endpoint to hire a new employee.
+ *
+ * @async
+ * @function
+ * @name hireEmployee
+ * @param {Object} req - The request object containing the new employee's details.
+ * @param {Object} res - The response object that will send a confirmation message.
+ * @returns {Object} A message and the newly hired employee's information.
+ * @throws {Error} If there is an issue with hiring the employee in the database.
+ */
 app.post('/api/hire', async (req, res) => {
     try {
-        const {firstName, lastName, role, phoneNumber , employed} = req.body; // Extract data from request body
+        const { firstName, lastName, role, phoneNumber, employed } = req.body; // Extract data from request body
 
         const result = await pool.query(
             `SELECT hire_new_employee($1, $2, $3, $4, $5)`, // Call the function using $1, $2, ... for parameters
@@ -112,16 +117,36 @@ app.post('/api/hire', async (req, res) => {
     }
 });
 
-
+/**
+ * Endpoint to fetch all inventory items.
+ *
+ * @async
+ * @function
+ * @name getInventory
+ * @returns {Object} JSON object containing inventory items.
+ * @throws {Error} If there is an issue fetching inventory data from the database.
+ */
 app.get('/api/inventory', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM "Inventory";');
         res.json(result.rows); // Send data as JSON response
     } catch (error) {
-        console.error('Error fetching menu items:', error);
+        console.error('Error fetching inventory:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+/**
+ * Endpoint to add a new inventory item.
+ *
+ * @async
+ * @function
+ * @name addInventoryItem
+ * @param {Object} req - The request object containing the inventory item details.
+ * @param {Object} res - The response object that will send a confirmation and the added item.
+ * @returns {Object} The newly added inventory item.
+ * @throws {Error} If there is an issue adding the inventory item to the database.
+ */
 app.post('/api/inventory', async (req, res) => {
     try {
         const { itemName, quantity, price, description } = req.body; // Extract data from the request body
@@ -140,9 +165,7 @@ app.post('/api/inventory', async (req, res) => {
     }
 });
 
-
-
-
+// Server start
 app.listen(port, () => {
     console.log(`Server started on http://localhost:${port}`);
 });

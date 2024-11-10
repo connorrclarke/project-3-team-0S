@@ -1,59 +1,100 @@
 import React, { useState } from 'react';
 
+/**
+ * Modal component for adding a new inventory item.
+ *
+ * @component
+ * @example
+ * const handleAddInventorySubmit = (formData) => {
+ *   // Handle form submission to API or state
+ * };
+ *
+ * return <AddInventory onClose={handleClose} onSubmit={handleAddInventorySubmit} />;
+ *
+ * @param {Object} props - The props for the AddInventory component.
+ * @param {Function} props.onClose - A function to close the modal after submission or cancellation.
+ * @param {Function} props.onSubmit - A function to handle the form submission with the form data.
+ *
+ * @returns {JSX.Element} A modal form for adding inventory.
+ */
 const AddInventory = ({ onClose, onSubmit }) => {
-    const [formData, setFormData] = useState({
-        itemName: '',
-        quantity: '',
-        price: '',
-        description: ''
-    });
+    // State for form inputs
+    const [ingredient, setIngredient] = useState('');
+    const [quantity, setQuantity] = useState('');
+    const [quantityUnit, setQuantityUnit] = useState('');
+    const [error, setError] = useState(null);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
+    /**
+     * Handles the form submission by creating the form data object and calling the onSubmit prop function.
+     * It also handles resetting the form and closing the modal upon successful submission.
+     *
+     * @param {Object} e - The event object.
+     *
+     * @returns {void}
+     */
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    const handleSubmit = async () => {
-        await onSubmit(formData);
-        onClose();  // Close modal after submit
+        // Create the form data object
+        const formData = {
+            Ingredient: ingredient,
+            Quantity: quantity,
+            QuantityUnit: quantityUnit,
+        };
+
+        try {
+            await onSubmit(formData);
+
+            setIngredient('');
+            setQuantity('');
+            setQuantityUnit('');
+            onClose();  // Close the modal after successful submission
+        } catch (err) {
+            setError('Error adding inventory item');
+            console.error('Error:', err);
+        }
     };
 
     return (
         <div className="modal">
             <div className="modal-content">
-                <h2>Add Inventory Item</h2>
-                <form>
-                    <input
-                        type="text"
-                        name="itemName"
-                        placeholder="Item Name"
-                        value={formData.itemName}
-                        onChange={handleChange}
-                    />
-                    <input
-                        type="number"
-                        name="quantity"
-                        placeholder="Quantity"
-                        value={formData.quantity}
-                        onChange={handleChange}
-                    />
-                    <input
-                        type="number"
-                        name="price"
-                        placeholder="Price"
-                        value={formData.price}
-                        onChange={handleChange}
-                    />
-                    <input
-                        type="text"
-                        name="description"
-                        placeholder="Description"
-                        value={formData.description}
-                        onChange={handleChange}
-                    />
-
-                    <button type="button" onClick={handleSubmit}>Submit</button>
-                    <button type="button" onClick={onClose}>Cancel</button>
+                <h2>Add New Inventory Item</h2>
+                <form onSubmit={handleSubmit}>
+                    <div>
+                        <label htmlFor="ingredient">Item Name:</label>
+                        <input
+                            type="text"
+                            id="ingredient"
+                            value={ingredient}
+                            onChange={(e) => setIngredient(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="quantity">Quantity:</label>
+                        <input
+                            type="number"
+                            id="quantity"
+                            value={quantity}
+                            onChange={(e) => setQuantity(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="quantityUnit">Quantity Unit:</label>
+                        <input
+                            type="text"
+                            id="quantityUnit"
+                            value={quantityUnit}
+                            onChange={(e) => setQuantityUnit(e.target.value)}
+                            required
+                        />
+                    </div>
+                    {error && <div className="error">{error}</div>}
+                    <div className="modal-buttons">
+                        <button type="submit">Add Item</button>
+                        <button type="button" onClick={onClose}>Cancel</button>
+                    </div>
                 </form>
             </div>
         </div>
