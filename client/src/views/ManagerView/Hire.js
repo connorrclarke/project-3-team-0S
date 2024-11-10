@@ -1,27 +1,31 @@
-// Hire.js
 import React, { useState } from 'react';
 import '../../App.css';
 
 const Hire = ({ onClose, onSubmit }) => {
     const [formData, setFormData] = useState({
-        employeeId: '',
         firstName: '',
         lastName: '',
         role: '',
-        phoneNumber: ''
+        phoneNumber: '',
+        employed: true, // Set employed to true by default
     });
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value,
+        }));
     };
 
-    const handleSubmit = async () => {
-        console.log("Employee ID:", formData.employeeId);
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // Prevent default form submission
+
         console.log("First Name:", formData.firstName);
         console.log("Last Name:", formData.lastName);
         console.log("Role:", formData.role);
         console.log("Phone Number:", formData.phoneNumber);
+        console.log("Employed:", formData.employed); // Log employed status
 
         try {
             const response = await fetch('http://localhost:5000/api/hire', {
@@ -43,23 +47,15 @@ const Hire = ({ onClose, onSubmit }) => {
             console.error('Error adding employee:', err);
         }
 
-        onSubmit(formData);
-        onClose();
+        onSubmit(formData); // Call onSubmit callback if provided
+        onClose(); // Close the modal
     };
-
 
     return (
         <div className="modal">
             <div className="modal-content">
                 <h2>Hire Employee</h2>
                 <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        name="employeeId"
-                        placeholder="Employee ID"
-                        value={formData.employeeId}
-                        onChange={handleChange}
-                    />
                     <input
                         type="text"
                         name="firstName"
@@ -89,9 +85,19 @@ const Hire = ({ onClose, onSubmit }) => {
                         onChange={handleChange}
                     />
 
-                    {/* Apply the submit and cancel button styles here */}
-                    <button className="submit-button" onClick={()=> handleSubmit(formData)}>Submit</button>
-                    <button  className="cancel-button" onClick={onClose}>Cancel</button>
+                    {/* Add checkbox for 'Employed' status */}
+                    <label>
+                        <input
+                            type="checkbox"
+                            name="employed"
+                            checked={formData.employed}
+                            onChange={handleChange}
+                        />
+                        Employed
+                    </label>
+
+                    <button type="submit" className="submit-button">Submit</button>
+                    <button type="button" className="cancel-button" onClick={onClose}>Cancel</button>
                 </form>
             </div>
         </div>

@@ -63,7 +63,7 @@ const ManageEmployees = () => {
 
     return (
         <div className="manager-view">
-            <button onClick={() => navigate('/')}>Return to CashierView</button>
+            <button onClick={() => navigate('/manager')}>Return to ManagerView</button>
             <button onClick={() => setShowHireModal(true)}>Hire</button>
             {error && <div>Error fetching employees: {error}</div>}
 

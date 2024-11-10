@@ -98,12 +98,11 @@ app.get('/api/fire/:employeeId', async (req, res) => {
 
 app.post('/api/hire', async (req, res) => {
     try {
-        const { employeeId, firstName, lastName, role, phoneNumber } = req.body; // Extract data from request body
+        const {firstName, lastName, role, phoneNumber , employed} = req.body; // Extract data from request body
 
         const result = await pool.query(
-            `INSERT INTO "Employees" ("EmployeeId", "FirstName", "LastName", "Role", "PhoneNumber", "Employed")
-             VALUES ($1, $2, $3, $4, $5, true) RETURNING *`,  // Insert values with "Employed" set to true
-            [employeeId, firstName, lastName, role, phoneNumber]
+            `SELECT hire_new_employee($1, $2, $3, $4, $5)`, // Call the function using $1, $2, ... for parameters
+            [firstName, lastName, role, phoneNumber, employed] // Values from the request body
         );
 
         res.status(201).json({ message: 'Employee hired successfully', employee: result.rows[0] });
