@@ -16,11 +16,37 @@ const Hire = ({ onClose, onSubmit }) => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
+        console.log("Employee ID:", formData.employeeId);
+        console.log("First Name:", formData.firstName);
+        console.log("Last Name:", formData.lastName);
+        console.log("Role:", formData.role);
+        console.log("Phone Number:", formData.phoneNumber);
+
+        try {
+            const response = await fetch('http://localhost:5000/api/hire', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData), // Send formData in request body
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error('Error hiring employee');
+            } else {
+                console.log(data.message);
+                window.location.reload();
+            }
+        } catch (err) {
+            console.error('Error adding employee:', err);
+        }
+
         onSubmit(formData);
         onClose();
     };
+
 
     return (
         <div className="modal">
@@ -64,7 +90,7 @@ const Hire = ({ onClose, onSubmit }) => {
                     />
 
                     {/* Apply the submit and cancel button styles here */}
-                    <button className="submit-button">Submit</button>
+                    <button className="submit-button" onClick={()=> handleSubmit(formData)}>Submit</button>
                     <button  className="cancel-button" onClick={onClose}>Cancel</button>
                 </form>
             </div>

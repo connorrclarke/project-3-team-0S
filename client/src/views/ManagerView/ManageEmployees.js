@@ -43,6 +43,23 @@ const ManageEmployees = () => {
             console.error('Error adding employee:', err);
         }
     };
+    const handleFireEmeployee = async (employeeId)=>
+    {
+        try {
+        const response = await fetch(`http://localhost:5000/api/fire/${employeeId}`);
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error('Error firing employee');
+        }
+        else    {
+            window.location.reload();
+            console.log(data.message);
+
+        }
+    } catch (err) {
+        console.error('Error adding employee:', err);
+    }
+    };
 
     return (
         <div className="manager-view">
@@ -70,6 +87,10 @@ const ManageEmployees = () => {
                         <td>{employee.Role}</td>
                         <td>{employee.PhoneNumber}</td>
                         <td>{employee.Employed ? 'Yes' : 'No'}</td>
+                        <td>
+                            <button className="manageEmployeeRed" onClick={() => handleFireEmeployee(employee.EmployeeId)}>Fire</button>
+                        </td>
+
                     </tr>
                 ))}
                 </tbody>

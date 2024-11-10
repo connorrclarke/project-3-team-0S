@@ -7,6 +7,7 @@ const dotenv = require('dotenv').config();
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const port = 5000;
 
@@ -94,6 +95,24 @@ app.get('/api/fire/:employeeId', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+app.post('/api/hire', async (req, res) => {
+    try {
+        const { employeeId, firstName, lastName, role, phoneNumber } = req.body; // Extract data from request body
+
+        const result = await pool.query(
+            `INSERT INTO "Employees" ("EmployeeId", "FirstName", "LastName", "Role", "PhoneNumber", "Employed")
+             VALUES ($1, $2, $3, $4, $5, true) RETURNING *`,  // Insert values with "Employed" set to true
+            [employeeId, firstName, lastName, role, phoneNumber]
+        );
+
+        res.status(201).json({ message: 'Employee hired successfully', employee: result.rows[0] });
+    } catch (error) {
+        console.error('Error hiring employee:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 
 app.listen(port, () => {
