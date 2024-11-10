@@ -113,6 +113,35 @@ app.post('/api/hire', async (req, res) => {
 });
 
 
+app.get('/api/inventory', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM "Inventory";');
+        res.json(result.rows); // Send data as JSON response
+    } catch (error) {
+        console.error('Error fetching menu items:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+app.post('/api/inventory', async (req, res) => {
+    try {
+        const { itemName, quantity, price, description } = req.body; // Extract data from the request body
+
+        // Insert new item into the Inventory table
+        const result = await pool.query(
+            `INSERT INTO "Inventory" ("ItemName", "Quantity", "Price", "Description") 
+            VALUES ($1, $2, $3, $4) RETURNING *`,
+            [itemName, quantity, price, description] // Values from the request body
+        );
+
+        res.status(201).json(result.rows[0]); // Return the newly added item
+    } catch (error) {
+        console.error('Error adding inventory item:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+
 
 app.listen(port, () => {
     console.log(`Server started on http://localhost:${port}`);

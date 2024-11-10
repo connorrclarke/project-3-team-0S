@@ -188,3 +188,27 @@
   .cancel-button:hover {
       background-color: #d32f2f;
   }
+
+  /* Scrollable table wrapper */
+  .table-wrapper {
+      width: 1800px;
+      max-height: 800px;  /* Adjust this to your preferred height */
+      overflow-y: auto;   /* Enables vertical scrolling */
+      margin-top: 20px;   /* Optional margin */
+  }
+
+  /* Optional: Add some styling to make the table look better */
+  table {
+      width: 100%;
+      border-collapse: collapse;
+  }
+
+  th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+  }
+
+  thead {
+      background-color: #f2f2f2;
+  }
