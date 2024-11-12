@@ -1,49 +1,55 @@
-import React, { useState } from 'react';
-import Receipt from './Receipt';
-import './CashierView.css';
+import React from 'react';
 
-const Pay = ({ receipt, total, applyTax, onClose, onConfirmPayment }) => {
-  const [showPopup, setShowPopup] = useState(false);
-
-  const handlePay = () => {
-    console.log('Pay button clicked');
-    setShowPopup(true);
-  };
-
-  const handleClosePopup = () => {
-    setShowPopup(false);
-    onConfirmPayment();
-  };
+const Receipt = ({ receipt, onRemove, applyTax }) => {
+  const subtotal = receipt.reduce((acc, entry) => acc + (entry.price || 0), 0);
+  const taxRate = 0.0825;
+  const taxAmount = applyTax ? subtotal * taxRate : 0;
+  const total = subtotal + taxAmount;
 
   return (
-    <div className="pay-view">
-      <h1>Order Summary</h1>
-      <Receipt receipt={receipt} applyTax={applyTax} />
-
-      <div className="order-controls">
-        <button
-          className="back-button"
-          onClick={onClose}
-          style={{ backgroundColor: 'red', color: 'white' }}
-        >
-          Back
-        </button>
-
-        <button className="checkout-button" onClick={handlePay}>
-          Pay / Close Order
-        </button>
-      </div>
-
-      {showPopup && (
-        <div className="popup">
-          <div className="popup-content">
-            <p>Your order has been placed!</p>
-            <button onClick={handleClosePopup}>OK</button>
+    <div className="receipt">
+      <h2>Receipt</h2>
+      <div>
+        {receipt.map((entry, index) => (
+          <div key={index}>
+            {entry.category ? (
+              <div className="receipt-category">
+                <div className="category-header">
+                  <span>{entry.category} - ${entry.price.toFixed(2)}</span>
+                  <img
+                    src="/removeItem.svg"
+                    alt="Remove item"
+                    className="remove-button"
+                    onClick={() => onRemove(index)}
+                  />
+                </div>
+                {entry.items.map((item, itemIndex) => (
+                  <div key={itemIndex} className="receipt-item">
+                    <span style={{ marginLeft: '20px' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="receipt-item">
+                <div className="item-details">
+                  <span>{entry.name} - ${entry.price.toFixed(2)}</span>
+                  <img
+                    src="/removeItem.svg"
+                    alt="Remove item"
+                    className="remove-button"
+                    onClick={() => onRemove(index)}
+                  />
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        ))}
+      </div>
+      <h3>Subtotal: ${subtotal.toFixed(2)}</h3>
+      <h3>Tax (8.25%): ${taxAmount.toFixed(2)}</h3>
+      <h3>Total: ${total.toFixed(2)}</h3>
     </div>
   );
 };
 
-export default Pay;
+export default Receipt;

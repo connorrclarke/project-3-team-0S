@@ -190,7 +190,16 @@ body {
   border-bottom: 1px solid #e0e0e0;
 }
 
-/* Remove button styling */
+.receipt-category {
+  margin-bottom: 10px;
+}
+
+.category-header, .receipt-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .remove-button {
   cursor: pointer;
   width: 20px;
