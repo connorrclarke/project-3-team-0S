@@ -9,9 +9,15 @@ const Receipt = ({ receipt, applyTax, subtotal, taxAmount, total, onRemove }) =>
                     <li key={index} className="receipt-item">
                         <span>{item.name}</span>
                         <span>${item.price.toFixed(2)}</span>
-                        <button onClick={() => onRemove(index)} className="remove-button">
+                        {/* <button onClick={() => onRemove(index)} className="remove-button">
                             Remove
-                        </button>
+                        </button> */}
+                        <img
+                            src="/removeItem.svg"
+                            alt="Remove item"
+                            className="remove-button"
+                            onClick={() => onRemove(index)}
+                        />
                     </li>
                 ))}
             </ul>
