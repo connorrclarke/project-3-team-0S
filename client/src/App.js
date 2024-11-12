@@ -15,8 +15,8 @@ function App() {
         <Route path="/manager" element={<ManagerView />} />
         <Route path="/customer" element={<CustomerView />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/customer/bowl" element={<Bowl />} />
-        <Route path="/customer/plate" element={<Plate />} />
+        <Route path="/bowl" element={<Bowl />} />
+        <Route path="/plate" element={<Plate />} />
       </Routes>
     </Router>
   );

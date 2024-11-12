@@ -18,7 +18,7 @@ const Checkout = () => {
     // Handle the payment logic (this could be an API call to process payment)
     const handlePay = () => {
         // Here you would typically process the payment, then clear the receipt or do other logic
-        navigate('/');
+        // navigate('/');
     };
 
     return (
@@ -28,39 +28,48 @@ const Checkout = () => {
                 <h1>Checkout</h1>
             </div>
 
-            {/* Left section with receipt and total */}
-            <div className="left-section">
-                <h2>Receipt</h2>
-                <div className="receipt">
-                    {receipt?.map((item, index) => (
-                        <div key={index} className="receipt-item">
-                            <span>{item.name}</span>
-                            <span>${item.price.toFixed(2)}</span>
-                        </div>
-                    ))}
+            <div className="checkout-content">
+                {/* Left column for receipt */}
+                <div className="left-section-checkout">
+                    <h2>Receipt</h2>
+                    <div className="receipt">
+                        {receipt?.map((item, index) => (
+                            <div key={index} className="receipt-item">
+                                <span>{item.name}</span>
+                                <span>${item.price.toFixed(2)}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="receipt-summary">
+                        <p>Subtotal: ${total.toFixed(2)}</p>
+                        <p>Tax: ${taxAmount.toFixed(2)}</p>
+                        <p>Total: ${(total + taxAmount).toFixed(2)}</p>
+                    </div>
                 </div>
-                <div className="receipt-summary">
-                    <p>Subtotal: ${total.toFixed(2)}</p>
-                    <p>Tax: ${taxAmount.toFixed(2)}</p>
-                    <p>Total: ${(total + taxAmount).toFixed(2)}</p>
+
+                {/* Middle column for payment methods */}
+                <div className="middle-section-checkout">
+                    <h2>Payment Method</h2>
+                    <div className="category-buttons">
+                        <button className="category-button">Credit Card</button>
+                        <button className="category-button">Cash</button>
+                        <button className="category-button">Gift Card</button>
+                        <button className="category-button">Student Swipe</button>
+                    </div>
                 </div>
+
+                {/* Right column for additional options if needed */}
+                {/* <div className="right-section">
+                    {/* <div className="bottom-middle-buttons">
+                        <button>High Contrast</button>
+                        <button>Google Translate</button>
+                        <button>Zoom In</button>
+                        <button>Zoom Out</button>
+                    </div> 
+                </div> */}
             </div>
 
-            {/* Middle section with additional buttons */}
-            <div className="middle-section">
-                <div className="category-buttons">
-                    <button className="category-button">Credit Card</button>
-                    <button className="category-button">Cash</button>
-                    <button className="category-button">Gift Card</button>
-                    <button className="category-button">Student Swipe</button>
-                </div>
-                <div className="bottom-middle-buttons">
-                    <button>High Contrast</button>
-                    <button>Google Translate</button>
-                    <button>Zoom In</button>
-                    <button>Zoom Out</button>
-                </div>
-            </div>
+            
 
             {/* Bottom buttons for cancel/pay */}
             <div className="bottom-bar">

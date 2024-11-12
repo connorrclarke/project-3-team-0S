@@ -9,16 +9,16 @@
 
 .content-section {
     display: flex;
-    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
     padding: 20px;
-    flex-grow: 1;
 }
 
 .top-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px 20; /* Add padding to control distance from screen edges */
+    padding: 0 20 20px; /* Add padding to control distance from screen edges */
     background-color: #f5f5f5;
     width: 100%;
     position: fixed;
@@ -34,10 +34,18 @@
     margin: 0 15px; /* Controls spacing between items in top bar */
 }
 
+.employee-login-button{
+    margin-left: 40px;
+    padding: 10px;
+    font-size: 14px;
+}
+
 .receipt-section {
-    width: 33%;
+    flex: 1 1 300px; 
+    max-width: 400px;
     padding: 20px;
     border-right: 1px solid #ddd;
+    box-sizing: border-box;
 }
 
 .main-section {
@@ -49,12 +57,12 @@
 }
 
 .button-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto auto;
-    grid-gap: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0px;
     justify-content: center;
     margin-right: 30px;
+    flex: 1 2 200px;
 }
 
 .category-circle {
@@ -96,11 +104,16 @@
 }
 
 button {
-    padding: 10px;
-    font-size: 14px;
+    padding: 15px 30px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: bold;
+    background-color: lightgrey;
 }
 
-/* Plate Page */
+/* Plate & Bowl Page */
 
 .plate-layout {
     display: flex;
@@ -119,8 +132,10 @@ button {
 .middle-section {
     display: flex;
     justify-content: space-around;
+    align-items: center;
     margin-top: 20px;
     width: 100%;
+    flex-direction: row;
 }
 
 .category-description {
@@ -138,17 +153,13 @@ button {
     cursor: pointer;
 }
 
-.bottom-bar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 20px;
-}
-
 .cancel-button, .add-button {
-    padding: 10px 20px;
+    padding: 15px 30px;
     font-size: 16px;
+    border: none;
     cursor: pointer;
+    border-radius: 8px;
+    font-weight: bold;
 }
 
 .cancel-button {
@@ -159,4 +170,94 @@ button {
     background-color: #4caf50;
     color: white;
 }
+
+/* Checkout Page */
+.checkout-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 60px; 
+    padding-bottom: 60px; 
+}
+
+.checkout-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    width: 100;
+    margin: 30px;
+}
+
+.left-section-checkout {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.left-section-checkout, .middle-section-checkout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.receipt-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    width: 100%;
+    align-items: center;
+}
+
+.receipt-summary p {
+    font-weight: bold;
+    text-align: right;
+    align-items: center;
+    width: 100%;
+}
+
+.category-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
+.category-button {
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    background-color: #f2a900;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.1s ease-in-out;
+}
+
+.category-button:hover {
+    transform: scale(1.05);
+}
+
+.cancel-button, .pay-button {
+    padding: 15px 30px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.cancel-button {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.pay-button {
+    background-color: #4caf50;
+    color: white;
+}
+
   
