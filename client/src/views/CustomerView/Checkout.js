@@ -12,7 +12,7 @@ const Checkout = () => {
 
     // Handle cancel action (navigate back to the home page or reset the state)
     const handleCancel = () => {
-        navigate('/');
+        navigate('/customer');
     };
 
     // Handle the payment logic (this could be an API call to process payment)

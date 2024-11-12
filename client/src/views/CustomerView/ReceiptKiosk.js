@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Receipt = ({ receipt, applyTax, subtotal, taxAmount, total }) => {
+const Receipt = ({ receipt, applyTax, subtotal, taxAmount, total, onRemove }) => {
     return (
         <div className="receipt">
             <h2>Receipt</h2>
@@ -9,6 +9,9 @@ const Receipt = ({ receipt, applyTax, subtotal, taxAmount, total }) => {
                     <li key={index} className="receipt-item">
                         <span>{item.name}</span>
                         <span>${item.price.toFixed(2)}</span>
+                        <button onClick={() => onRemove(index)} className="remove-button">
+                            Remove
+                        </button>
                     </li>
                 ))}
             </ul>
