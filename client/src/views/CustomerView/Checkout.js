@@ -1,0 +1,74 @@
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import '../../App.css';
+
+const Checkout = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { receipt, total } = location.state || {}; // Get receipt and total from state
+
+    const taxRate = 0.0825;
+    const taxAmount = total * taxRate;
+
+    // Handle cancel action (navigate back to the home page or reset the state)
+    const handleCancel = () => {
+        navigate('/');
+    };
+
+    // Handle the payment logic (this could be an API call to process payment)
+    const handlePay = () => {
+        // Here you would typically process the payment, then clear the receipt or do other logic
+        navigate('/');
+    };
+
+    return (
+        <div className="checkout-layout">
+            {/* Title bar */}
+            <div className="top-bar">
+                <h1>Checkout</h1>
+            </div>
+
+            {/* Left section with receipt and total */}
+            <div className="left-section">
+                <h2>Receipt</h2>
+                <div className="receipt">
+                    {receipt?.map((item, index) => (
+                        <div key={index} className="receipt-item">
+                            <span>{item.name}</span>
+                            <span>${item.price.toFixed(2)}</span>
+                        </div>
+                    ))}
+                </div>
+                <div className="receipt-summary">
+                    <p>Subtotal: ${total.toFixed(2)}</p>
+                    <p>Tax: ${taxAmount.toFixed(2)}</p>
+                    <p>Total: ${(total + taxAmount).toFixed(2)}</p>
+                </div>
+            </div>
+
+            {/* Middle section with additional buttons */}
+            <div className="middle-section">
+                <div className="category-buttons">
+                    <button className="category-button">Credit Card</button>
+                    <button className="category-button">Cash</button>
+                    <button className="category-button">Gift Card</button>
+                    <button className="category-button">Student Swipe</button>
+                </div>
+                <div className="bottom-middle-buttons">
+                    <button>High Contrast</button>
+                    <button>Google Translate</button>
+                    <button>Zoom In</button>
+                    <button>Zoom Out</button>
+                </div>
+            </div>
+
+            {/* Bottom buttons for cancel/pay */}
+            <div className="bottom-bar">
+                <button className="cancel-button" onClick={handleCancel}>Cancel</button>
+                <button className="pay-button" onClick={handlePay}>Pay</button>
+            </div>
+        </div>
+    );
+};
+
+export default Checkout;
