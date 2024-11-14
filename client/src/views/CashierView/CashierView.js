@@ -256,6 +256,7 @@ const CashierView = () => {
               applyTax={applyTax}
               onClearOrder={clearOrder}
               onAddDiscount={() => setShowDiscountPopup(true)}
+              hasDiscount={discount > 0}
             />
           </div>
         </>

@@ -49,7 +49,7 @@ const Receipt = ({
       </div>
       <h3>Subtotal: ${subtotal.toFixed(2)}</h3>
       {discount > 0 && <h3>Discount: -${discount.toFixed(2)}</h3>}
-      <h3>Subtotal after Discount: ${discountAdjustedSubtotal.toFixed(2)}</h3>
+      {discount > 0 && <h3>Subtotal after Discount: ${discountAdjustedSubtotal.toFixed(2)}</h3>}
       <h3>Tax (8.25%): ${taxAmount.toFixed(2)}</h3>
       <h3>Total: ${total.toFixed(2)}</h3>
     </div>

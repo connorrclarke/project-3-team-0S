@@ -1,11 +1,11 @@
 import React from 'react';
 
-const OrderControls = ({ toggleTax, applyTax, onPay, onClearOrder, onAddDiscount }) => {
+const OrderControls = ({ toggleTax, applyTax, onPay, onClearOrder, onAddDiscount, hasDiscount }) => {
   return (
     <div className="order-controls">
       <button>Print Last Receipt</button>
-      <button onClick={onAddDiscount}>Add Discount</button>
-      <button>Split Bill</button>
+      <button onClick={onAddDiscount}>{hasDiscount ? 'Update Discount' : 'Add Discount'}</button>
+      {/* <button>Split Bill</button> */}
       <button onClick={toggleTax}>
         {applyTax ? 'No Tax' : 'Apply Tax'}
       </button>
