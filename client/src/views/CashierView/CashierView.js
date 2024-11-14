@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Receipt from './Receipt';
 import CategoryTabs from './CategoryTabs';
 import OrderControls from './OrderControls';
-import Pay from './Pay';
 import './CashierView.css';
 import { useNavigate } from 'react-router-dom';
 
