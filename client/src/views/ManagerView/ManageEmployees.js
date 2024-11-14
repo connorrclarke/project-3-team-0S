@@ -12,7 +12,7 @@ const ManageEmployees = () => {
     useEffect(() => {
         const fetchEmployees = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/employees');
+                const response = await fetch('http://localhost:5555/api/employees');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -29,7 +29,7 @@ const ManageEmployees = () => {
 
     const handleHireSubmit = async (formData) => {
         try {
-            const response = await fetch('http://localhost:5000/api/employees', {
+            const response = await fetch('http://localhost:5555/api/employees', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -46,7 +46,7 @@ const ManageEmployees = () => {
     const handleFireEmeployee = async (employeeId)=>
     {
         try {
-        const response = await fetch(`http://localhost:5000/api/fire/${employeeId}`);
+        const response = await fetch(`http://localhost:5555/api/fire/${employeeId}`);
         const data = await response.json();
         if (!response.ok) {
             throw new Error('Error firing employee');

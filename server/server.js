@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const port = 5000;
+const port = 5555;
 
 // Create pool
 const pool = new Pool({
