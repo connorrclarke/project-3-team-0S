@@ -26,15 +26,15 @@ const Plate = () => {
       <div className="middle-section">
         <div className="category-description">
           <p>Choose your sides:</p>
-          <button className="category-circle">Sides</button>
+          <button className="sides-circle">Sides</button>
         </div>
         <div className="category-description">
           <p>Choose your entrees:</p>
-          <button className="category-circle">Entree</button>
+          <button className="entree-circle">Entree</button>
         </div>
         <div className="category-description">
           <p>Choose your drinks:</p>
-          <button className="category-circle">Entree</button>
+          <button className="entree-circle">Entree</button>
         </div>
       </div>
 
