@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../ManagerView/Manager.css';
 
 /**
  * Modal component for adding a new inventory item.

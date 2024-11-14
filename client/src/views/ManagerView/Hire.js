@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../../App.css';
+import '../ManagerView/Manager.css';
 
 /**
  * A component for hiring a new employee, including a form to input employee details.

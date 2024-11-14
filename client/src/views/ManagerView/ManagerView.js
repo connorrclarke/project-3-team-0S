@@ -8,7 +8,7 @@
  * @author Luke Lopez
  */
 import React from 'react';
-import '../../App.css';
+import '../ManagerView/Manager.css';
 import { useNavigate } from "react-router-dom";
 
 const ManagerView = ({ setView }) => {
