@@ -9,9 +9,12 @@ body {
 .cashier-layout {
   display: flex;
   justify-content: center;
-  padding: 0 20px;
+  align-items: flex-start;
+  padding: 40px;
+  gap: 40px;
   height: 100vh;
-  gap: 20px;
+  background-color: #EDDFD3;
+  font-family: Arial, sans-serif;
 }
 
 .main-section {
@@ -201,11 +204,7 @@ body {
 
 .receipt-section {
   flex: 1;
-  max-width: 300px;
-  margin: 0 10px;
-  padding: 20px;
-  max-height: calc(100vh - 150px);
-  box-sizing: border-box;
+  max-width: 350px;
 }
 
 .receipt {
@@ -265,13 +264,11 @@ body {
 
 /* Checkout Page Styling */
 .checkout-container {
-  margin-left: 320px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  height: 100vh;
-  box-sizing: border-box;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 800px;
+  align-items: flex-start;
 }
 
 .receipt-summary {
@@ -286,6 +283,20 @@ body {
   width: 280px;
   max-height: 80vh;
   overflow-y: auto;
+}
+
+.payment-section {
+  flex: 1;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.payment-section h3 {
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
 .payment-methods {
@@ -303,51 +314,51 @@ body {
 }
 
 .payment-button {
-  background-color: #ffa500; /* Orange color */
-  color: white;
-  font-weight: bold;
+  width: 100%;
+  padding: 15px;
   font-size: 18px;
-  padding: 15px 25px;
+  font-weight: bold;
+  color: white;
+  background-color: #FF8C00;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  width: 100%;
-  max-width: 250px;
   transition: background-color 0.3s;
 }
 
 .payment-button:hover {
-  background-color: #e69500;
+  background-color: #FF7F50;
 }
 
-.cancel-button,
-.pay-button {
-  position: fixed;
-  bottom: 20px;
-  font-weight: bold;
-  padding: 10px 20px;
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 30px;
+}
+
+.action-buttons button {
+  padding: 12px 20px;
+  font-size: 16px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 18px;
 }
 
 .cancel-button {
-  background-color: #d3d3d3;
+  background-color: #D3D3D3;
   color: black;
-  left: 20px;
 }
 
 .cancel-button:hover {
-  background-color: #bcbcbc;
+  background-color: #C0C0C0;
 }
 
 .pay-button {
   background-color: #4CAF50;
   color: white;
-  right: 20px;
 }
 
 .pay-button:hover {
-  background-color: #45a049;
+  background-color: #45A049;
 }

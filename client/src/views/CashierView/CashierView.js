@@ -206,13 +206,33 @@ const CashierView = () => {
       )}
 
       {showPay ? (
-        <Pay
-          receipt={receipt}
-          total={{ subtotal: subtotal || 0, tax: taxAmount || 0, final: finalTotal || 0 }}
-          tax={taxAmount || 0}
-          onClose={() => setShowPay(false)}
-          onConfirmPayment={handleConfirmPayment}
-        />
+        <div className="checkout-container">
+          <div className="receipt-section">
+            <Receipt
+              receipt={receipt}
+              onRemove={removeItemFromReceipt}
+              applyTax={applyTax}
+              subtotal={subtotal}
+              discountAdjustedSubtotal={discountAdjustedSubtotal}
+              taxAmount={taxAmount}
+              discount={discount}
+              total={finalTotal}
+            />
+          </div>
+
+          <div className="payment-section">
+            <h3>Payment Method</h3>
+            <button className="payment-button">Credit Card</button>
+            <button className="payment-button">Cash</button>
+            <button className="payment-button">Gift Card</button>
+            <button className="payment-button">Student Swipe</button>
+            
+            <div className="action-buttons">
+              <button className="cancel-button" onClick={() => setShowPay(false)}>Cancel</button>
+              <button className="pay-button" onClick={handleConfirmPayment}>Pay</button>
+            </div>
+          </div>
+        </div>
       ) : (
         <>
           <div className="receipt-section">
