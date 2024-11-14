@@ -1,55 +1,33 @@
 import React from 'react';
+import Receipt from './Receipt';
 
-const Receipt = ({ receipt, onRemove, applyTax }) => {
-  const subtotal = receipt.reduce((acc, entry) => acc + (entry.price || 0), 0);
-  const taxRate = 0.0825;
-  const taxAmount = applyTax ? subtotal * taxRate : 0;
-  const total = subtotal + taxAmount;
-
+const Pay = ({ receipt, total = { subtotal: 0, tax: 0, final: 0 }, onClose, onConfirmPayment }) => {
   return (
-    <div className="receipt">
-      <h2>Receipt</h2>
-      <div>
-        {receipt.map((entry, index) => (
-          <div key={index}>
-            {entry.category ? (
-              <div className="receipt-category">
-                <div className="category-header">
-                  <span>{entry.category} - ${entry.price.toFixed(2)}</span>
-                  <img
-                    src="/removeItem.svg"
-                    alt="Remove item"
-                    className="remove-button"
-                    onClick={() => onRemove(index)}
-                  />
-                </div>
-                {entry.items.map((item, itemIndex) => (
-                  <div key={itemIndex} className="receipt-item">
-                    <span style={{ marginLeft: '20px' }}>{item}</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="receipt-item">
-                <div className="item-details">
-                  <span>{entry.name} - ${entry.price.toFixed(2)}</span>
-                  <img
-                    src="/removeItem.svg"
-                    alt="Remove item"
-                    className="remove-button"
-                    onClick={() => onRemove(index)}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+    <div className="checkout-container">
+      {/* Receipt Summary Section */}
+      <div className="receipt-summary">
+        <Receipt
+          receipt={receipt}
+          subtotal={total.subtotal}
+          taxAmount={total.tax}
+          total={total.final}
+        />
       </div>
-      <h3>Subtotal: ${subtotal.toFixed(2)}</h3>
-      <h3>Tax (8.25%): ${taxAmount.toFixed(2)}</h3>
-      <h3>Total: ${total.toFixed(2)}</h3>
+
+      {/* Payment Methods Section */}
+      <div className="payment-methods">
+        <h3>Payment Method</h3>
+        <button className="payment-button">Credit Card</button>
+        <button className="payment-button">Cash</button>
+        <button className="payment-button">Gift Card</button>
+        <button className="payment-button">Student Swipe</button>
+      </div>
+
+      {/* Bottom Buttons */}
+      <button className="cancel-button" onClick={onClose}>Cancel</button>
+      <button className="pay-button" onClick={onConfirmPayment}>Pay</button>
     </div>
   );
 };
 
-export default Receipt;
+export default Pay;

@@ -14,6 +14,7 @@ const CashierView = () => {
   const [applyTax, setApplyTax] = useState(true);
   const [showPay, setShowPay] = useState(false);
   const [showDiscountPopup, setShowDiscountPopup] = useState(false);
+  const [showComboErrorPopup, setShowComboErrorPopup] = useState(false);
   const [discount, setDiscount] = useState(0);
   const [discountInput, setDiscountInput] = useState('');
 
@@ -111,20 +112,11 @@ const CashierView = () => {
     setReceipt(updatedReceipt);
   };
 
-  const toggleTax = () => {
-    setApplyTax(!applyTax);
-  };
-
   const subtotal = receipt.reduce((acc, entry) => acc + (entry.price || 0), 0);
   const discountAdjustedSubtotal = subtotal - discount;
   const taxRate = 0.0825;
   const taxAmount = applyTax ? discountAdjustedSubtotal * taxRate : 0;
-  const total = discountAdjustedSubtotal + taxAmount;
-
-  const clearOrder = () => {
-    setReceipt([]);
-    setDiscount(0);
-  };
+  const finalTotal = discountAdjustedSubtotal + taxAmount;
 
   const handleAddDiscount = () => {
     const discountValue = parseFloat(discountInput);
@@ -139,13 +131,28 @@ const CashierView = () => {
     }
   };
 
+  const isComboComplete = () => {
+    return receipt.every((item) => {
+      if (item.category === 'Bowl') {
+        return item.items.length === 2;
+      } else if (item.category === 'Plate') {
+        return item.items.length === 3;
+      } else if (item.category === 'Bigger Plate') {
+        return item.items.length === 4;
+      }
+      return true;
+    });
+  };
+
   const handlePay = () => {
+    if (!isComboComplete()) {
+      setShowComboErrorPopup(true);
+      return;
+    }
     setShowPay(true);
   };
 
-  const handleBack = () => {
-    setShowPay(false);
-  };
+  const handleCloseComboErrorPopup = () => setShowComboErrorPopup(false);
 
   const handleConfirmPayment = () => {
     setShowPay(false);
@@ -176,12 +183,21 @@ const CashierView = () => {
         </div>
       )}
 
+      {showComboErrorPopup && (
+        <div className="popup">
+          <div className="popup-content">
+            <h3>You must finish building combo before you can checkout</h3>
+            <button onClick={handleCloseComboErrorPopup}>OK</button>
+          </div>
+        </div>
+      )}
+
       {showPay ? (
         <Pay
           receipt={receipt}
-          total={total}
-          applyTax={applyTax}
-          onClose={handleBack}
+          total={{ subtotal: subtotal || 0, tax: taxAmount || 0, final: finalTotal || 0 }}
+          tax={taxAmount || 0}
+          onClose={() => setShowPay(false)}
           onConfirmPayment={handleConfirmPayment}
         />
       ) : (
@@ -195,7 +211,7 @@ const CashierView = () => {
               discountAdjustedSubtotal={discountAdjustedSubtotal}
               taxAmount={taxAmount}
               discount={discount}
-              total={total}
+              total={finalTotal}
             />
           </div>
 
@@ -212,13 +228,16 @@ const CashierView = () => {
             />
 
             {selectedCategory === 'Bowl' && (
-              <p className="selection-message">Select 1-2 Side(s) and 1 Entree</p>
+              <p className="selection-message">Select 1 Side and 1 Entree</p>
+              // <p className="selection-message">Select 1-2 Side(s) and 1 Entree</p>
             )}
             {selectedCategory === 'Plate' && (
-              <p className="selection-message">Select 1-2 Side(s) and 2 Entrees</p>
+              <p className="selection-message">Select 1 Side and 2 Entrees</p>
+              // <p className="selection-message">Select 1-2 Side(s) and 2 Entrees</p>
             )}
             {selectedCategory === 'Bigger Plate' && (
-              <p className="selection-message">Select 1-2 Side(s) and 3 Entrees</p>
+              <p className="selection-message">Select 1 Side and 3 Entrees</p>
+              // <p className="selection-message">Select 1-2 Side(s) and 3 Entrees</p>
             )}
             {selectedCategory === 'Appetizers' && (
               <p className="selection-message">Select the Customer's Appetizer</p>
@@ -252,9 +271,12 @@ const CashierView = () => {
 
             <OrderControls
               onPay={handlePay}
-              toggleTax={toggleTax}
+              toggleTax={() => setApplyTax(!applyTax)}
               applyTax={applyTax}
-              onClearOrder={clearOrder}
+              onClearOrder={() => {
+                setReceipt([]);
+                setDiscount(0);
+              }}
               onAddDiscount={() => setShowDiscountPopup(true)}
               hasDiscount={discount > 0}
             />
