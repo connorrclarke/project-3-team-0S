@@ -17,6 +17,8 @@ const CashierView = () => {
   const [showComboErrorPopup, setShowComboErrorPopup] = useState(false);
   const [showLimitErrorPopup, setShowLimitErrorPopup] = useState(false);
   const [limitErrorMessage, setLimitErrorMessage] = useState('');
+  const [showDiscountErrorPopup, setShowDiscountErrorPopup] = useState(false);
+  const [discountErrorMessage, setDiscountErrorMessage] = useState('');
   const [discount, setDiscount] = useState(0);
   const [discountInput, setDiscountInput] = useState('');
 
@@ -127,7 +129,8 @@ const CashierView = () => {
     if (isNaN(discountValue) || discountValue <= 0) {
       alert('Please enter a valid discount amount.');
     } else if (discountValue > subtotal) {
-      alert('Discount cannot exceed the subtotal amount.');
+      setDiscountErrorMessage('Discount cannot exceed the subtotal amount.');
+      setShowDiscountErrorPopup(true);
     } else {
       setDiscount(discountValue);
       setShowDiscountPopup(false);
@@ -157,6 +160,7 @@ const CashierView = () => {
   };
 
   const handleCloseComboErrorPopup = () => setShowComboErrorPopup(false);
+  const handleCloseDiscountErrorPopup = () => setShowDiscountErrorPopup(false);
 
   const handleConfirmPayment = () => {
     setShowPay(false);
@@ -201,6 +205,15 @@ const CashierView = () => {
           <div className="popup-content">
             <h3>{limitErrorMessage}</h3>
             <button onClick={() => setShowLimitErrorPopup(false)}>OK</button>
+          </div>
+        </div>
+      )}
+
+      {showDiscountErrorPopup && (
+        <div className="popup">
+          <div className="popup-content">
+            <h3>{discountErrorMessage}</h3>
+            <button onClick={handleCloseDiscountErrorPopup}>OK</button>
           </div>
         </div>
       )}
