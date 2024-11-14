@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 /**
  * Modal component for adding a new inventory item.
  *
@@ -18,7 +20,6 @@ import React, { useState } from 'react';
  * @returns {JSX.Element} A modal form for adding inventory.
  */
 const AddInventory = ({ onClose, onSubmit }) => {
-    // State for form inputs
     const [ingredient, setIngredient] = useState('');
     const [quantity, setQuantity] = useState('');
     const [quantityUnit, setQuantityUnit] = useState('');
@@ -34,21 +35,23 @@ const AddInventory = ({ onClose, onSubmit }) => {
      */
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Create the form data object
-        const formData = {
-            Ingredient: ingredient,
-            Quantity: quantity,
-            QuantityUnit: quantityUnit,
-        };
+        const formData = { Ingredient: ingredient, Quantity: quantity, QuantityUnit: quantityUnit };
 
         try {
-            await onSubmit(formData);
-
+            const response = await fetch(`${API_URL}/inventory`, {  // Use API_URL here
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+            if (!response.ok) {
+                throw new Error('Error adding inventory item');
+            }
+            const newItem = await response.json();
+            onSubmit(newItem); // Notify parent component of new item
             setIngredient('');
             setQuantity('');
             setQuantityUnit('');
-            onClose();  // Close the modal after successful submission
+            onClose();
         } catch (err) {
             setError('Error adding inventory item');
             console.error('Error:', err);
@@ -62,33 +65,15 @@ const AddInventory = ({ onClose, onSubmit }) => {
                 <form onSubmit={handleSubmit}>
                     <div>
                         <label htmlFor="ingredient">Item Name:</label>
-                        <input
-                            type="text"
-                            id="ingredient"
-                            value={ingredient}
-                            onChange={(e) => setIngredient(e.target.value)}
-                            required
-                        />
+                        <input type="text" id="ingredient" value={ingredient} onChange={(e) => setIngredient(e.target.value)} required />
                     </div>
                     <div>
                         <label htmlFor="quantity">Quantity:</label>
-                        <input
-                            type="number"
-                            id="quantity"
-                            value={quantity}
-                            onChange={(e) => setQuantity(e.target.value)}
-                            required
-                        />
+                        <input type="number" id="quantity" value={quantity} onChange={(e) => setQuantity(e.target.value)} required />
                     </div>
                     <div>
                         <label htmlFor="quantityUnit">Quantity Unit:</label>
-                        <input
-                            type="text"
-                            id="quantityUnit"
-                            value={quantityUnit}
-                            onChange={(e) => setQuantityUnit(e.target.value)}
-                            required
-                        />
+                        <input type="text" id="quantityUnit" value={quantityUnit} onChange={(e) => setQuantityUnit(e.target.value)} required />
                     </div>
                     {error && <div className="error">{error}</div>}
                     <div className="modal-buttons">
