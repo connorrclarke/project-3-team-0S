@@ -15,6 +15,8 @@ const CashierView = () => {
   const [showPay, setShowPay] = useState(false);
   const [showDiscountPopup, setShowDiscountPopup] = useState(false);
   const [showComboErrorPopup, setShowComboErrorPopup] = useState(false);
+  const [showLimitErrorPopup, setShowLimitErrorPopup] = useState(false);
+  const [limitErrorMessage, setLimitErrorMessage] = useState('');
   const [discount, setDiscount] = useState(0);
   const [discountInput, setDiscountInput] = useState('');
 
@@ -73,11 +75,13 @@ const CashierView = () => {
         const entreeCount = entry.items.filter(i => entrees.includes(i)).length;
   
         if (sides.includes(item) && sideCount >= limit.sides) {
-          alert(`You can only add ${limit.sides} side(s) for a ${selectedCategory}.`);
+          setLimitErrorMessage(`You can only add ${limit.sides} side(s) for a ${selectedCategory}.`);
+          setShowLimitErrorPopup(true);
           return;
         }
         if (entrees.includes(item) && entreeCount >= limit.entrees) {
-          alert(`You can only add ${limit.entrees} entree(s) for a ${selectedCategory}.`);
+          setLimitErrorMessage(`You can only add ${limit.entrees} entree(s) for a ${selectedCategory}.`);
+          setShowLimitErrorPopup(true);
           return;
         }
   
@@ -188,6 +192,15 @@ const CashierView = () => {
           <div className="popup-content">
             <h3>You must finish building combo before you can checkout</h3>
             <button onClick={handleCloseComboErrorPopup}>OK</button>
+          </div>
+        </div>
+      )}
+
+      {showLimitErrorPopup && (
+        <div className="popup">
+          <div className="popup-content">
+            <h3>{limitErrorMessage}</h3>
+            <button onClick={() => setShowLimitErrorPopup(false)}>OK</button>
           </div>
         </div>
       )}
