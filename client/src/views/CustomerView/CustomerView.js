@@ -64,7 +64,7 @@ const CustomerView = () => {
             </div>
 
             <div className="content-section">
-                <div className="receipt-section">
+                <div className="receipt-section-customer">
                     <Receipt 
                         receipt={receipt} 
                         onRemove={removeItemFromReceipt} 
@@ -83,8 +83,6 @@ const CustomerView = () => {
                     <button onClick={goToAppetizersPage} className="category-circle"> Appetizers </button>
                     <button onClick={goToDrinksPage} className="category-circle"> Drinks </button>
                 </div>
-
-                
             </div>
 
             <div className="bottom-bar">
