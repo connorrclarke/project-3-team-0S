@@ -9,10 +9,13 @@ import { useNavigate } from 'react-router-dom';
 const CashierView = () => {
   const navigate = useNavigate();
 
-  const [selectedCategory, setSelectedCategory] = useState('Bowl'); //Default to bowl
+  const [selectedCategory, setSelectedCategory] = useState('Bowl');
   const [receipt, setReceipt] = useState([]);
   const [applyTax, setApplyTax] = useState(true);
   const [showPay, setShowPay] = useState(false);
+  const [showDiscountPopup, setShowDiscountPopup] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [discountInput, setDiscountInput] = useState('');
 
   const categories = ['Bowl', 'Plate', 'Bigger Plate', 'Appetizers', 'Drinks', 'À la carte'];
   const entrees = [
@@ -45,19 +48,17 @@ const CashierView = () => {
     "Bigger Plate": { sides: 1, entrees: 3 }
   };
 
-  // Function to get the default price of an item type, used primarily for 'À la carte' items
   const getPriceByItem = (item) => {
     if (sides.includes(item)) {
-      return 4.4; // Side price
+      return 4.4;
     } else if (entrees.includes(item)) {
-      return 5.2; // Entree price
+      return 5.2;
     }
-    return 0; // Fallback price if not recognized
+    return 0;
   };
 
   const addItemToReceipt = (item) => {
     if (['Bowl', 'Plate', 'Bigger Plate'].includes(selectedCategory)) {
-      // Existing logic for Bowl, Plate, and Bigger Plate
       const limit = categoryLimits[selectedCategory];
       const existingCategoryIndex = receipt.findIndex(
         entry => entry.category === selectedCategory && 
@@ -95,12 +96,10 @@ const CashierView = () => {
         setReceipt((prevReceipt) => [...prevReceipt, newEntry]);
       }
     } else if (selectedCategory === 'Appetizers' || selectedCategory === 'Drinks') {
-      // Apply specific prices for Appetizers and Drinks
       const price = categoryPrices[selectedCategory];
       const newItem = { name: item, price };
       setReceipt((prevReceipt) => [...prevReceipt, newItem]);
     } else {
-      // For À la carte items, use default side or entree price
       const price = getPriceByItem(item);
       const newItem = { name: item, price };
       setReceipt((prevReceipt) => [...prevReceipt, newItem]);
@@ -117,13 +116,28 @@ const CashierView = () => {
   };
 
   const subtotal = receipt.reduce((acc, entry) => acc + (entry.price || 0), 0);
+  const discountAdjustedSubtotal = subtotal - discount;
   const taxRate = 0.0825;
-  const taxAmount = applyTax ? subtotal * taxRate : 0;
-  const total = subtotal + taxAmount;
+  const taxAmount = applyTax ? discountAdjustedSubtotal * taxRate : 0;
+  const total = discountAdjustedSubtotal + taxAmount;
 
   const clearOrder = () => {
     setReceipt([]);
-  }
+    setDiscount(0);
+  };
+
+  const handleAddDiscount = () => {
+    const discountValue = parseFloat(discountInput);
+    if (isNaN(discountValue) || discountValue <= 0) {
+      alert('Please enter a valid discount amount.');
+    } else if (discountValue > subtotal) {
+      alert('Discount cannot exceed the subtotal amount.');
+    } else {
+      setDiscount(discountValue);
+      setShowDiscountPopup(false);
+      setDiscountInput('');
+    }
+  };
 
   const handlePay = () => {
     setShowPay(true);
@@ -136,6 +150,7 @@ const CashierView = () => {
   const handleConfirmPayment = () => {
     setShowPay(false);
     setReceipt([]);
+    setDiscount(0);
     setSelectedCategory('Bowl');
   };
 
@@ -145,6 +160,22 @@ const CashierView = () => {
 
   return (
     <div className="cashier-layout">
+      {showDiscountPopup && (
+        <div className="popup">
+          <div className="popup-content">
+            <h3>Enter Discount Amount</h3>
+            <input
+              type="number"
+              value={discountInput}
+              onChange={(e) => setDiscountInput(e.target.value)}
+              placeholder="Discount in dollars"
+            />
+            <button onClick={handleAddDiscount}>Apply Discount</button>
+            <button onClick={() => setShowDiscountPopup(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
+
       {showPay ? (
         <Pay
           receipt={receipt}
@@ -156,7 +187,16 @@ const CashierView = () => {
       ) : (
         <>
           <div className="receipt-section">
-            <Receipt receipt={receipt} onRemove={removeItemFromReceipt} applyTax={applyTax} />
+            <Receipt
+              receipt={receipt}
+              onRemove={removeItemFromReceipt}
+              applyTax={applyTax}
+              subtotal={subtotal}
+              discountAdjustedSubtotal={discountAdjustedSubtotal}
+              taxAmount={taxAmount}
+              discount={discount}
+              total={total}
+            />
           </div>
 
           <div className="main-section">
@@ -215,6 +255,7 @@ const CashierView = () => {
               toggleTax={toggleTax}
               applyTax={applyTax}
               onClearOrder={clearOrder}
+              onAddDiscount={() => setShowDiscountPopup(true)}
             />
           </div>
         </>

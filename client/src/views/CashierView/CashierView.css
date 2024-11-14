@@ -169,7 +169,33 @@ body {
   text-align: center;
 }
 
-/* Receipt styling */
+.popup-content input {
+  width: 80%;
+  padding: 8px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.popup-content button {
+  margin-top: 10px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup-content button:first-of-type {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.popup-content button:last-of-type {
+  background-color: #f44336;
+  color: white;
+  margin-left: 10px;
+}
+
 .receipt-section {
   flex: 1;
   max-width: 300px;
@@ -222,15 +248,14 @@ body {
   transform: scale(1.2);
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .cashier-layout {
-    flex-direction: column; /* Stack vertically on smaller screens */
+    flex-direction: column;
     padding: 10px;
   }
 
   .receipt-section {
-    max-width: 100%; /* Allow full width on smaller screens */
-    margin: 0 auto 20px auto; /* Center with space at the bottom */
+    max-width: 100%;
+    margin: 0 auto 20px auto;
   }
 }

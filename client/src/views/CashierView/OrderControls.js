@@ -1,10 +1,10 @@
 import React from 'react';
 
-const OrderControls = ({ toggleTax, applyTax, onPay, onClearOrder }) => {
+const OrderControls = ({ toggleTax, applyTax, onPay, onClearOrder, onAddDiscount }) => {
   return (
     <div className="order-controls">
       <button>Print Last Receipt</button>
-      <button>Add Discount</button>
+      <button onClick={onAddDiscount}>Add Discount</button>
       <button>Split Bill</button>
       <button onClick={toggleTax}>
         {applyTax ? 'No Tax' : 'Apply Tax'}

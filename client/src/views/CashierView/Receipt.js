@@ -1,11 +1,15 @@
 import React from 'react';
 
-const Receipt = ({ receipt, onRemove, applyTax }) => {
-  const subtotal = receipt.reduce((acc, entry) => acc + (entry.price || 0), 0);
-  const taxRate = 0.0825;
-  const taxAmount = applyTax ? subtotal * taxRate : 0;
-  const total = subtotal + taxAmount;
-
+const Receipt = ({
+  receipt,
+  onRemove,
+  applyTax,
+  subtotal,
+  discountAdjustedSubtotal,
+  taxAmount,
+  discount,
+  total
+}) => {
   return (
     <div className="receipt">
       <h2>Receipt</h2>
@@ -44,6 +48,8 @@ const Receipt = ({ receipt, onRemove, applyTax }) => {
         ))}
       </div>
       <h3>Subtotal: ${subtotal.toFixed(2)}</h3>
+      {discount > 0 && <h3>Discount: -${discount.toFixed(2)}</h3>}
+      <h3>Subtotal after Discount: ${discountAdjustedSubtotal.toFixed(2)}</h3>
       <h3>Tax (8.25%): ${taxAmount.toFixed(2)}</h3>
       <h3>Total: ${total.toFixed(2)}</h3>
     </div>
