@@ -8,14 +8,13 @@ body {
 
 .cashier-layout {
   display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px;
+  gap: 40px;
   height: 100vh;
-}
-
-.receipt-section {
-  flex: 1;
-  padding: 20px;
-  border-right: 2px solid black;
-  overflow-y: auto;
+  background-color: #EDDFD3;
+  font-family: Arial, sans-serif;
 }
 
 .main-section {
@@ -153,17 +152,18 @@ body {
   background-color: #77dd77;
 }
 
+/* Popup styling */
 .popup {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Dark background */
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* Ensure it appears on top */
+  z-index: 1000;
 }
 
 .popup-content {
@@ -173,12 +173,49 @@ body {
   text-align: center;
 }
 
-/* Receipt styling */
+.popup-content input {
+  width: 80%;
+  padding: 8px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.popup-content button {
+  margin-top: 10px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+}
+
+.popup-content button:first-of-type {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.popup-content button:last-of-type {
+  background-color: #f44336;
+  color: white;
+  margin-left: 10px;
+}
+
+.receipt-section {
+  flex: 1;
+  max-width: 350px;
+}
+
 .receipt {
   background-color: #f8f8f8;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  max-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .receipt-item {
@@ -190,7 +227,17 @@ body {
   border-bottom: 1px solid #e0e0e0;
 }
 
-/* Remove button styling */
+.receipt-category {
+  margin-bottom: 10px;
+}
+
+.category-header, .receipt-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
 .remove-button {
   cursor: pointer;
   width: 20px;
@@ -201,4 +248,117 @@ body {
 
 .remove-button:hover {
   transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+  .cashier-layout {
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .receipt-section {
+    max-width: 100%;
+    margin: 0 auto 20px auto;
+  }
+}
+
+/* Checkout Page Styling */
+.checkout-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 800px;
+  align-items: flex-start;
+}
+
+.receipt-summary {
+  position: fixed;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  background-color: #f8f8f8;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 280px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.payment-section {
+  flex: 1;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.payment-section h3 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  width: 40%;
+  text-align: center;
+}
+
+.payment-methods h3 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.payment-button {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  background-color: #FF8C00;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.payment-button:hover {
+  background-color: #FF7F50;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 30px;
+}
+
+.action-buttons button {
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cancel-button {
+  background-color: #D3D3D3;
+  color: black;
+}
+
+.cancel-button:hover {
+  background-color: #C0C0C0;
+}
+
+.pay-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.pay-button:hover {
+  background-color: #45A049;
 }
