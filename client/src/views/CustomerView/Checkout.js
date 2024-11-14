@@ -32,15 +32,15 @@ const Checkout = () => {
                 {/* Left column for receipt */}
                 <div className="left-section-checkout">
                     <h2>Receipt</h2>
-                    <div className="receipt">
+                    <div className="receipt-customer">
                         {receipt?.map((item, index) => (
-                            <div key={index} className="receipt-item">
+                            <div key={index} className="receipt-item-checkout">
                                 <span>{item.name}</span>
                                 <span>${item.price.toFixed(2)}</span>
                             </div>
                         ))}
                     </div>
-                    <div className="receipt-summary">
+                    <div className="receipt-summary-customer">
                         <p>Subtotal: ${total.toFixed(2)}</p>
                         <p>Tax: ${taxAmount.toFixed(2)}</p>
                         <p>Total: ${(total + taxAmount).toFixed(2)}</p>
