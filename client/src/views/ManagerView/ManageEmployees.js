@@ -66,7 +66,7 @@ const ManageEmployees = () => {
             <button onClick={() => navigate('/manager')}>Return to ManagerView</button>
             <button onClick={() => setShowHireModal(true)}>Hire</button>
             {error && <div>Error fetching employees: {error}</div>}
-
+            <div className= "table-wrapper" >
             <table>
                 <thead>
                 <tr>
@@ -95,6 +95,7 @@ const ManageEmployees = () => {
                 ))}
                 </tbody>
             </table>
+            </div>
 
             {showHireModal && (
                 <Hire
