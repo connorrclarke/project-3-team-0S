@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import '../ManagerView/Manager.css';
+import './Manager.css';
 import { useNavigate } from "react-router-dom";
 import AddInventory from './AddInventory';  // A component for adding new inventory items
 
