@@ -34,7 +34,15 @@ const CashierView = () => {
   const categoryPrices = {
     Bowl: 8.30,
     Plate: 9.80,
-    "Bigger Plate": 11.30
+    "Bigger Plate": 11.30,
+    Appetizers: 1.75,
+    Drinks: 2.5
+  };
+
+  const categoryLimits = {
+    Bowl: { sides: 1, entrees: 1 },
+    Plate: { sides: 1, entrees: 2 },
+    "Bigger Plate": { sides: 1, entrees: 3 }
   };
 
   // Function to get the default price of an item type, used primarily for 'À la carte' items
@@ -49,12 +57,31 @@ const CashierView = () => {
 
   const addItemToReceipt = (item) => {
     if (['Bowl', 'Plate', 'Bigger Plate'].includes(selectedCategory)) {
-      const existingCategory = receipt.find(entry => entry.category === selectedCategory);
-
-      if (existingCategory) {
+      // Existing logic for Bowl, Plate, and Bigger Plate
+      const limit = categoryLimits[selectedCategory];
+      const existingCategoryIndex = receipt.findIndex(
+        entry => entry.category === selectedCategory && 
+                 (entry.items.filter(i => sides.includes(i)).length < limit.sides || 
+                  entry.items.filter(i => entrees.includes(i)).length < limit.entrees)
+      );
+  
+      if (existingCategoryIndex !== -1) {
+        const entry = receipt[existingCategoryIndex];
+        const sideCount = entry.items.filter(i => sides.includes(i)).length;
+        const entreeCount = entry.items.filter(i => entrees.includes(i)).length;
+  
+        if (sides.includes(item) && sideCount >= limit.sides) {
+          alert(`You can only add ${limit.sides} side(s) for a ${selectedCategory}.`);
+          return;
+        }
+        if (entrees.includes(item) && entreeCount >= limit.entrees) {
+          alert(`You can only add ${limit.entrees} entree(s) for a ${selectedCategory}.`);
+          return;
+        }
+  
         setReceipt((prevReceipt) =>
-          prevReceipt.map(entry =>
-            entry.category === selectedCategory
+          prevReceipt.map((entry, index) =>
+            index === existingCategoryIndex
               ? { ...entry, items: [...entry.items, item] }
               : entry
           )
@@ -67,19 +94,14 @@ const CashierView = () => {
         };
         setReceipt((prevReceipt) => [...prevReceipt, newEntry]);
       }
-    } else if (selectedCategory === 'À la carte') {
-      // For À la carte, get the specific price of the item as either a side or entree
-      const price = getPriceByItem(item);
+    } else if (selectedCategory === 'Appetizers' || selectedCategory === 'Drinks') {
+      // Apply specific prices for Appetizers and Drinks
+      const price = categoryPrices[selectedCategory];
       const newItem = { name: item, price };
       setReceipt((prevReceipt) => [...prevReceipt, newItem]);
     } else {
-      // For Appetizers and Drinks, add items directly with fixed prices
-      const price = selectedCategory === 'Appetizers'
-        ? 1.75
-        : selectedCategory === 'Drinks'
-        ? 2.5
-        : 0; // Fallback in case of an unexpected category
-
+      // For À la carte items, use default side or entree price
+      const price = getPriceByItem(item);
       const newItem = { name: item, price };
       setReceipt((prevReceipt) => [...prevReceipt, newItem]);
     }
@@ -143,6 +165,10 @@ const CashierView = () => {
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
               goToManagerView={goToManagerView}
+              receipt={receipt}
+              sides={sides}
+              entrees={entrees}
+              categoryLimits={categoryLimits}
             />
 
             {selectedCategory === 'Bowl' && (
