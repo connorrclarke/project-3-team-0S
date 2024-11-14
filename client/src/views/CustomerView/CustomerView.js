@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../../App.css';
 import './CustomerView.css';
 import Receipt from './ReceiptKiosk';
 
