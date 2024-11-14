@@ -47,6 +47,23 @@ const ManageEmployees = () => {
         }
     };
 
+    const handleFireEmeployee = async (employeeId)=>
+        {
+            try {
+            const response = await fetch(`${API_URL}/fire/${employeeId}`);
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error('Error firing employee');
+            }
+            else    {
+                window.location.reload();
+                console.log(data.message);
+            }
+        } catch (err) {
+            console.error('Error adding employee:', err);
+        }
+    };
+
     return (
         <div className="manager-view">
             <button onClick={() => navigate('/manager')}>Return to ManagerView</button>
