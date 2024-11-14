@@ -7,7 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const port = 5000;
+// Use Vercel's assigned port if available
+const port = process.env.PORT || 5555;
 
 // Create pool
 const pool = new Pool({
@@ -16,7 +17,7 @@ const pool = new Pool({
     database: process.env.PSQL_DATABASE,
     password: process.env.PSQL_PASSWORD,
     port: process.env.PSQL_PORT,
-    ssl: {rejectUnauthorized: false}
+    ssl: { rejectUnauthorized: false }
 });
 
 /**
@@ -42,7 +43,7 @@ process.on('SIGINT', function() {
 app.get('/api/menu-items', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM "MenuItems";');
-        res.json(result.rows); // Send data as JSON response
+        res.json(result.rows);
     } catch (error) {
         console.error('Error fetching menu items:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -61,7 +62,7 @@ app.get('/api/menu-items', async (req, res) => {
 app.get('/api/employees', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM "Employees";');
-        res.json(result.rows); // Send data as JSON response
+        res.json(result.rows);
     } catch (error) {
         console.error('Error fetching employees:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -81,8 +82,8 @@ app.get('/api/employees', async (req, res) => {
  */
 app.get('/api/fire/:employeeId', async (req, res) => {
     try {
-        const employeeId = req.params.employeeId; // Get EmployeeId from URL parameter
-        const result = await pool.query('UPDATE "Employees" SET "Employed" = false WHERE "EmployeeId" = $1', [employeeId]); // Use $1 for parameterized query
+        const employeeId = req.params.employeeId;
+        await pool.query('UPDATE "Employees" SET "Employed" = false WHERE "EmployeeId" = $1', [employeeId]);
         res.status(200).json({ message: 'Employee fired successfully' });
     } catch (error) {
         console.error('Error firing employee:', error);
@@ -103,13 +104,11 @@ app.get('/api/fire/:employeeId', async (req, res) => {
  */
 app.post('/api/hire', async (req, res) => {
     try {
-        const { firstName, lastName, role, phoneNumber, employed } = req.body; // Extract data from request body
-
+        const { firstName, lastName, role, phoneNumber, employed } = req.body;
         const result = await pool.query(
-            `SELECT hire_new_employee($1, $2, $3, $4, $5)`, // Call the function using $1, $2, ... for parameters
-            [firstName, lastName, role, phoneNumber, employed] // Values from the request body
+            `SELECT hire_new_employee($1, $2, $3, $4, $5)`,
+            [firstName, lastName, role, phoneNumber, employed]
         );
-
         res.status(201).json({ message: 'Employee hired successfully', employee: result.rows[0] });
     } catch (error) {
         console.error('Error hiring employee:', error);
@@ -129,7 +128,7 @@ app.post('/api/hire', async (req, res) => {
 app.get('/api/inventory', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM "Inventory";');
-        res.json(result.rows); // Send data as JSON response
+        res.json(result.rows);
     } catch (error) {
         console.error('Error fetching inventory:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -149,21 +148,21 @@ app.get('/api/inventory', async (req, res) => {
  */
 app.post('/api/inventory', async (req, res) => {
     try {
-        const { itemName, quantity, price, description } = req.body; // Extract data from the request body
-
-        // Insert new item into the Inventory table
+        const { itemName, quantity, price, description } = req.body;
         const result = await pool.query(
             `INSERT INTO "Inventory" ("ItemName", "Quantity", "Price", "Description") 
-            VALUES ($1, $2, $3, $4) RETURNING *`,
-            [itemName, quantity, price, description] // Values from the request body
+             VALUES ($1, $2, $3, $4) RETURNING *`,
+            [itemName, quantity, price, description]
         );
-
-        res.status(201).json(result.rows[0]); // Return the newly added item
+        res.status(201).json(result.rows[0]);
     } catch (error) {
         console.error('Error adding inventory item:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+// Export the app module for Vercel
+module.exports = app;
 
 // Server start
 app.listen(port, () => {
