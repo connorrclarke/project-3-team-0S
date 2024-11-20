@@ -165,6 +165,53 @@ app.post('/api/inventory', async (req, res) => {
     }
 });
 
+
+app.get('/api/items', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM "MenuItems";');
+        res.json(result.rows); // Send data as JSON response
+    } catch (error) {
+        console.error('Error fetching items:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.post('/api/items', async (req, res) => {
+    console.log('Received request:', req.body);
+    try {
+        const { Name, Price, Seasonal, Calories, Category, available } = req.body;
+
+        // Ensure all required fields are provided
+        if (!Name || !Price || Seasonal === undefined || !Calories || !Category || available === undefined) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        // Fetch the largest existing MenuItemId
+        const result = await pool.query('SELECT MAX("MenuItemId") AS max_id FROM "MenuItems";');
+        const maxId = result.rows[0].max_id || 0; // Default to 0 if no rows exist
+
+        // Increment the ID for the new item
+        const newId = maxId + 1;
+
+        // Insert the new item into the database
+        const insertResult = await pool.query(
+            `INSERT INTO "MenuItems" ("MenuItemId", "Name", "Price", "Seasonal", "Calories", "Category", "available")
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING *;`,
+            [newId, Name, Price, Seasonal, Calories, Category, available]
+        );
+
+        // Return the newly added item
+        res.status(201).json(insertResult.rows[0]);
+    } catch (error) {
+        console.error('Error adding item:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+
+
 // Server start
 app.listen(port, () => {
     console.log(`Server started on http://localhost:${port}`);

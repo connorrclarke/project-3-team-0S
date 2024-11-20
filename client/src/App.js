@@ -8,6 +8,7 @@ import Plate from './views/CustomerView/Plate';
 import Checkout from './views/CustomerView/Checkout';
 import ManageEmployees from './views/ManagerView/ManageEmployees';
 import ManageInventory from "./views/ManagerView/ManageInventory";
+import ManageItems from "./views/ManagerView/ManageItems";
 
 function App() {
   return (
@@ -21,6 +22,8 @@ function App() {
         <Route path="/plate" element={<Plate />} />
         <Route path= "/employees" element = {<ManageEmployees/>} />
         <Route path= "/inventory" element = {<ManageInventory/>} />
+        <Route path= "/items" element = {<ManageItems/>} />
+
         {/* Add other routes here for different views */}
 
       </Routes>
