@@ -29,6 +29,19 @@
     background-color: orange;
     font-weight: bold;
 }
+.options{
+    width: fit-content;
+}
+.options .add-item-button{
+    width: auto;
+    height: auto;
+    background-color: green;
+}
+.options .rem-item-button{
+    width: auto;
+    height: auto;
+    background-color: red;
+}
 
 .item-grid {
     display: grid;

@@ -81,6 +81,7 @@ const ManageInventory = () => {
                         <th>Calories</th>
                         <th>Catagory</th>
                         <th>Available</th>
+                        <th>Action</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -95,6 +96,14 @@ const ManageInventory = () => {
                             <td>{item.Category}</td>
                             {/* Fix typo here */}
                             <td>{item.Available ? 'Yes' : 'No'}</td>
+                            <td>
+                                <div className={"options"}>
+
+
+                                <button className={"add-item-button"}>Add</button>
+                                <button className={"rem-item-button"}>Remove</button>
+                                </div>
+                            </td>
                             {/* Proper boolean display */}
                         </tr>
                     ))}
