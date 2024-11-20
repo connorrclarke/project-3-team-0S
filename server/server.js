@@ -125,7 +125,7 @@ app.post('/api/inventory', async (req, res) => {
  */
 app.get('/api/items', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM "MenuItems";');
+        const result = await pool.query('SELECT * FROM "MenuItems" ORDER BY "MenuItemId" ASC ;');
         res.json(result.rows);
     } catch (error) {
         console.error('Error fetching items:', error);
@@ -157,6 +157,39 @@ app.post('/api/items', async (req, res) => {
         res.status(500).json({ error: 'Failed to add menu item' });
     }
 });
+
+// Update the availability of an item
+// Update the availability of a menu item
+app.patch('/api/items/:id', async (req, res) => {
+    const { id } = req.params;
+    const { Available } = req.body;
+
+    if (typeof Available !== 'boolean') {
+        return res.status(400).json({ error: 'Invalid value for availability. Must be a boolean.' });
+    }
+
+    try {
+        const query = `
+            UPDATE "MenuItems" 
+            SET "available" = $1 
+            WHERE "MenuItemId" = $2 
+            RETURNING *;
+        `;
+        const values = [Available, id];
+
+        const result = await pool.query(query, values);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        res.json({ message: 'Item updated successfully', item: result.rows[0] });
+    } catch (error) {
+        console.error('Error updating item availability:', error);
+        res.status(500).json({ error: 'Failed to update item availability' });
+    }
+});
+
 
 // Start the server
 app.listen(port, () => {
