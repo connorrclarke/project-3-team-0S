@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 import './Manager.css';
 
 /**
- * A modal component for adding new menu items to the inventory.
+ * A modal component for adding new menu items to the inventory, including a manual ID input.
  *
  * @component
  * @example
  * // Usage Example:
  * <AddItems onClose={handleClose} onSubmit={handleSubmit} />
- * @author Luke Lopez
  * @param {Function} onClose - Function to close the modal.
+ * @param {Function} onSubmit - Function to handle form submission.
  * @returns {JSX.Element} The rendered AddItems component.
  */
-const AddItems = ({ onClose }) => {
+const AddItems = ({ onClose, onSubmit }) => {
     const [formData, setFormData] = useState({
+        MenuItemID: '',
         Name: '',
         Price: '',
         Seasonal: false,
@@ -21,8 +22,6 @@ const AddItems = ({ onClose }) => {
         Category: '',
         Available: false,
     });
-
-    const [error, setError] = useState(null); // To track errors during the submission
 
     /**
      * Handles form input changes and updates the state.
@@ -38,55 +37,31 @@ const AddItems = ({ onClose }) => {
     };
 
     /**
-     * Sends a POST request to add a new item to the backend.
-     *
-     * @returns {Promise<void>}
-     */
-    const sendRequest = async () => {
-        try {
-            const response = await fetch('/api/items', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Server responded with status ${response.status}`);
-            }
-
-            // Check if the response has a valid JSON body
-            const responseText = await response.text();
-            const data = responseText ? JSON.parse(responseText) : null;
-
-            console.log('Item added successfully:', data);
-        } catch (error) {
-            console.error('Error adding item:', error);
-            setError(error.message);
-        }
-    };
-
-
-    /**
-     * Handles form submission, sends the request, and closes the modal.
+     * Handles form submission and triggers the parent onSubmit function.
      *
      * @param {Object} event - The form submission event.
      */
-    const handleSubmit = async (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
-        setError(null); // Clear previous errors
-
-        await sendRequest();
-        onClose(); // Close the modal after submission
+        onSubmit(formData); // Pass the form data to the parent component
+        onClose(); // Close the modal
     };
 
     return (
         <div className="modal">
             <div className="modal-content">
                 <h2>Add New Menu Item</h2>
-                {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>
+                    <label>
+                        Menu Item ID:
+                        <input
+                            type="number"
+                            name="MenuItemID"
+                            value={formData.MenuItemID}
+                            onChange={handleChange}
+                            required
+                        />
+                    </label>
                     <label>
                         Item Name:
                         <input
