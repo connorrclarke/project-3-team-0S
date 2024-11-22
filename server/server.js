@@ -185,7 +185,7 @@ app.post('/api/inventory', async (req, res) => {
 // Export the app module for Vercel
 module.exports = app;
 
-// // Server start
-// app.listen(port, () => {
-//     console.log(`Server started on http://localhost:${port}`);
-// });
+// Server start
+app.listen(port, () => {
+    console.log(`Server started on http://localhost:${port}`);
+});
