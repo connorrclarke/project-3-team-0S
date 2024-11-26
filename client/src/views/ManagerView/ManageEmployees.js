@@ -3,6 +3,9 @@ import './Manager.css';
 import { useNavigate } from "react-router-dom";
 import Hire from './Hire';
 
+// Define the API base URL
+const API_URL = process.env.REACT_APP_API_URL;
+
 const ManageEmployees = () => {
     const [employees, setEmployees] = useState([]);
     const [error, setError] = useState(null);
@@ -12,7 +15,8 @@ const ManageEmployees = () => {
     useEffect(() => {
         const fetchEmployees = async () => {
             try {
-                const response = await fetch('http://localhost:5555/api/employees');
+                const response = await fetch(`${API_URL}/employees`);  // Use API_URL here
+                //const response = await fetch('http://localhost:5555/api/employees');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -29,7 +33,8 @@ const ManageEmployees = () => {
 
     const handleHireSubmit = async (formData) => {
         try {
-            const response = await fetch('http://localhost:5555/api/employees', {
+            const response = await fetch(`${API_URL}/employees`, {
+            //const response = await fetch('http://localhost:5555/api/employees', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -38,27 +43,28 @@ const ManageEmployees = () => {
                 throw new Error('Error adding employee');
             }
             const newEmployee = await response.json();
-            setEmployees((prevEmployees) => [...prevEmployees, newEmployee]); // Update employee list
+            setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
         } catch (err) {
             console.error('Error adding employee:', err);
         }
     };
-    const handleFireEmeployee = async (employeeId)=>
-    {
-        try {
-        const response = await fetch(`http://localhost:5555/api/fire/${employeeId}`);
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error('Error firing employee');
-        }
-        else    {
-            window.location.reload();
-            console.log(data.message);
 
+    const handleFireEmeployee = async (employeeId)=>
+        {
+            try {
+            const response = await fetch(`${API_URL}/fire/${employeeId}`);
+            //const response = await fetch(`http://localhost:5555/api/fire/${employeeId}`);
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error('Error firing employee');
+            }
+            else    {
+                window.location.reload();
+                console.log(data.message);
+            }
+        } catch (err) {
+            console.error('Error adding employee:', err);
         }
-    } catch (err) {
-        console.error('Error adding employee:', err);
-    }
     };
 
     return (
@@ -66,6 +72,7 @@ const ManageEmployees = () => {
             <button onClick={() => navigate('/manager')}>Return to ManagerView</button>
             <button onClick={() => setShowHireModal(true)}>Hire</button>
             {error && <div>Error fetching employees: {error}</div>}
+             
             <div className= "table-wrapper" >
             <table>
                 <thead>

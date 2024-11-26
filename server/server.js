@@ -1,13 +1,16 @@
+// Import required packages
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
 const dotenv = require('dotenv').config();
 
+// Initialize the app
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const port = 5555;
+// Use Vercel's assigned port if available
+const port = process.env.PORT || 5555;
 
 // Create pool
 const pool = new Pool({
@@ -33,7 +36,45 @@ process.on('SIGINT', () => {
 });
 
 /**
+ * Root route to confirm the server is running.
+ *
+ * @name root
+ * @route GET /
+ * @returns {string} A welcome message indicating the server is operational.
+ */
+app.get('/', (req, res) => {
+    res.send('Welcome to the API! Server is running.');
+});
+
+/**
+ * Test database connection endpoint.
+ *
+ * @async
+ * @function
+ * @name testDbConnection
+ * @route GET /api/test-db
+ * @returns {Object} A simple confirmation of the database connection.
+ * @throws {Error} If there is an issue connecting to the database.
+ */
+app.get('/api/test-db', async (req, res) => {
+    try {
+        await pool.query('SELECT NOW()'); // Simple query to check DB connection
+        res.json({ message: 'Database connection is working' });
+    } catch (error) {
+        console.error('Database connection error:', error);
+        res.status(500).json({ error: 'Database connection failed' });
+    }
+});
+
+/**
  * Endpoint to get all menu items.
+ *
+ * @async
+ * @function
+ * @name getMenuItems
+ * @route GET /api/menu-items
+ * @returns {Object} JSON object containing menu items.
+ * @throws {Error} If there is an issue fetching menu items from the database.
  */
 app.get('/api/menu-items', async (req, res) => {
     try {
@@ -47,6 +88,13 @@ app.get('/api/menu-items', async (req, res) => {
 
 /**
  * Endpoint to get all employees.
+ *
+ * @async
+ * @function
+ * @name getEmployees
+ * @route GET /api/employees
+ * @returns {Object} JSON object containing employee details.
+ * @throws {Error} If there is an issue fetching employee data from the database.
  */
 app.get('/api/employees', async (req, res) => {
     try {
@@ -59,7 +107,16 @@ app.get('/api/employees', async (req, res) => {
 });
 
 /**
- * Endpoint to fire an employee.
+ * Endpoint to fire an employee by updating their employment status.
+ *
+ * @async
+ * @function
+ * @name fireEmployee
+ * @route GET /api/fire/:employeeId
+ * @param {Object} req - The request object containing the employee's ID.
+ * @param {Object} res - The response object that will send the status of the operation.
+ * @returns {Object} A message confirming the firing of the employee.
+ * @throws {Error} If there is an issue with the database operation.
  */
 app.get('/api/fire/:employeeId', async (req, res) => {
     try {
@@ -74,6 +131,15 @@ app.get('/api/fire/:employeeId', async (req, res) => {
 
 /**
  * Endpoint to hire a new employee.
+ *
+ * @async
+ * @function
+ * @name hireEmployee
+ * @route POST /api/hire
+ * @param {Object} req - The request object containing the new employee's details.
+ * @param {Object} res - The response object that will send a confirmation message.
+ * @returns {Object} A message and the newly hired employee's information.
+ * @throws {Error} If there is an issue with hiring the employee in the database.
  */
 app.post('/api/hire', async (req, res) => {
     try {
@@ -91,6 +157,13 @@ app.post('/api/hire', async (req, res) => {
 
 /**
  * Endpoint to fetch all inventory items.
+ *
+ * @async
+ * @function
+ * @name getInventory
+ * @route GET /api/inventory
+ * @returns {Object} JSON object containing inventory items.
+ * @throws {Error} If there is an issue fetching inventory data from the database.
  */
 app.get('/api/inventory', async (req, res) => {
     try {
@@ -104,13 +177,23 @@ app.get('/api/inventory', async (req, res) => {
 
 /**
  * Endpoint to add a new inventory item.
+ *
+ * @async
+ * @function
+ * @name addInventoryItem
+ * @route POST /api/inventory
+ * @param {Object} req - The request object containing the inventory item details.
+ * @param {Object} res - The response object that will send a confirmation and the added item.
+ * @returns {Object} The newly added inventory item.
+ * @throws {Error} If there is an issue adding the inventory item to the database.
  */
 app.post('/api/inventory', async (req, res) => {
     try {
         const { itemName, quantity, price, description } = req.body;
         const result = await pool.query(
             `INSERT INTO "Inventory" ("ItemName", "Quantity", "Price", "Description") 
-            VALUES ($1, $2, $3, $4) RETURNING *`,
+
+             VALUES ($1, $2, $3, $4) RETURNING *`,
             [itemName, quantity, price, description]
         );
         res.status(201).json(result.rows[0]);
@@ -191,7 +274,10 @@ app.patch('/api/items/:id', async (req, res) => {
 });
 
 
-// Start the server
-app.listen(port, () => {
-    console.log(`Server started on http://localhost:${port}`);
-});
+// Export the app module for Vercel
+module.exports = app;
+
+// // Server start
+// app.listen(port, () => {
+//     console.log(`Server started on http://localhost:${port}`);
+// });
