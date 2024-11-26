@@ -9,7 +9,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Use Vercel's assigned port if available
 const port = process.env.PORT || 5555;
 
 // Create pool
@@ -47,6 +46,17 @@ app.get('/', (req, res) => {
 });
 
 /**
+ * Root route for the API.
+ * 
+ * @name apiRoot
+ * @route GET /api
+ * @returns {string} A message indicating the root route for the API.
+ */
+app.get('/api', (req, res) => {
+    res.send('This is the root route for the API');
+});
+
+/**
  * Test database connection endpoint.
  *
  * @async
@@ -58,8 +68,8 @@ app.get('/', (req, res) => {
  */
 app.get('/api/test-db', async (req, res) => {
     try {
-        await pool.query('SELECT NOW()'); // Simple query to check DB connection
-        res.json({ message: 'Database connection is working' });
+        const result = await pool.query('SELECT * FROM "teammembers";');
+        res.json(result.rows);
     } catch (error) {
         console.error('Database connection error:', error);
         res.status(500).json({ error: 'Database connection failed' });
@@ -216,32 +226,6 @@ app.get('/api/items', async (req, res) => {
     }
 });
 
-/**
- * Endpoint to add a new menu item.
- */
-app.post('/api/items', async (req, res) => {
-    const { MenuItemID, Name, Price, Seasonal, Calories, Category, Available } = req.body;
-
-    // Ensure all required fields are provided
-    if (!MenuItemID || !Name || !Price || !Calories || !Category) {
-        return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    try {
-        const query = `
-            INSERT INTO "MenuItems" ("MenuItemId", "Name", "Price", "Seasonal", "Calories", "Category", "available")
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-        `;
-        const values = [MenuItemID, Name, Price, Seasonal, Calories, Category, Available];
-        await pool.query(query, values);
-        res.status(201).json({ message: 'Item added successfully' });
-    } catch (error) {
-        console.error('Error adding menu item:', error);
-        res.status(500).json({ error: 'Failed to add menu item' });
-    }
-});
-
-// Update the availability of an item
 // Update the availability of a menu item
 app.patch('/api/items/:id', async (req, res) => {
     const { id } = req.params;
@@ -277,7 +261,7 @@ app.patch('/api/items/:id', async (req, res) => {
 // Export the app module for Vercel
 module.exports = app;
 
-// // Server start
-// app.listen(port, () => {
-//     console.log(`Server started on http://localhost:${port}`);
-// });
+// Server start
+app.listen(port, () => {
+    console.log(`Server started on http://localhost:${port}`);
+});
