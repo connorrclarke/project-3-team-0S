@@ -3,6 +3,8 @@ import './Manager.css';
 import { useNavigate } from "react-router-dom";
 import AddItems from './AddItems';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const ManageInventory = () => {
     const [items, setItems] = useState([]);
     const [error, setError] = useState(null);
@@ -12,7 +14,8 @@ const ManageInventory = () => {
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await fetch('http://localhost:5555/api/items');
+                const response = await fetch(`${API_URL}/items`);
+                // const response = await fetch('http://localhost:5555/api/items');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -29,7 +32,8 @@ const ManageInventory = () => {
 
     const handleAddInventorySubmit = async (formData) => {
         try {
-            const response = await fetch('http://localhost:5555/api/items', {
+            const response = await fetch(`${API_URL}/items`, {
+            //const response = await fetch('http://localhost:5555/api/items', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -46,7 +50,8 @@ const ManageInventory = () => {
 
     const handleAdd = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5555/api/items/${id}`, {
+            const response = await fetch(`${API_URL}/items/${id}`, {
+            //const response = await fetch(`http://localhost:5555/api/items/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ Available: true }),
@@ -67,7 +72,8 @@ const ManageInventory = () => {
 
     const handleRemove = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5555/api/items/${id}`, {
+            const response = await fetch(`${API_URL}/items/${id}`, {
+            //const response = await fetch(`http://localhost:5555/api/items/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ Available: false }),

@@ -32,8 +32,8 @@ const ManageInventory = () => {
     useEffect(() => {
         const fetchInventory = async () => {
             try {
-                //const response = await fetch(`${API_URL}/inventory`);  // Use API_URL here
-                const response = await fetch('http://localhost:5555/api/inventory');  // API endpoint to fetch inventory data
+                const response = await fetch(`${API_URL}/inventory`);  // Use API_URL here
+                //const response = await fetch('http://localhost:5555/api/inventory');  // API endpoint to fetch inventory data
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -59,8 +59,8 @@ const ManageInventory = () => {
      */
     const handleAddInventorySubmit = async (formData) => {
         try {
-            //const response = await fetch(`${API_URL}/inventory`, {
-            const response = await fetch('http://localhost:5555/api/inventory', {
+            const response = await fetch(`${API_URL}/inventory`, {
+            //const response = await fetch('http://localhost:5555/api/inventory', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
