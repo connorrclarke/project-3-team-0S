@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './Manager.css';
 
 const API_URL = process.env.REACT_APP_API_URL;
 

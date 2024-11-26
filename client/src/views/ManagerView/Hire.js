@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../../App.css';
+import './Manager.css';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -59,6 +59,7 @@ const Hire = ({ onClose, onSubmit }) => {
 
         try {
             const response = await fetch(`${API_URL}/hire`, {  // Use API_URL here
+            //const response = await fetch('http://localhost:5555/api/hire', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),

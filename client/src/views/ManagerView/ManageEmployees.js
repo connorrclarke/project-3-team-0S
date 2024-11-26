@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import '../../App.css';
+import './Manager.css';
 import { useNavigate } from "react-router-dom";
 import Hire from './Hire';
 
@@ -16,6 +16,7 @@ const ManageEmployees = () => {
         const fetchEmployees = async () => {
             try {
                 const response = await fetch(`${API_URL}/employees`);  // Use API_URL here
+                //const response = await fetch('http://localhost:5555/api/employees');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -33,6 +34,7 @@ const ManageEmployees = () => {
     const handleHireSubmit = async (formData) => {
         try {
             const response = await fetch(`${API_URL}/employees`, {
+            //const response = await fetch('http://localhost:5555/api/employees', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -51,6 +53,7 @@ const ManageEmployees = () => {
         {
             try {
             const response = await fetch(`${API_URL}/fire/${employeeId}`);
+            //const response = await fetch(`http://localhost:5555/api/fire/${employeeId}`);
             const data = await response.json();
             if (!response.ok) {
                 throw new Error('Error firing employee');
@@ -69,6 +72,8 @@ const ManageEmployees = () => {
             <button onClick={() => navigate('/manager')}>Return to ManagerView</button>
             <button onClick={() => setShowHireModal(true)}>Hire</button>
             {error && <div>Error fetching employees: {error}</div>}
+             
+            <div className= "table-wrapper" >
             <table>
                 <thead>
                 <tr>
@@ -97,6 +102,7 @@ const ManageEmployees = () => {
                 ))}
                 </tbody>
             </table>
+            </div>
 
             {showHireModal && (
                 <Hire

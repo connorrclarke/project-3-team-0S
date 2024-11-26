@@ -1,7 +1,7 @@
 // Import required packages
 const express = require('express');
 const { Pool } = require('pg');
-const cors = require('cors'); // Import CORS
+const cors = require('cors');
 const dotenv = require('dotenv').config();
 
 // Initialize the app
@@ -24,13 +24,15 @@ const pool = new Pool({
 
 /**
  * Handles server shutdown and cleans up database connections.
- *
- * @returns {void}
  */
-process.on('SIGINT', function() {
-    pool.end();
-    console.log('Application successfully shutdown');
-    process.exit(0);
+process.on('SIGINT', () => {
+    pool.end().then(() => {
+        console.log('Application successfully shutdown');
+        process.exit(0);
+    }).catch(err => {
+        console.error('Error shutting down pool:', err);
+        process.exit(1);
+    });
 });
 
 /**
@@ -190,6 +192,7 @@ app.post('/api/inventory', async (req, res) => {
         const { itemName, quantity, price, description } = req.body;
         const result = await pool.query(
             `INSERT INTO "Inventory" ("ItemName", "Quantity", "Price", "Description") 
+
              VALUES ($1, $2, $3, $4) RETURNING *`,
             [itemName, quantity, price, description]
         );
@@ -199,6 +202,77 @@ app.post('/api/inventory', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+/**
+ * Endpoint to get all menu items (use this for the frontend to get the list).
+ */
+app.get('/api/items', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM "MenuItems" ORDER BY "MenuItemId" ASC ;');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching items:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * Endpoint to add a new menu item.
+ */
+app.post('/api/items', async (req, res) => {
+    const { MenuItemID, Name, Price, Seasonal, Calories, Category, Available } = req.body;
+
+    // Ensure all required fields are provided
+    if (!MenuItemID || !Name || !Price || !Calories || !Category) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    try {
+        const query = `
+            INSERT INTO "MenuItems" ("MenuItemId", "Name", "Price", "Seasonal", "Calories", "Category", "available")
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `;
+        const values = [MenuItemID, Name, Price, Seasonal, Calories, Category, Available];
+        await pool.query(query, values);
+        res.status(201).json({ message: 'Item added successfully' });
+    } catch (error) {
+        console.error('Error adding menu item:', error);
+        res.status(500).json({ error: 'Failed to add menu item' });
+    }
+});
+
+// Update the availability of an item
+// Update the availability of a menu item
+app.patch('/api/items/:id', async (req, res) => {
+    const { id } = req.params;
+    const { Available } = req.body;
+
+    if (typeof Available !== 'boolean') {
+        return res.status(400).json({ error: 'Invalid value for availability. Must be a boolean.' });
+    }
+
+    try {
+        const query = `
+            UPDATE "MenuItems" 
+            SET "available" = $1 
+            WHERE "MenuItemId" = $2 
+            RETURNING *;
+        `;
+        const values = [Available, id];
+
+        const result = await pool.query(query, values);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        res.json({ message: 'Item updated successfully', item: result.rows[0] });
+    } catch (error) {
+        console.error('Error updating item availability:', error);
+        res.status(500).json({ error: 'Failed to update item availability' });
+    }
+});
+
 
 // Export the app module for Vercel
 module.exports = app;
