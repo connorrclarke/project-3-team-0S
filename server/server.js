@@ -35,28 +35,6 @@ process.on('SIGINT', () => {
 });
 
 /**
- * Root route to confirm the server is running.
- *
- * @name root
- * @route GET /
- * @returns {string} A welcome message indicating the server is operational.
- */
-app.get('/', (req, res) => {
-    res.send('Welcome to the API! Server is running.');
-});
-
-/**
- * Root route for the API.
- * 
- * @name apiRoot
- * @route GET /api
- * @returns {string} A message indicating the root route for the API.
- */
-app.get('/api', (req, res) => {
-    res.send('This is the root route for the API');
-});
-
-/**
  * Test database connection endpoint.
  *
  * @async
