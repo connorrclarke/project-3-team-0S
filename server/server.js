@@ -108,7 +108,7 @@ app.get('/api/menu-items', async (req, res) => {
  */
 app.get('/api/employees', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM "Employees";');
+        const result = await pool.query('SELECT * FROM "Employees" ORDER BY "Employed" DESC, "EmployeeId" ASC;');
         res.json(result.rows);
     } catch (error) {
         console.error('Error fetching employees:', error);
