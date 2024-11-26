@@ -257,11 +257,8 @@ app.patch('/api/items/:id', async (req, res) => {
     }
 });
 
+// Server start
+app.listen(port, () => { console.log(`Server started on http://localhost:${port}`); });
 
 // Export the app module for Vercel
 module.exports = app;
-
-// // Server start
-// app.listen(port, () => {
-//     console.log(`Server started on http://localhost:${port}`);
-// });
