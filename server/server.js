@@ -1,8 +1,10 @@
+// Import required packages
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors'); // Import CORS
 const dotenv = require('dotenv').config();
 
+// Initialize the app
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -32,11 +34,23 @@ process.on('SIGINT', function() {
 });
 
 /**
+ * Root route to confirm the server is running.
+ *
+ * @name root
+ * @route GET /
+ * @returns {string} A welcome message indicating the server is operational.
+ */
+app.get('/', (req, res) => {
+    res.send('Welcome to the API! Server is running.');
+});
+
+/**
  * Test database connection endpoint.
  *
  * @async
  * @function
  * @name testDbConnection
+ * @route GET /api/test-db
  * @returns {Object} A simple confirmation of the database connection.
  * @throws {Error} If there is an issue connecting to the database.
  */
@@ -56,14 +70,13 @@ app.get('/api/test-db', async (req, res) => {
  * @async
  * @function
  * @name getMenuItems
+ * @route GET /api/menu-items
  * @returns {Object} JSON object containing menu items.
  * @throws {Error} If there is an issue fetching menu items from the database.
  */
 app.get('/api/menu-items', async (req, res) => {
-    console.log("Menu items endpoint hit");  // Log to confirm endpoint access
     try {
         const result = await pool.query('SELECT * FROM "MenuItems";');
-        console.log("Query result:", result.rows); // Log query result to verify database output
         res.json(result.rows);
     } catch (error) {
         console.error('Error fetching menu items:', error);
@@ -77,6 +90,7 @@ app.get('/api/menu-items', async (req, res) => {
  * @async
  * @function
  * @name getEmployees
+ * @route GET /api/employees
  * @returns {Object} JSON object containing employee details.
  * @throws {Error} If there is an issue fetching employee data from the database.
  */
@@ -96,6 +110,7 @@ app.get('/api/employees', async (req, res) => {
  * @async
  * @function
  * @name fireEmployee
+ * @route GET /api/fire/:employeeId
  * @param {Object} req - The request object containing the employee's ID.
  * @param {Object} res - The response object that will send the status of the operation.
  * @returns {Object} A message confirming the firing of the employee.
@@ -118,6 +133,7 @@ app.get('/api/fire/:employeeId', async (req, res) => {
  * @async
  * @function
  * @name hireEmployee
+ * @route POST /api/hire
  * @param {Object} req - The request object containing the new employee's details.
  * @param {Object} res - The response object that will send a confirmation message.
  * @returns {Object} A message and the newly hired employee's information.
@@ -143,6 +159,7 @@ app.post('/api/hire', async (req, res) => {
  * @async
  * @function
  * @name getInventory
+ * @route GET /api/inventory
  * @returns {Object} JSON object containing inventory items.
  * @throws {Error} If there is an issue fetching inventory data from the database.
  */
@@ -162,6 +179,7 @@ app.get('/api/inventory', async (req, res) => {
  * @async
  * @function
  * @name addInventoryItem
+ * @route POST /api/inventory
  * @param {Object} req - The request object containing the inventory item details.
  * @param {Object} res - The response object that will send a confirmation and the added item.
  * @returns {Object} The newly added inventory item.
@@ -185,7 +203,7 @@ app.post('/api/inventory', async (req, res) => {
 // Export the app module for Vercel
 module.exports = app;
 
-// Server start
-app.listen(port, () => {
-    console.log(`Server started on http://localhost:${port}`);
-});
+// // Server start
+// app.listen(port, () => {
+//     console.log(`Server started on http://localhost:${port}`);
+// });
