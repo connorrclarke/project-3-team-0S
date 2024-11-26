@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './Manager.css';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 /**
  * A component for hiring a new employee, including a form to input employee details.
  *
@@ -21,7 +23,7 @@ const Hire = ({ onClose, onSubmit }) => {
         lastName: '',
         role: '',
         phoneNumber: '',
-        employed: true, // Set employed to true by default
+        employed: true,
     });
 
     /**
@@ -53,36 +55,25 @@ const Hire = ({ onClose, onSubmit }) => {
      * @throws {Error} If there is an error during the submission or if the server returns an error.
      */
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevent default form submission
-
-        console.log("First Name:", formData.firstName);
-        console.log("Last Name:", formData.lastName);
-        console.log("Role:", formData.role);
-        console.log("Phone Number:", formData.phoneNumber);
-        console.log("Employed:", formData.employed); // Log employed status
+        e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:5555/api/hire', {
+            const response = await fetch(`${API_URL}/hire`, {  // Use API_URL here
+            //const response = await fetch('http://localhost:5555/api/hire', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData), // Send formData in request body
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
             });
-
-            const data = await response.json();
             if (!response.ok) {
                 throw new Error('Error hiring employee');
-            } else {
-                console.log(data.message);
-                window.location.reload();
             }
+            const data = await response.json();
+            console.log(data.message);
+            onSubmit(formData);
+            onClose();
         } catch (err) {
             console.error('Error adding employee:', err);
         }
-
-        onSubmit(formData); // Call onSubmit callback if provided
-        onClose(); // Close the modal
     };
 
     return (
@@ -90,46 +81,14 @@ const Hire = ({ onClose, onSubmit }) => {
             <div className="modal-content">
                 <h2>Hire Employee</h2>
                 <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        name="firstName"
-                        placeholder="First Name"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                    />
-                    <input
-                        type="text"
-                        name="lastName"
-                        placeholder="Last Name"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                    />
-                    <input
-                        type="text"
-                        name="role"
-                        placeholder="Role"
-                        value={formData.role}
-                        onChange={handleChange}
-                    />
-                    <input
-                        type="text"
-                        name="phoneNumber"
-                        placeholder="Phone Number"
-                        value={formData.phoneNumber}
-                        onChange={handleChange}
-                    />
-
-                    {/* Add checkbox for 'Employed' status */}
+                    <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} />
+                    <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} />
+                    <input type="text" name="role" placeholder="Role" value={formData.role} onChange={handleChange} />
+                    <input type="text" name="phoneNumber" placeholder="Phone Number" value={formData.phoneNumber} onChange={handleChange} />
                     <label>
-                        <input
-                            type="checkbox"
-                            name="employed"
-                            checked={formData.employed}
-                            onChange={handleChange}
-                        />
+                        <input type="checkbox" name="employed" checked={formData.employed} onChange={handleChange} />
                         Employed
                     </label>
-
                     <button type="submit" className="submit-button">Submit</button>
                     <button type="button" className="cancel-button" onClick={onClose}>Cancel</button>
                 </form>
