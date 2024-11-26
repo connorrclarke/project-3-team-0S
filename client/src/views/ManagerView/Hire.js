@@ -58,8 +58,8 @@ const Hire = ({ onClose, onSubmit }) => {
         e.preventDefault();
 
         try {
-            const response = await fetch(`${API_URL}/hire`, {  // Use API_URL here
-            //const response = await fetch('http://localhost:5555/api/hire', {
+            //const response = await fetch(`${API_URL}/hire`, {  // Use API_URL here
+            const response = await fetch('http://localhost:5555/api/hire', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
