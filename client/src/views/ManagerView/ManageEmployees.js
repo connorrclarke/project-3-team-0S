@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Hire from './Hire';
 
 // Define the API base URL
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = "http://localhost:5555/api"; //process.env.REACT_APP_API_URL;
 
 const ManageEmployees = () => {
     const [employees, setEmployees] = useState([]);
