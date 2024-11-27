@@ -39,16 +39,19 @@ const CustomerView = () => {
     };
 
     const goToBiggerPlatePage = () => {
+        navigate('/bigger-plate');
         const newItem = { name: 'Bigger Plate', price: 9.99 };
         setReceipt(prevReceipt => [...prevReceipt, newItem]);
     };
 
     const goToAppetizersPage = () => {
+        navigate('/appetizers');
         const newItem = { name: 'Appetizer', price: 3.99 };
         setReceipt(prevReceipt => [...prevReceipt, newItem]);
     };
 
     const goToDrinksPage = () => {
+        navigate('/drinks');
         const newItem = { name: 'Drink', price: 2.99 };
         setReceipt(prevReceipt => [...prevReceipt, newItem]);
     };
