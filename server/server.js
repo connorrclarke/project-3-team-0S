@@ -75,6 +75,86 @@ app.get('/api/menu-items', async (req, res) => {
 });
 
 /**
+ * Endpoint to get all menu items that are entrees.
+ * 
+ * @async
+ * @function
+ * @name getEntrees
+ * @route GET /api/menu-items/entrees
+ * @returns {Object} JSON object containing entree menu items.
+ * @throws {Error} If there is an issue fetching entree menu items from the database.
+ */
+app.get('/api/menu-items/entrees', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM "MenuItems" WHERE "Category" = \'Entree\';');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching entrees:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * Endpoint to get all menu items that are sides.
+ * 
+ * @async
+ * @function
+ * @name getSides
+ * @route GET /api/menu-items/sides
+ * @returns {Object} JSON object containing side menu items.
+ * @throws {Error} If there is an issue fetching side menu items from the database.
+ */
+app.get('/api/menu-items/sides', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM "MenuItems" WHERE "Category" = \'Side\';');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching sides:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * Endpoint to get all menu items that are appetizers.
+ * 
+ * @async
+ * @function
+ * @name getAppetizers
+ * @route GET /api/menu-items/appetizers
+ * @returns {Object} JSON object containing appetizer menu items.
+ * @throws {Error} If there is an issue fetching appetizer menu items from the database.
+ */
+app.get('/api/menu-items/appetizers', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM "MenuItems" WHERE "Category" = \'Appetizer\';');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching sides:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * Endpoint to get all menu items that are drinks.
+ * 
+ * @async
+ * @function
+ * @name getDrinks
+ * @route GET /api/menu-items/drinks
+ * @returns {Object} JSON object containing drink menu items.
+ * @throws {Error} If there is an issue fetching drink menu items from the database.
+ */
+app.get('/api/menu-items/drinks', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM "MenuItems" WHERE "Category" = \'drinks\';');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching sides:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
  * Endpoint to get all employees.
  *
  * @async
