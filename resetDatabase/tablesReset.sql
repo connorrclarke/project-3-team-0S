@@ -110,9 +110,9 @@ INSERT INTO "MenuItems" ("MenuItemId", "Name", "Price", "Seasonal", "Calories", 
 (12, 'White Rice', 4.40, FALSE, 520, 'Side'),
 (13, 'Egg Roll', 1.75, FALSE, 200, 'Appetizer'),
 (14, 'Spring Roll', 1.75, FALSE, 240, 'Appetizer'),
-(15, 'Fountain Soda', 2.50, FALSE, 250, 'Drinks'),
-(16, 'Coke', 2.50, FALSE, 150, 'Drinks'),
-(17, 'Apple Juice', 2.50, FALSE, 180, 'Drinks'),
+(15, 'Fountain Soda', 2.50, FALSE, 250, 'Drink'),
+(16, 'Coke', 2.50, FALSE, 150, 'Drink'),
+(17, 'Apple Juice', 2.50, FALSE, 180, 'Drink'),
 --New for project 3
 (18, 'Bourbon Chicken', 5.20, FALSE, 400, 'Entree'),
 (19, 'Honey Sesame Chicken', 5.20, FALSE, 340, 'Entree'),
@@ -121,7 +121,7 @@ INSERT INTO "MenuItems" ("MenuItemId", "Name", "Price", "Seasonal", "Calories", 
 (22, 'Super Greens', 4.40, FALSE, 130, 'Side'),
 (23, 'Cream Cheese Rangoons', 1.75, FALSE, 190, 'Appetizer'),
 (24, 'Apple Pie Roll', 1.75, FALSE, 150, 'Appetizer'),
-(25, 'Water Bottle', 2.50, FALSE, 0, 'Drinks');
+(25, 'Water Bottle', 2.50, FALSE, 0, 'Drink');
 
 CREATE TABLE "MenuInventoryJunction" (
   "MenuItemId" int,
