@@ -108,7 +108,7 @@ app.get('/api/menu-items', async (req, res) => {
  */
 app.get('/api/employees', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM "Employees" ORDER BY "Employed" DESC, "EmployeeId" ASC;');
+        const result = await pool.query('SELECT * FROM "Employees" ORDER BY "EmployeeId" ASC ;');
         res.json(result.rows);
     } catch (error) {
         console.error('Error fetching employees:', error);
@@ -318,13 +318,40 @@ app.get('/api/stats/top-employee-sales/:month', async (req, res) => {
             FROM "Orders"
             WHERE EXTRACT(MONTH FROM "SaleDate") = $1
             GROUP BY "EmployeeId"
-            ORDER BY "TotalSales" DESC
-            LIMIT 5;
-        `;
+            ORDER BY "EmployeeId" ASC         `;
 
         console.log('Executing query:', query, 'with month:', month);  // Add logging for query
 
         const result = await pool.query(query, [month]);  // Execute the query with the month parameter
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'No sales data found for this month' });
+        }
+
+        res.json(result.rows);  // Return the result as JSON
+    } catch (error) {
+        console.error('Error fetching employee sales:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/api/stats/top-item-sales/', async (req, res) => {
+    try {
+
+        const query = `
+        SELECT 
+            "MenuItemId" AS "Item", 
+            COUNT(*) AS "TimesOrdered"
+        FROM 
+            "MenuOrderJunction"
+        GROUP BY 
+            "MenuItemId"
+        ORDER BY 
+            "MenuItemId";
+    `;
+
+
+        const result = await pool.query(query);  // Execute the query with the month parameter
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'No sales data found for this month' });
