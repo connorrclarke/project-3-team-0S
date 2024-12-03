@@ -86,7 +86,7 @@ app.get('/api/menu-items', async (req, res) => {
  */
 app.get('/api/employees', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM "Employees" ORDER BY "Employed" DESC, "EmployeeId" ASC;');
+        const result = await pool.query('SELECT * FROM "Employees" ORDER BY "EmployeeId" ASC ;');
         res.json(result.rows);
     } catch (error) {
         console.error('Error fetching employees:', error);
@@ -235,8 +235,117 @@ app.patch('/api/items/:id', async (req, res) => {
     }
 });
 
-// Server start
+// Endpoint to get least popular items
+app.get('/api/stats/least-popular', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM get_least_popular_item();');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching least popular items:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Endpoint to get most popular item on a specific day
+app.get('/api/stats/most-popular-day', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM get_most_popular_item_on_day($1);', [new Date()]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching most popular items:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Endpoint to get top employee sales for a month
+app.get('/api/stats/top-employee-sales', async (req, res) => {
+    try {
+        const currentDate = new Date();
+        const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const result = await pool.query('SELECT * FROM get_top_employee_sales_for_month($1);', [startOfMonth]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching top employee sales:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/api/stats/salesinMonth/:month', async (req, res) => {
+    try {
+        const { month } = req.params;
+
+        // Use parameterized queries to avoid SQL injection risks
+        const query = 'SELECT * FROM "Orders" WHERE EXTRACT(MONTH FROM "SaleDate") = $1';
+
+        const result = await pool.query(query, [month]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching top sales:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+app.get('/api/stats/top-employee-sales/:month', async (req, res) => {
+    try {
+        const { month } = req.params; // Get the month parameter from the URL
+        console.log('Month received:', month);  // Add logging to check the month value
+
+        const query = `
+            SELECT "EmployeeId", SUM("AmountSold") AS "TotalSales"
+            FROM "Orders"
+            WHERE EXTRACT(MONTH FROM "SaleDate") = $1
+            GROUP BY "EmployeeId"
+            ORDER BY "EmployeeId" ASC         `;
+
+        console.log('Executing query:', query, 'with month:', month);  // Add logging for query
+
+        const result = await pool.query(query, [month]);  // Execute the query with the month parameter
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'No sales data found for this month' });
+        }
+
+        res.json(result.rows);  // Return the result as JSON
+    } catch (error) {
+        console.error('Error fetching employee sales:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/api/stats/top-item-sales/', async (req, res) => {
+    try {
+
+        const query = `
+            SELECT
+                mi."Name" AS "Item",
+                COUNT(moj."MenuItemId") AS "TimesOrdered"
+            FROM
+                "MenuOrderJunction" moj
+                    JOIN
+                "MenuItems" mi
+                ON
+                    moj."MenuItemId" = mi."MenuItemId"
+            GROUP BY
+                mi."Name"
+            ;
+    `;
+
+
+        const result = await pool.query(query);  // Execute the query with the month parameter
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'No sales data found for this month' });
+        }
+
+        res.json(result.rows);  // Return the result as JSON
+    } catch (error) {
+        console.error('Error fetching employee sales:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
 app.listen(port, () => { console.log(`Server started on http://localhost:${port}`); });
 
-// Export the app module for Vercel
 module.exports = app;
