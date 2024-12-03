@@ -1,10 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CustomerView.css';
 import Receipt from './ReceiptKiosk';
 
+const api = {
+    key: 'd453e1ec5fc10a70f578d8c724e586cd',
+    base: 'https://api.openweathermap.org/data/2.5/'
+};  
+
 const CustomerView = () => {
     const navigate = useNavigate();
+
+    const[weather, setWeather] = useState({});
+
+    useEffect(() => {
+        fetch(`${api.base}weather?q=College Station&units=metric&APPID=${api.key}`)
+            .then((res) => res.json())
+            .then((result) => {
+                setWeather(result);
+            })
+            .catch((error) => console.error('Error fetching weather data:', error));
+    }, []);
 
     const goToEmployeeLogin = () => {
         navigate('/');
@@ -23,16 +39,19 @@ const CustomerView = () => {
     };
 
     const goToBiggerPlatePage = () => {
+        navigate('/bigger-plate');
         const newItem = { name: 'Bigger Plate', price: 9.99 };
         setReceipt(prevReceipt => [...prevReceipt, newItem]);
     };
 
     const goToAppetizersPage = () => {
+        navigate('/appetizers');
         const newItem = { name: 'Appetizer', price: 3.99 };
         setReceipt(prevReceipt => [...prevReceipt, newItem]);
     };
 
     const goToDrinksPage = () => {
+        navigate('/drinks');
         const newItem = { name: 'Drink', price: 2.99 };
         setReceipt(prevReceipt => [...prevReceipt, newItem]);
     };
@@ -57,7 +76,11 @@ const CustomerView = () => {
     return (
         <div className="customer-layout">
             <div className="top-bar">
-                <div className="weather-info">Sunny, 75°F</div>
+                <div className="weather-info">
+                {weather.main 
+                    ? `College Station: ${(weather.main.temp * 1.8 + 32).toFixed(1)}°F` 
+                    : 'Loading weather...'}
+                </div>
                 <button className="employee-login-button" onClick={goToEmployeeLogin}>
                     Employee Login
                 </button>

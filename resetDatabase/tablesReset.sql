@@ -93,7 +93,8 @@ CREATE TABLE "MenuItems" (
   "Price" double precision,
   "Seasonal" boolean,
   "Calories" int,
-  "Category" varchar
+  "Category" varchar,
+  "available" boolean DEFAULT TRUE
 );
 INSERT INTO "MenuItems" ("MenuItemId", "Name", "Price", "Seasonal", "Calories", "Category") VALUES
 (1, 'Orange Chicken', 5.20, FALSE, 510, 'Entree'),
