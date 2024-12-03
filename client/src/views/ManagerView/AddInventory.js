@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Manager.css';
 
-const API_URL = "http://localhost:5555/api"; //process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL;
 
 /**
  * Modal component for adding a new inventory item.

@@ -3,7 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import './ManageStatistics.css';
 import { Chart as ChartJS } from "chart.js/auto";
 
-const API_URL = "http://localhost:5555/api";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const ManageStatistics = () => {
     const [employeeSales, setEmployeeSales] = useState([]);
