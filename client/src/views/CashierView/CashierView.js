@@ -14,11 +14,6 @@ const CashierView = () => {
   const [applyTax, setApplyTax] = useState(true);
   const [showPay, setShowPay] = useState(false);
   const [showDiscountPopup, setShowDiscountPopup] = useState(false);
-  const [showComboErrorPopup, setShowComboErrorPopup] = useState(false);
-  const [showLimitErrorPopup, setShowLimitErrorPopup] = useState(false);
-  const [limitErrorMessage, setLimitErrorMessage] = useState('');
-  const [showDiscountErrorPopup, setShowDiscountErrorPopup] = useState(false);
-  const [discountErrorMessage, setDiscountErrorMessage] = useState('');
   const [discount, setDiscount] = useState(0);
   const [discountInput, setDiscountInput] = useState('');
   const [errorPopupVisible, setErrorPopupVisible] = useState(false);
@@ -206,7 +201,7 @@ const CashierView = () => {
   return (
     <div className="cashier-layout">
       {errorPopupVisible && (
-        <div className="popup">
+        <div className="popup error-popup">
           <div className="popup-content">
             <h3>{errorMessage}</h3>
             <button onClick={() => setErrorPopupVisible(false)}>OK</button>

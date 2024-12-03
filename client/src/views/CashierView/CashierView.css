@@ -171,6 +171,11 @@ body {
   padding: 20px;
   border-radius: 8px;
   text-align: center;
+  z-index: 1100;
+}
+
+.error-popup {
+  z-index: 2000;
 }
 
 .popup-content input {
