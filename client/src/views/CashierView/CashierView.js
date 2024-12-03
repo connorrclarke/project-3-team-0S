@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Receipt from './Receipt';
 import CategoryTabs from './CategoryTabs';
 import OrderControls from './OrderControls';
@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 const CashierView = () => {
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const [selectedCategory, setSelectedCategory] = useState('Bowl');
   const [receipt, setReceipt] = useState([]);
@@ -20,22 +21,44 @@ const CashierView = () => {
   const [discountErrorMessage, setDiscountErrorMessage] = useState('');
   const [discount, setDiscount] = useState(0);
   const [discountInput, setDiscountInput] = useState('');
+  const [menuItems, setMenuItems] = useState({
+    entrees: [],
+    sides: [],
+    appetizers: [],
+    drinks: [],
+  });
+
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const response = await fetch(`${API_URL}/menu-items`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        const categorizedItems = {
+          entrees: data.filter(item => item.Category === 'Entree' && item.available).map(item => item.Name),
+          sides: data.filter(item => item.Category === 'Side' && item.available).map(item => item.Name),
+          appetizers: data.filter(item => item.Category === 'Appetizer' && item.available).map(item => item.Name),
+          drinks: data.filter(item => item.Category === 'Drink' && item.available).map(item => item.Name),
+        };
+        setMenuItems(categorizedItems);
+      } catch (err) {
+        console.error('Error fetching menu items:', err);
+      }
+    };
+
+    fetchMenuItems();
+  }, [API_URL]);
 
   const categories = ['Bowl', 'Plate', 'Bigger Plate', 'Appetizers', 'Drinks', 'À la carte'];
-  const entrees = [
-    "Bourbon Chicken", "Orange Chicken", "Honey Walnut Shrimp", "Teriyaki Chicken",
-    "Broccoli Beef", "Kung Pao Chicken", "Honey Sesame Chicken", "Beijing Beef",
-    "Sweet Fire Chicken", "Mushroom Chicken", "String Bean Chicken", "Black Pepper Steak"
-  ];
-  const sides = ['Chow Mein', 'Fried Rice', 'White Rice', 'Super Greens'];
-
   const items = {
-    Bowl: [...sides, ...entrees],
-    Plate: [...sides, ...entrees],
-    "Bigger Plate": [...sides, ...entrees],
-    Appetizers: ['Egg Roll', 'Spring Roll', 'Cream Cheese Rangoon', 'Apple Pie Roll'],
-    Drinks: ['Fountain Drink', 'Mexican Coke', 'Apple Juice', 'Water Bottle'],
-    'À la carte': [...sides, ...entrees]
+    Bowl: [...menuItems.sides, ...menuItems.entrees],
+    Plate: [...menuItems.sides, ...menuItems.entrees],
+    "Bigger Plate": [...menuItems.sides, ...menuItems.entrees],
+    Appetizers: [...menuItems.appetizers],
+    Drinks: [...menuItems.drinks],
+    'À la carte': [...menuItems.sides, ...menuItems.entrees],
   };
 
   const categoryPrices = {
@@ -43,19 +66,19 @@ const CashierView = () => {
     Plate: 9.80,
     "Bigger Plate": 11.30,
     Appetizers: 1.75,
-    Drinks: 2.5
+    Drinks: 2.5,
   };
 
   const categoryLimits = {
     Bowl: { sides: 1, entrees: 1 },
     Plate: { sides: 1, entrees: 2 },
-    "Bigger Plate": { sides: 1, entrees: 3 }
+    "Bigger Plate": { sides: 1, entrees: 3 },
   };
 
   const getPriceByItem = (item) => {
-    if (sides.includes(item)) {
+    if (menuItems.sides.includes(item)) {
       return 4.4;
-    } else if (entrees.includes(item)) {
+    } else if (menuItems.entrees.includes(item)) {
       return 5.2;
     }
     return 0;
@@ -66,21 +89,21 @@ const CashierView = () => {
       const limit = categoryLimits[selectedCategory];
       const existingCategoryIndex = receipt.findIndex(
         entry => entry.category === selectedCategory && 
-                 (entry.items.filter(i => sides.includes(i)).length < limit.sides || 
-                  entry.items.filter(i => entrees.includes(i)).length < limit.entrees)
+                 (entry.items.filter(i => menuItems.sides.includes(i)).length < limit.sides || 
+                  entry.items.filter(i => menuItems.entrees.includes(i)).length < limit.entrees)
       );
   
       if (existingCategoryIndex !== -1) {
         const entry = receipt[existingCategoryIndex];
-        const sideCount = entry.items.filter(i => sides.includes(i)).length;
-        const entreeCount = entry.items.filter(i => entrees.includes(i)).length;
+        const sideCount = entry.items.filter(i => menuItems.sides.includes(i)).length;
+        const entreeCount = entry.items.filter(i => menuItems.entrees.includes(i)).length;
   
-        if (sides.includes(item) && sideCount >= limit.sides) {
+        if (menuItems.sides.includes(item) && sideCount >= limit.sides) {
           setLimitErrorMessage(`You can only add ${limit.sides} side(s) for a ${selectedCategory}.`);
           setShowLimitErrorPopup(true);
           return;
         }
-        if (entrees.includes(item) && entreeCount >= limit.entrees) {
+        if (menuItems.entrees.includes(item) && entreeCount >= limit.entrees) {
           setLimitErrorMessage(`You can only add ${limit.entrees} entree(s) for a ${selectedCategory}.`);
           setShowLimitErrorPopup(true);
           return;
@@ -97,7 +120,7 @@ const CashierView = () => {
         const newEntry = {
           category: selectedCategory,
           items: [item],
-          price: categoryPrices[selectedCategory]
+          price: categoryPrices[selectedCategory],
         };
         setReceipt((prevReceipt) => [...prevReceipt, newEntry]);
       }
@@ -115,6 +138,11 @@ const CashierView = () => {
   const removeItemFromReceipt = (index) => {
     const updatedReceipt = receipt.filter((_, i) => i !== index);
     setReceipt(updatedReceipt);
+    const newSubtotal = updatedReceipt.reduce((acc, entry) => acc + (entry.price || 0), 0);
+    if (discount > newSubtotal) {
+      alert('The discount has been adjusted because it cannot exceed the subtotal.');
+      setDiscount(newSubtotal);
+    }
   };
 
   const subtotal = receipt.reduce((acc, entry) => acc + (entry.price || 0), 0);
@@ -177,7 +205,7 @@ const CashierView = () => {
       {showDiscountPopup && (
         <div className="popup">
           <div className="popup-content">
-            <h3>Enter Discount Amount</h3>
+            <h3>Enter Discount Amount ($)</h3>
             <input
               type="number"
               value={discountInput}
@@ -267,22 +295,19 @@ const CashierView = () => {
               setSelectedCategory={setSelectedCategory}
               goToManagerView={goToManagerView}
               receipt={receipt}
-              sides={sides}
-              entrees={entrees}
+              sides={menuItems.sides}
+              entrees={menuItems.entrees}
               categoryLimits={categoryLimits}
             />
 
             {selectedCategory === 'Bowl' && (
               <p className="selection-message">Select 1 Side and 1 Entree</p>
-              // <p className="selection-message">Select 1-2 Side(s) and 1 Entree</p>
             )}
             {selectedCategory === 'Plate' && (
               <p className="selection-message">Select 1 Side and 2 Entrees</p>
-              // <p className="selection-message">Select 1-2 Side(s) and 2 Entrees</p>
             )}
             {selectedCategory === 'Bigger Plate' && (
               <p className="selection-message">Select 1 Side and 3 Entrees</p>
-              // <p className="selection-message">Select 1-2 Side(s) and 3 Entrees</p>
             )}
             {selectedCategory === 'Appetizers' && (
               <p className="selection-message">Select the Customer's Appetizer</p>
@@ -304,7 +329,7 @@ const CashierView = () => {
                       ? 'appetizer-button'
                       : selectedCategory === 'Drinks'
                       ? 'drink-button'
-                      : sides.includes(item)
+                      : menuItems.sides.includes(item)
                       ? 'side-button'
                       : 'entree-button'
                   }`}
