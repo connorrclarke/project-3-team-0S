@@ -198,6 +198,12 @@ const CashierView = () => {
     navigate('/manager');
   };
 
+  const clearOrder = () => {
+    setReceipt([]);
+    setDiscount(0);
+    setApplyTax(true);
+  };  
+
   return (
     <div className="cashier-layout">
       {errorPopupVisible && (
@@ -323,10 +329,7 @@ const CashierView = () => {
               onPay={handlePay}
               toggleTax={() => setApplyTax(!applyTax)}
               applyTax={applyTax}
-              onClearOrder={() => {
-                setReceipt([]);
-                setDiscount(0);
-              }}
+              onClearOrder={clearOrder}
               onAddDiscount={() => setShowDiscountPopup(true)}
               hasDiscount={discount > 0}
             />
