@@ -11,6 +11,11 @@ import ManageInventory from "./views/ManagerView/ManageInventory";
 import ManageItems from "./views/ManagerView/ManageItems";
 import Reports from "./views/ManagerView/MonthlyStatistics";
 
+import Drink from "./views/CustomerView/drink";
+import Appetizer from "./views/CustomerView/appetizer";
+import BiggerPlate from "./views/CustomerView/Biggerplate";
+import Entree from "./views/CustomerView/entree";
+import Side from "./views/CustomerView/Side";
 
 function App() {
   return (
@@ -27,6 +32,12 @@ function App() {
         <Route path= "/items" element = {<ManageItems/>} />
         <Route path= "/reports" element = {<Reports/>} />
 
+
+        <Route path= "/drinks" element = {<Drink/>} />
+        <Route path= "/appetizers" element = {<Appetizer/>} />
+        <Route path= "/bigger-plate" element = {<BiggerPlate/>} />
+        <Route path= "/entree" element = {<Entree/>} />
+        <Route path= "/sides" element = {<Side/>} />
 
         {/* Add other routes here for different views */}
 
