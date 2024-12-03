@@ -335,6 +335,40 @@ app.get('/api/stats/top-employee-sales/:month', async (req, res) => {
     }
 });
 
+app.get('/api/stats/dailypayment/:month', async (req, res) => {
+    try {
+        const { month } = req.params; // Get the month parameter from the URL
+        console.log('Month received:', month);  // Add logging to check the month value
+
+        const query = `
+            SELECT
+                o."PaymentType" AS "Item",
+                COUNT(o."PaymentType") AS "TimesUsed",
+                SUM(o."AmountSold" ) AS "TotalAmount"
+            FROM
+                "Orders" o
+            WHERE EXTRACT(MONTH FROM "SaleDate") = $1
+            GROUP BY
+                o."PaymentType"
+            ;`;
+
+
+        const result = await pool.query(query, [month]);  // Execute the query with the month parameter
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'No sales data found for this month' });
+        }
+
+        res.json(result.rows);  // Return the result as JSON
+    } catch (error) {
+        console.error('Error fetching employee sales:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+
+
 app.get('/api/stats/top-item-sales/', async (req, res) => {
     try {
 
