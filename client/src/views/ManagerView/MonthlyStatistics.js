@@ -71,10 +71,12 @@ const ManageStatistics = () => {
     };
 
     const ItemSalesData = {
-        labels: itemSales.map((item) => `Item ${item.Item}`),
+        labels: itemSales.map((item) => `${item.Item}`),
         datasets: [
             {
-                label: 'Times Ordered',
+                label: 'All time Orders',
+                x: "Item Name",
+                x: "Amount Sold",
                 data: itemSales.map((item) => item.TimesOrdered),
                 backgroundColor: 'rgba(153, 102, 255, 0.2)',
                 borderColor: 'rgba(153, 102, 255, 1)',
@@ -145,6 +147,10 @@ const ManageStatistics = () => {
             </div>
             <div className="charts">
                 <Bar data={EmployeeSalesChartData} options={chartOptions} />
+
+            </div>
+             .
+            <div className={"charts"}>
                 <Bar data={ItemSalesData} options={{ responsive: true, plugins: { title: { display: true, text: 'Top Item Sales' } } }} />
             </div>
         </div>

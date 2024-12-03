@@ -339,15 +339,18 @@ app.get('/api/stats/top-item-sales/', async (req, res) => {
     try {
 
         const query = `
-        SELECT 
-            "MenuItemId" AS "Item", 
-            COUNT(*) AS "TimesOrdered"
-        FROM 
-            "MenuOrderJunction"
-        GROUP BY 
-            "MenuItemId"
-        ORDER BY 
-            "MenuItemId";
+            SELECT
+                mi."Name" AS "Item",
+                COUNT(moj."MenuItemId") AS "TimesOrdered"
+            FROM
+                "MenuOrderJunction" moj
+                    JOIN
+                "MenuItems" mi
+                ON
+                    moj."MenuItemId" = mi."MenuItemId"
+            GROUP BY
+                mi."Name"
+            ;
     `;
 
 
