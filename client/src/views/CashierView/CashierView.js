@@ -21,6 +21,8 @@ const CashierView = () => {
   const [discountErrorMessage, setDiscountErrorMessage] = useState('');
   const [discount, setDiscount] = useState(0);
   const [discountInput, setDiscountInput] = useState('');
+  const [errorPopupVisible, setErrorPopupVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [menuItems, setMenuItems] = useState({
     entrees: [],
     sides: [],
@@ -99,13 +101,13 @@ const CashierView = () => {
         const entreeCount = entry.items.filter(i => menuItems.entrees.includes(i)).length;
   
         if (menuItems.sides.includes(item) && sideCount >= limit.sides) {
-          setLimitErrorMessage(`You can only add ${limit.sides} side(s) for a ${selectedCategory}.`);
-          setShowLimitErrorPopup(true);
+          setErrorMessage(`You can only add ${limit.sides} side(s) for a ${selectedCategory}.`);
+          setErrorPopupVisible(true);
           return;
         }
         if (menuItems.entrees.includes(item) && entreeCount >= limit.entrees) {
-          setLimitErrorMessage(`You can only add ${limit.entrees} entree(s) for a ${selectedCategory}.`);
-          setShowLimitErrorPopup(true);
+          setErrorMessage(`You can only add ${limit.entrees} entree(s) for a ${selectedCategory}.`);
+          setErrorPopupVisible(true);
           return;
         }
   
@@ -138,9 +140,11 @@ const CashierView = () => {
   const removeItemFromReceipt = (index) => {
     const updatedReceipt = receipt.filter((_, i) => i !== index);
     setReceipt(updatedReceipt);
+
     const newSubtotal = updatedReceipt.reduce((acc, entry) => acc + (entry.price || 0), 0);
     if (discount > newSubtotal) {
-      alert('The discount has been adjusted because it cannot exceed the subtotal.');
+      setErrorMessage('The discount has been adjusted because it cannot exceed the subtotal.');
+      setErrorPopupVisible(true);
       setDiscount(newSubtotal);
     }
   };
@@ -154,10 +158,11 @@ const CashierView = () => {
   const handleAddDiscount = () => {
     const discountValue = parseFloat(discountInput);
     if (isNaN(discountValue) || discountValue <= 0) {
-      alert('Please enter a valid discount amount.');
+      setErrorMessage('Please enter a valid discount amount.');
+      setErrorPopupVisible(true);
     } else if (discountValue > subtotal) {
-      setDiscountErrorMessage('Discount cannot exceed the subtotal amount.');
-      setShowDiscountErrorPopup(true);
+      setErrorMessage('Discount cannot exceed the subtotal amount.');
+      setErrorPopupVisible(true);
     } else {
       setDiscount(discountValue);
       setShowDiscountPopup(false);
@@ -180,14 +185,12 @@ const CashierView = () => {
 
   const handlePay = () => {
     if (!isComboComplete()) {
-      setShowComboErrorPopup(true);
+      setErrorMessage('You must finish building combo before you can checkout.');
+      setErrorPopupVisible(true);
       return;
     }
     setShowPay(true);
   };
-
-  const handleCloseComboErrorPopup = () => setShowComboErrorPopup(false);
-  const handleCloseDiscountErrorPopup = () => setShowDiscountErrorPopup(false);
 
   const handleConfirmPayment = () => {
     setShowPay(false);
@@ -202,6 +205,15 @@ const CashierView = () => {
 
   return (
     <div className="cashier-layout">
+      {errorPopupVisible && (
+        <div className="popup">
+          <div className="popup-content">
+            <h3>{errorMessage}</h3>
+            <button onClick={() => setErrorPopupVisible(false)}>OK</button>
+          </div>
+        </div>
+      )}
+
       {showDiscountPopup && (
         <div className="popup">
           <div className="popup-content">
@@ -214,33 +226,6 @@ const CashierView = () => {
             />
             <button onClick={handleAddDiscount}>Apply Discount</button>
             <button onClick={() => setShowDiscountPopup(false)}>Cancel</button>
-          </div>
-        </div>
-      )}
-
-      {showComboErrorPopup && (
-        <div className="popup">
-          <div className="popup-content">
-            <h3>You must finish building combo before you can checkout</h3>
-            <button onClick={handleCloseComboErrorPopup}>OK</button>
-          </div>
-        </div>
-      )}
-
-      {showLimitErrorPopup && (
-        <div className="popup">
-          <div className="popup-content">
-            <h3>{limitErrorMessage}</h3>
-            <button onClick={() => setShowLimitErrorPopup(false)}>OK</button>
-          </div>
-        </div>
-      )}
-
-      {showDiscountErrorPopup && (
-        <div className="popup">
-          <div className="popup-content">
-            <h3>{discountErrorMessage}</h3>
-            <button onClick={handleCloseDiscountErrorPopup}>OK</button>
           </div>
         </div>
       )}
