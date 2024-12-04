@@ -146,29 +146,37 @@ button {
 }
 
 .sides-circle {
+    border: 2px solid transparent;
     width: 200px;
     height: 200px;
     border-radius: 50%;
     background-color: #f0f0f0;
-    border: black;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .entree-circle {
+    border: 2px solid transparent;
     width: 200px;
     height: 200px;
     border-radius: 50%;
     background-color: #ff9999;
-    border: black;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     cursor: pointer;
+    font-weight: bold;
+}
+
+.sides-circle.selected, .entree-circle.selected, 
+.sides-carte-circle.selected, .entree-carte-circle.selected {
+    border-color: black;
+    border-width: 3px;
 }
 
 .cancel-button, .add-button {

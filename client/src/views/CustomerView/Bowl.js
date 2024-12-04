@@ -30,6 +30,16 @@ const Bowl = () => {
         navigate('/customer'); // Redirecting back to the CustomerView page
     };
 
+    // Navigates to sides page
+    const goToSide = () => {
+        navigate('/sides');
+    };
+
+    // Navigates to entree page
+    const goToEntree = () => {
+        navigate('/entree');
+    };
+
     return (
         <div className="bowl-layout">
             {/* Title bar */}
@@ -41,11 +51,11 @@ const Bowl = () => {
             <div className="middle-section">
                 <div className="category-description">
                     <p>Choose your side:</p>
-                    <button className="sides-circle">Sides</button>
+                    <button onClick={goToSide} className="sides-circle">Sides</button>
                 </div>
                 <div className="category-description">
                     <p>Choose your entree:</p>
-                    <button className="entree-circle">Entree</button>
+                    <button onClick={goToEntree} className="entree-circle">Entree</button>
                 </div>
             </div>
 

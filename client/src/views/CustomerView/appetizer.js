@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import "./CustomerView.css";
 
 const AppetizerSelection = () => {
     const [selected, setSelected] = useState("");
+    const navigate = useNavigate(); // Hook for navigating between pages
 
     const appetizers = [
         "Egg Roll",
@@ -23,6 +25,14 @@ const AppetizerSelection = () => {
         }
     };
 
+    /**
+     * Handles the "Cancel" button click by navigating back to the CustomerView page
+     * without saving the current selection.
+     */
+    const handleCancel = () => {
+        navigate('/customer'); // Redirecting back to the CustomerView page
+    };
+
     return (
         <div className="customer-layout">
             <div className="title-bar">
@@ -32,8 +42,8 @@ const AppetizerSelection = () => {
                 {appetizers.map((item) => (
                     <button
                         key={item}
-                        className={`category-circle ${
-                            selected === item ? "entree-circle" : ""
+                        className={`sides-circle ${
+                            selected === item ? "selected" : ""
                         }`}
                         onClick={() => handleSelect(item)}
                     >
@@ -42,7 +52,7 @@ const AppetizerSelection = () => {
                 ))}
             </div>
             <div className="bottom-bar">
-                <button className="cancel-button" onClick={() => setSelected("")}>
+                <button className="cancel-button" onClick={handleCancel}>
                     Cancel
                 </button>
                 <button className="add-button" onClick={handleAdd}>
