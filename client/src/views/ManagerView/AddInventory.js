@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import './Manager.css';
 
-const API_URL = process.env.REACT_APP_API_URL;
+//const API_URL = process.env.REACT_APP_API_URL ;
+//const API_URL =  'http://localhost:5555/api';
 
 /**
  * Modal component for adding a new inventory item.
@@ -27,36 +29,39 @@ const AddInventory = ({ onClose, onSubmit }) => {
     const [error, setError] = useState(null);
 
     /**
-     * Handles the form submission by creating the form data object and calling the onSubmit prop function.
-     * It also handles resetting the form and closing the modal upon successful submission.
+     * Handles the form submission.
      *
      * @param {Object} e - The event object.
-     *
-     * @returns {void}
      */
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const formData = { Ingredient: ingredient, Quantity: quantity, QuantityUnit: quantityUnit };
+        const formData = {
+            itemName: ingredient,
+            quantity: parseInt(quantity, 10),
+            description: quantityUnit,
+        };
 
         try {
-            const response = await fetch(`${API_URL}/inventory`, {  // Use API_URL here
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            });
-            if (!response.ok) {
-                throw new Error('Error adding inventory item');
-            }
-            const newItem = await response.json();
-            onSubmit(newItem); // Notify parent component of new item
-            setIngredient('');
-            setQuantity('');
-            setQuantityUnit('');
+
+
+
+            onSubmit(formData); // Notify parent component
+            resetForm();
             onClose();
         } catch (err) {
-            setError('Error adding inventory item');
+            setError('Failed to add the inventory item. Please try again.');
             console.error('Error:', err);
         }
+    };
+
+    /**
+     * Resets the form inputs and error state.
+     */
+    const resetForm = () => {
+        setIngredient('');
+        setQuantity('');
+        setQuantityUnit('');
+        setError(null);
     };
 
     return (
@@ -66,25 +71,58 @@ const AddInventory = ({ onClose, onSubmit }) => {
                 <form onSubmit={handleSubmit}>
                     <div>
                         <label htmlFor="ingredient">Item Name:</label>
-                        <input type="text" id="ingredient" value={ingredient} onChange={(e) => setIngredient(e.target.value)} required />
+                        <input
+                            type="text"
+                            id="ingredient"
+                            value={ingredient}
+                            onChange={(e) => setIngredient(e.target.value)}
+                            required
+                        />
                     </div>
                     <div>
                         <label htmlFor="quantity">Quantity:</label>
-                        <input type="number" id="quantity" value={quantity} onChange={(e) => setQuantity(e.target.value)} required />
+                        <input
+                            type="number"
+                            id="quantity"
+                            value={quantity}
+                            onChange={(e) => setQuantity(e.target.value)}
+                            required
+                            min="1"
+                        />
                     </div>
                     <div>
                         <label htmlFor="quantityUnit">Quantity Unit:</label>
-                        <input type="text" id="quantityUnit" value={quantityUnit} onChange={(e) => setQuantityUnit(e.target.value)} required />
+                        <input
+                            type="text"
+                            id="quantityUnit"
+                            value={quantityUnit}
+                            onChange={(e) => setQuantityUnit(e.target.value)}
+                            required
+                        />
                     </div>
                     {error && <div className="error">{error}</div>}
                     <div className="modal-buttons">
-                        <button type="submit">Add Item</button>
-                        <button type="button" onClick={onClose}>Cancel</button>
+                        <button type="submit" className="submit-button">Add Item</button>
+                        <button
+                            type="button"
+                            className="cancel-button"
+                            onClick={() => {
+                                resetForm();
+                                onClose();
+                            }}
+                        >
+                            Cancel
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     );
+};
+
+AddInventory.propTypes = {
+    onClose: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
 };
 
 export default AddInventory;

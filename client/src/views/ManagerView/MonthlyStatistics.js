@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import './ManageStatistics.css';
-import { Chart as ChartJS } from "chart.js/auto";
 import { useNavigate } from "react-router-dom";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -98,8 +97,7 @@ const ManageStatistics = () => {
         datasets: [
             {
                 label: 'All time Orders',
-                x: "Item Name",
-                x: "Amount Sold",
+
                 data: itemSales.map((item) => item.TimesOrdered),
                 backgroundColor: 'rgba(153, 102, 255, 0.2)',
                 borderColor: 'rgba(153, 102, 255, 1)',

@@ -177,19 +177,27 @@ app.get('/api/inventory', async (req, res) => {
  */
 app.post('/api/inventory', async (req, res) => {
     try {
-        const { itemName, quantity, price, description } = req.body;
-        const result = await pool.query(
-            `INSERT INTO "Inventory" ("ItemName", "Quantity", "Price", "Description") 
+        const { itemName, quantity, description } = req.body;
 
+        // Find the next biggest InventoryId
+        const idResult = await pool.query(`SELECT MAX("InventoryId") AS maxId FROM "Inventory"`);
+        const nextInventoryId = (idResult.rows[0].maxid || 0 ) + 1 ; // If no rows exist, start from 1
+        console.log(`Command Executed: INSERT INTO "Inventory" (${nextInventoryId} , ${itemName}, ${quantity}, ${description}) \n
+       ` )
+        // Insert the new inventory item with the calculated InventoryId
+        const result = await pool.query(
+            `INSERT INTO "Inventory" ("InventoryId", "Ingredient", "Quantity", "QuantityUnit") 
              VALUES ($1, $2, $3, $4) RETURNING *`,
-            [itemName, quantity, price, description]
+            [nextInventoryId, itemName, quantity, description]
         );
+
         res.status(201).json(result.rows[0]);
     } catch (error) {
         console.error('Error adding inventory item:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 /**
  * Endpoint to get all menu items (use this for the frontend to get the list).
