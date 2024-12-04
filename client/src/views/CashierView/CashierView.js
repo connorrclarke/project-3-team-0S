@@ -274,7 +274,7 @@ const CashierView = () => {
             />
           </div>
 
-          <div className="main-section">
+          <div className="mainSection">
             <CategoryTabs
               categories={categories}
               selectedCategory={selectedCategory}
@@ -287,22 +287,34 @@ const CashierView = () => {
             />
 
             {selectedCategory === 'Bowl' && (
-              <p className="selection-message">Select 1 Side and 1 Entree</p>
+              <p className="selection-message">
+                Select <span className="side-text">1 Side</span> and <span className="entree-text">1 Entree</span>
+              </p>
             )}
             {selectedCategory === 'Plate' && (
-              <p className="selection-message">Select 1 Side and 2 Entrees</p>
+              <p className="selection-message">
+                Select <span className="side-text">1 Side</span> and <span className="entree-text">2 Entrees</span>
+              </p>
             )}
             {selectedCategory === 'Bigger Plate' && (
-              <p className="selection-message">Select 1 Side and 3 Entrees</p>
+              <p className="selection-message">
+                Select <span className="side-text">1 Side</span> and <span className="entree-text">3 Entrees</span>
+              </p>
             )}
             {selectedCategory === 'Appetizers' && (
-              <p className="selection-message">Select the Customer's Appetizer</p>
+              <p className="selection-message">
+                Select the Customer's <span className="appetizer-text">Appetizer</span>
+              </p>
             )}
             {selectedCategory === 'Drinks' && (
-              <p className="selection-message">Select the Customer's Drink</p>
+              <p className="selection-message">
+                Select the Customer's <span className="drink-text">Drink</span>
+              </p>
             )}
             {selectedCategory === 'À la carte' && (
-              <p className="selection-message">Each Item Will be Added Individually to the Receipt</p>
+              <p className="selection-message">
+                Each <span className="side-text">Side</span> or <span className="entree-text">Entree</span>, or both, can be added individually to the receipt
+              </p>
             )}
 
             <div className="item-grid">

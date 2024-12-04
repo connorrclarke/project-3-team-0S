@@ -8,23 +8,23 @@ body {
 
 .cashier-layout {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: flex-start;
-  padding: 40px;
-  gap: 40px;
+  padding: 2%;
+  gap: 5%;
   height: 100vh;
   background-color: #EDDFD3;
   font-family: Arial, sans-serif;
 }
 
-.main-section {
-  flex: 3;
+.mainSection {
+  flex: 3 1;
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  gap: 20px;
+  align-items: stretch;
+  padding: 20px 20px 80px;
+  gap: 30px;
   overflow-y: auto;
-  padding-bottom: 80px;
 }
 
 .category-tabs {
@@ -67,36 +67,41 @@ body {
 }
 
 .selection-message {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .item-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 30px;
   justify-items: center;
 }
 
 .item-button {
-  width: 120px;
-  height: 60px;
-  border: 1px solid black;
+  width: 150px;
+  height: auto;
+  min-height: 75px;
+  border: 1.5px solid black;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 18px;
+  text-align: center;
   cursor: pointer;
+  padding: 10px;
+  word-wrap: break-word;
+  border-radius: 10px;
 }
 
 .side-button {
-  background-color: lightgrey;
+  background-color: rgb(213, 213, 213);
 }
 
 .side-button:hover {
-  background-color: #d3d3d3;
+  background-color: rgb(180, 180, 180);
 }
 
 .entree-button {
@@ -121,6 +126,26 @@ body {
 
 .drink-button:hover {
   background-color: #99ddff;
+}
+
+.side-text {
+  background-color: rgb(181, 181, 181);
+  font-weight: bold;
+}
+
+.entree-text {
+  background-color: #ff9999;
+  font-weight: bold;
+}
+
+.appetizer-text {
+  background-color: #d1b3ff;
+  font-weight: bold;
+}
+
+.drink-text {
+  background-color: #99ddff;
+  font-weight: bold;
 }
 
 .order-controls {
@@ -209,7 +234,8 @@ body {
 
 .receipt-section {
   flex: 1;
-  max-width: 350px;
+  max-width: 25%;
+  min-width: 300px;
 }
 
 .receipt {
@@ -253,18 +279,6 @@ body {
 
 .remove-button:hover {
   transform: scale(1.2);
-}
-
-@media (max-width: 768px) {
-  .cashier-layout {
-    flex-direction: column;
-    padding: 10px;
-  }
-
-  .receipt-section {
-    max-width: 100%;
-    margin: 0 auto 20px auto;
-  }
 }
 
 /* Checkout Page Styling */
