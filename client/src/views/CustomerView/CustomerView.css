@@ -279,7 +279,7 @@ h2{
     font-size: 18px;
     font-weight: bold;
     border-radius: 8px;
-    border: none;
+    border: 2px solid transparent;
     background-color: #f2a900;
     color: white;
     cursor: pointer;
@@ -288,6 +288,11 @@ h2{
 
 .category-button:hover {
     transform: scale(1.05);
+}
+
+.category-button.selected{
+    border-color: black;
+    border-width: 3px;
 }
 
 .cancel-button, .pay-button {

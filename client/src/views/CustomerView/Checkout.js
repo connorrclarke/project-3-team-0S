@@ -7,7 +7,7 @@
  *
  * @author Siddhi Mittal
  */
-import React from 'react';
+import React, { useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import './CustomerView.css';
 
@@ -15,6 +15,7 @@ const Checkout = () => {
     const navigate = useNavigate(); // Hook for navigating between pages
     const location = useLocation(); // Hook to access the current location and state
     const { receipt, total } = location.state || {}; // Get receipt and total from state
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
     // Tax rate and tax calculation
     const taxRate = 0.0825;
@@ -33,8 +34,16 @@ const Checkout = () => {
      * (Future functionality could include integrating with a payment API.)
      */
     const handlePay = () => {
-        // Here you would typically process the payment, then clear the receipt or do other logic
-        // navigate('/');
+        if (!selectedPaymentMethod) {
+            alert("Please select a payment method before proceeding.");
+            return;
+        }
+        alert(`Payment method selected: ${selectedPaymentMethod}`);
+        // More payment logic here
+    };
+
+    const handleSelectPaymentMethod = (method) => {
+        setSelectedPaymentMethod(method);
     };
 
     return (
@@ -67,10 +76,17 @@ const Checkout = () => {
                 <div className="middle-section-checkout">
                     <h2>Payment Method</h2>
                     <div className="category-buttons">
-                        <button className="category-button">Credit Card</button>
-                        <button className="category-button">Cash</button>
-                        <button className="category-button">Gift Card</button>
-                        <button className="category-button">Student Swipe</button>
+                        {["Credit Card", "Cash", "Gift Card", "Student Swipe"].map((method) => (
+                            <button
+                                key={method}
+                                className={`category-button ${
+                                    selectedPaymentMethod === method ? "selected" : ""
+                                }`}
+                                onClick={() => handleSelectPaymentMethod(method)}
+                            >
+                                {method}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
