@@ -67,7 +67,7 @@ body {
 }
 
 .selection-message {
-  font-size: 20px;
+  font-size: 25px;
   font-weight: bold;
   text-align: center;
   margin-bottom: 5px;
@@ -131,21 +131,29 @@ body {
 .side-text {
   background-color: rgb(181, 181, 181);
   font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 3px;
 }
 
 .entree-text {
   background-color: #ff9999;
   font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 3px;
 }
 
 .appetizer-text {
   background-color: #d1b3ff;
   font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 3px;
 }
 
 .drink-text {
   background-color: #99ddff;
   font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 3px;
 }
 
 .order-controls {
