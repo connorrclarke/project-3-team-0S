@@ -301,4 +301,61 @@ h2{
     color: white;
 }
 
+/* A la Carte*/
+.button-alacarte-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;  
+    width: 100%;
+}
+
+.sides-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-right: 30px;
+    flex: 1 2 200px;
+    padding-top: 20px;
+    display: flex;
+    
+}
+
+.entrees-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-right: 30px;
+    flex: 1 2 200px;
+    padding-top: 20px;
+    display: flex;
+}
+
+.sides-carte-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    border: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.entree-carte-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #ff9999;
+    border: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+}
+
   

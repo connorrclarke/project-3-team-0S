@@ -111,6 +111,10 @@ const CustomerView = () => {
         const newItem = { name: 'Drink', price: 2.99 };
         setReceipt(prevReceipt => [...prevReceipt, newItem]);
     };
+    
+    const goToAlacartePage = () => {
+        navigate('/alacarte');
+    }
 
     // Navigates to checkout page, passing the current receipt and total
     const goToCheckout = () => {
@@ -159,6 +163,7 @@ const CustomerView = () => {
                     <button onClick={goToBiggerPlatePage} className="category-circle"> Bigger Plate </button>
                     <button onClick={goToAppetizersPage} className="category-circle"> Appetizers </button>
                     <button onClick={goToDrinksPage} className="category-circle"> Drinks </button>
+                    <button onClick={goToAlacartePage} className="category-circle"> À la carte </button>
                 </div>
             </div>
 
