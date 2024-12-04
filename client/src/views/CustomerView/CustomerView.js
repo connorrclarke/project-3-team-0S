@@ -1,25 +1,41 @@
+/**
+ * CustomerView Component
+ *
+ * This component provides the user interface for the customer-facing view of the POS system.
+ * It allows customers to interact with menu categories, view their receipt, and proceed to checkout.
+ * Additionally, it displays real-time weather information and includes accessibility features like
+ * Google Translate integration and high-contrast mode.
+ *
+ * @author Siddhi Mittal
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CustomerView.css';
 import Receipt from './ReceiptKiosk';
 
+// API details for fetching weather information
 const api = {
     key: 'd453e1ec5fc10a70f578d8c724e586cd',
     base: 'https://api.openweathermap.org/data/2.5/'
 };  
 
 const CustomerView = () => {
-    const navigate = useNavigate();
-    const translateButtonRef = useRef(null);
-    const[weather, setWeather] = useState({});
-    const[receipt, setReceipt] = useState([]);
-    const applyTax = true;
+    const navigate = useNavigate(); // Hook for programmatic navigation
+    const translateButtonRef = useRef(null); // Ref for Google Translate button
+    const[weather, setWeather] = useState({}); // State for storing weather data
+    const[receipt, setReceipt] = useState([]); // State for storing receipt items
+    const applyTax = true; // Flag to indicate if tax should be applied
 
+    // Calculate receipt totals
     const subtotal = receipt.reduce((acc, item) => acc + item.price, 0);
     const taxRate = 0.0825;
     const taxAmount = applyTax ? subtotal * taxRate : 0;
     const total = subtotal + taxAmount;
 
+    /**
+     * Fetches weather data for College Station using the OpenWeatherMap API
+     * and updates the weather state.
+     */
     useEffect(() => {
         fetch(`${api.base}weather?q=College Station&units=metric&APPID=${api.key}`)
             .then((res) => res.json())
@@ -29,7 +45,11 @@ const CustomerView = () => {
             .catch((error) => console.error('Error fetching weather data:', error));
     }, []);
 
-    const loadGoogleTranslateScript = () => {
+    /**
+     * Dynamically loads the Google Translate script for on-the-fly translation
+     * of the page content.
+     */
+    const translatePage = () => {
         if(!document.querySelector('#google-translate-script')){
             const script = document.createElement('script');
             script.id = 'google-translate-script';
@@ -37,7 +57,7 @@ const CustomerView = () => {
             script.async = true;
             document.body.appendChild(script);
 
-            //initialize google translate
+            // Initialize Google Translate
             window.googleTranslateElementInit = () => {
                 new window.google.translate.TranslateElement(
                     {pageLanguage: 'en'},
@@ -52,48 +72,56 @@ const CustomerView = () => {
         }
     }
 
-    const translatePage = () => {
-        loadGoogleTranslateScript();
-    }
-
+    // Navigates to employee login page
     const goToEmployeeLogin = () => {
         navigate('/');
     };
 
+    // Navigates to bowl menu page
     const goToBowlPage = () => {
         navigate('/bowl');
         const newItem = { name: 'Bowl', price: 5.99 };
         setReceipt(prevReceipt => [...prevReceipt, newItem]);
     };
 
+    // Navigates to plate menu page
     const goToPlatePage = () => {
         navigate('/plate');
         const newItem = { name: 'Plate', price: 7.99 };
         setReceipt(prevReceipt => [...prevReceipt, newItem]);
     };
 
+    // Navigates to bigger plate menu page
     const goToBiggerPlatePage = () => {
         navigate('/bigger-plate');
         const newItem = { name: 'Bigger Plate', price: 9.99 };
         setReceipt(prevReceipt => [...prevReceipt, newItem]);
     };
 
+    // Navigates to appetizer menu page
     const goToAppetizersPage = () => {
         navigate('/appetizers');
         const newItem = { name: 'Appetizer', price: 3.99 };
         setReceipt(prevReceipt => [...prevReceipt, newItem]);
     };
 
+    // Navigates to drinks menu page
     const goToDrinksPage = () => {
         navigate('/drinks');
         const newItem = { name: 'Drink', price: 2.99 };
         setReceipt(prevReceipt => [...prevReceipt, newItem]);
     };
 
+    // Navigates to checkout page, passing the current receipt and total
     const goToCheckout = () => {
         navigate('/checkout', { state: { receipt, total } });
     };
 
+    /**
+    * Removes an item from the receipt by its index.
+    *
+    * @param {number} index - The index of the item to remove.
+    */
     const removeItemFromReceipt = (index) => {
         const updatedReceipt = receipt.filter((_, i) => i !== index);
         setReceipt(updatedReceipt);
@@ -139,7 +167,7 @@ const CustomerView = () => {
 
                 <button 
                     ref={translateButtonRef}
-                    onClick={loadGoogleTranslateScript}
+                    onClick={translatePage}
                     className='translate=button'
                 >Google Translate</button>
 

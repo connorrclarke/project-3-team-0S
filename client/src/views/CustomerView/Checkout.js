@@ -1,21 +1,37 @@
+/**
+ * Checkout Component
+ *
+ * This component represents the checkout page where customers can review their receipt, 
+ * calculate the tax, and choose a payment method to complete their transaction.
+ * It provides options to cancel the checkout process or proceed with payment.
+ *
+ * @author Siddhi Mittal
+ */
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './CustomerView.css';
 
 const Checkout = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
+    const navigate = useNavigate(); // Hook for navigating between pages
+    const location = useLocation(); // Hook to access the current location and state
     const { receipt, total } = location.state || {}; // Get receipt and total from state
 
+    // Tax rate and tax calculation
     const taxRate = 0.0825;
     const taxAmount = total * taxRate;
 
-    // Handle cancel action (navigate back to the home page or reset the state)
+    /**
+     * Handles the "Cancel" button click by navigating back to the CustomerView page.
+     * Resets the checkout process if canceled.
+     */
     const handleCancel = () => {
         navigate('/customer');
     };
 
-    // Handle the payment logic (this could be an API call to process payment)
+    /**
+     * Handles the "Pay" button click to process the payment.
+     * (Future functionality could include integrating with a payment API.)
+     */
     const handlePay = () => {
         // Here you would typically process the payment, then clear the receipt or do other logic
         // navigate('/');
