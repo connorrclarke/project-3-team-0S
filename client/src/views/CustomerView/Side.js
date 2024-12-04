@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import "./CustomerView.css";
 
 const SelectSides = () => {
     const [selectedSides, setSelectedSides] = useState([]);
+    const navigate = useNavigate();
 
     const sides = ["Chow Mein", "Fried Rice", "White Rice", "Super Greens"];
     const toggleSide = (side) => {
@@ -23,6 +25,7 @@ const SelectSides = () => {
 
     const handleCancel = () => {
         setSelectedSides([]);
+        navigate(-1); // Go back to the previous page
     };
 
     return (

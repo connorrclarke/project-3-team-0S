@@ -11,11 +11,12 @@ import ManageInventory from "./views/ManagerView/ManageInventory";
 import ManageItems from "./views/ManagerView/ManageItems";
 import Reports from "./views/ManagerView/MonthlyStatistics";
 
-import Drink from "./views/CustomerView/drink";
-import Appetizer from "./views/CustomerView/appetizer";
+import Drink from "./views/CustomerView/Drink";
+import Appetizer from "./views/CustomerView/Appetizer";
 import BiggerPlate from "./views/CustomerView/Biggerplate";
-import Entree from "./views/CustomerView/entree";
+import Entree from "./views/CustomerView/Entree";
 import Side from "./views/CustomerView/Side";
+import Alacarte from "./views/CustomerView/Alacarte";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route path= "/bigger-plate" element = {<BiggerPlate/>} />
         <Route path= "/entree" element = {<Entree/>} />
         <Route path= "/sides" element = {<Side/>} />
+        <Route path= "/alacarte" element = {<Alacarte/>} />
 
         {/* Add other routes here for different views */}
 

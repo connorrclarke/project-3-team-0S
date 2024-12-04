@@ -1,18 +1,45 @@
+/**
+ * Plate Component
+ *
+ * This component represents the page where customers can customize their "Plate" order.
+ * It allows users to select sides, entrees, and drinks for their plate and provides 
+ * options to either add the selection to their order or cancel and return to the main view.
+ *
+ * @author Siddhi Mittal
+ */
 import React from 'react';
 import './CustomerView.css';
 import { useNavigate } from 'react-router-dom';
 
 const Plate = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Hook for navigating between pages
 
-  // Handling the "Add" and "Cancel" button actions
+  /**
+   * Handles the "Cancel" button click by navigating back to the CustomerView page
+   * without saving the current selection.
+   */
   const handleCancel = () => {
     navigate('/customer'); // Redirecting back to the CustomerView page
   };
 
+  /**
+   * Handles the "Add" button click by navigating back to the CustomerView page.
+   * (Future functionality could include saving the current selection before navigating.)
+   */
   const handleAdd = () => {
     navigate('/customer'); // Redirecting back to the CustomerView page
   };
+
+  // Navigates to sides page
+  const goToSide = () => {
+    navigate('/sides');
+  };
+
+  // Navigates to entree page
+  const goToEntree = () => {
+    navigate('/entree');
+  };
+
 
   return (
     <div className="plate-layout">
@@ -24,16 +51,16 @@ const Plate = () => {
       {/* Middle section with circle buttons */}
       <div className="middle-section">
         <div className="category-description">
-          <p>Choose your sides:</p>
-          <button className="sides-circle">Sides</button>
+          <p>Choose your side:</p>
+          <button onClick={goToSide} className="sides-circle">Sides</button>
         </div>
         <div className="category-description">
-          <p>Choose your entrees:</p>
-          <button className="entree-circle">Entree</button>
+          <p>Choose your 1st entree:</p>
+          <button onClick={goToEntree} className="entree-circle">Entree</button>
         </div>
         <div className="category-description">
-          <p>Choose your drinks:</p>
-          <button className="entree-circle">Entree</button>
+          <p>Choose your 2nd entree:</p>
+          <button onClick={goToEntree} className="entree-circle">Entree</button>
         </div>
       </div>
 
