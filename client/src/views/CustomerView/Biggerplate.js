@@ -10,31 +10,31 @@ function Biggerplate() {
 
             <div className="middle-section">
                 <div className="category-description">
+                    <p>Select your side:</p>
                     <div className="sides-circle">
                         <span>Sides</span>
                     </div>
-                    <p>Select your Sides</p>
                 </div>
 
                 <div className="category-description">
+                    <p>Select your 1st entree:</p>
                     <div className="entree-circle">
                         <span>Entree</span>
                     </div>
-                    <p>Select your 1st Entree</p>
                 </div>
 
                 <div className="category-description">
+                    <p>Select your 2nd entree:</p>
                     <div className="entree-circle">
                         <span>Entree</span>
                     </div>
-                    <p>Select your 2nd Entree</p>
                 </div>
 
                 <div classNae="category-description">
+                    <p>Select your 3rd entree:</p>  
                     <div className="entree-circle">
                         <span>Entree</span>
                     </div>
-                    <p>Select your 3rd Entree</p>
                 </div>
             </div>
 

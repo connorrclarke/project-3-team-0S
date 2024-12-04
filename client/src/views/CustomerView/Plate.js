@@ -40,15 +40,15 @@ const Plate = () => {
       {/* Middle section with circle buttons */}
       <div className="middle-section">
         <div className="category-description">
-          <p>Choose your sides:</p>
+          <p>Choose your side:</p>
           <button className="sides-circle">Sides</button>
         </div>
         <div className="category-description">
-          <p>Choose your entrees:</p>
+          <p>Choose your 1st entree:</p>
           <button className="entree-circle">Entree</button>
         </div>
         <div className="category-description">
-          <p>Choose your drinks:</p>
+          <p>Choose your 2nd entree:</p>
           <button className="entree-circle">Entree</button>
         </div>
       </div>

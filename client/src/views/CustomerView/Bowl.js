@@ -40,11 +40,11 @@ const Bowl = () => {
             {/* Middle section with two circle buttons */}
             <div className="middle-section">
                 <div className="category-description">
-                    <p>Choose your sides:</p>
+                    <p>Choose your side:</p>
                     <button className="sides-circle">Sides</button>
                 </div>
                 <div className="category-description">
-                    <p>Choose your entrees:</p>
+                    <p>Choose your entree:</p>
                     <button className="entree-circle">Entree</button>
                 </div>
             </div>
