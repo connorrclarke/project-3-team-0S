@@ -18,6 +18,7 @@ const CashierView = () => {
   const [discountInput, setDiscountInput] = useState('');
   const [errorPopupVisible, setErrorPopupVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [menuItems, setMenuItems] = useState({
     entrees: [],
     sides: [],
@@ -187,11 +188,37 @@ const CashierView = () => {
     setShowPay(true);
   };
 
-  const handleConfirmPayment = () => {
-    setShowPay(false);
-    setReceipt([]);
-    setDiscount(0);
-    setSelectedCategory('Bowl');
+  const handleConfirmPayment = async () => {
+    if (!selectedPaymentMethod) {
+      setErrorMessage("Please select a payment method.");
+      setErrorPopupVisible(true);
+      return;
+    }
+  
+    try {
+      const response = await fetch(`http://localhost:5555/api/order`, {
+      // const response = await fetch(`${API_URL}/order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ total: finalTotal.toFixed(2), method: selectedPaymentMethod }),
+      });
+  
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Payment failed");
+      }
+  
+      setErrorMessage("Payment successful! Your order number is " + data.orderNumber);
+      setErrorPopupVisible(true);
+      setShowPay(false);
+      setReceipt([]);
+      setDiscount(0);
+      setSelectedCategory("Bowl");
+      setSelectedPaymentMethod(null);
+    } catch (error) {
+      setErrorMessage(error.message || "Payment failed. Please try again.");
+      setErrorPopupVisible(true);
+    }
   };
 
   const goToManagerView = () => {
@@ -248,14 +275,32 @@ const CashierView = () => {
 
           <div className="payment-section">
             <h3>Payment Method</h3>
-            <button className="payment-button">Credit Card</button>
-            <button className="payment-button">Cash</button>
-            <button className="payment-button">Gift Card</button>
-            <button className="payment-button">Student Swipe</button>
-            
+            {["Credit Card", "Cash", "Gift Card", "Student Swipe"].map((method) => (
+              <button
+                key={method}
+                className={`payment-button ${
+                  selectedPaymentMethod === method ? "selected" : ""
+                }`}
+                onClick={() => setSelectedPaymentMethod(method)}
+              >
+                {method}
+              </button>
+            ))}
             <div className="action-buttons">
               <button className="cancel-button" onClick={() => setShowPay(false)}>Cancel</button>
-              <button className="pay-button" onClick={handleConfirmPayment}>Pay</button>
+              <button
+                className="pay-button"
+                onClick={() => {
+                  if (selectedPaymentMethod) {
+                    handleConfirmPayment();
+                  } else {
+                    setErrorMessage("Please select a payment method.");
+                    setErrorPopupVisible(true);
+                  }
+                }}
+              >
+                Pay
+              </button>
             </div>
           </div>
         </div>

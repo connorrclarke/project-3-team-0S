@@ -315,6 +315,70 @@ app.patch('/api/items/:id', async (req, res) => {
     }
 });
 
+/**
+ * Endpoint to create a new order.
+ * 
+ * @async
+ * @function
+ * @name createOrder
+ * @route POST /api/order
+ * @param {Object} req - The request object containing the order details.
+ * @param {Object} res - The response object that will send a confirmation message.
+ * @returns {Object} A message confirming the order creation and the order ID.
+ * @throws {Error} If there is an issue creating the order in the database.
+ */
+app.post('/api/order', async (req, res) => {
+    const { total, method } = req.body;
+
+    // Hardcoded employee ID for demonstration purposes
+    const employeeId = 11;
+
+    if (!total || !method) {
+        return res.status(400).json({ error: "Total amount and payment method are required." });
+    }
+
+    try {
+        const query = `
+            INSERT INTO "Orders" ("EmployeeId", "SaleDate", "AmountSold", "PaymentType") 
+            VALUES ($1, NOW(), $2, $3)
+            RETURNING "OrderId";
+        `;
+        const values = [employeeId, total, method];
+        const result = await pool.query(query, values);
+        if (result.rowCount === 0) {
+            throw new Error("Failed to create order");
+        }
+
+        res.status(201).json({ message: "Order created successfully", orderId: result.rows[0].OrderId });
+    } catch (error) {
+        console.error('Error processing order:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * Endpoint to get the most recent order.
+ *
+ * @async
+ * @function
+ * @name getMostRecentOrder
+ * @route GET /api/lastOrder
+ * @returns {Object} JSON object containing the most recent order details.
+ * @throws {Error} If there is an issue fetching the most recent order from the database.
+ */
+app.get('/api/lastOrder', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM "Orders" ORDER BY "OrderId" DESC LIMIT 1;');
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'No orders found' });
+        }
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error fetching most recent order:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Server start
 app.listen(port, () => { console.log(`Server started on http://localhost:${port}`); });
 

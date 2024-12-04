@@ -1,33 +1,49 @@
-import React from 'react';
-import Receipt from './Receipt';
+// import React, { useState } from "react";
 
-const Pay = ({ receipt, total = { subtotal: 0, tax: 0, final: 0 }, onClose, onConfirmPayment }) => {
-  return (
-    <div className="checkout-container">
-      {/* Receipt Summary Section */}
-      <div className="receipt-summary">
-        <Receipt
-          receipt={receipt}
-          subtotal={total.subtotal}
-          taxAmount={total.tax}
-          total={total.final}
-        />
-      </div>
+// const Pay = ({ receipt, subtotal, taxAmount, total, onConfirmPayment, onCancel }) => {
+//   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+//   const [showError, setShowError] = useState(false);
 
-      {/* Payment Methods Section */}
-      <div className="payment-methods">
-        <h3>Payment Method</h3>
-        <button className="payment-button">Credit Card</button>
-        <button className="payment-button">Cash</button>
-        <button className="payment-button">Gift Card</button>
-        <button className="payment-button">Student Swipe</button>
-      </div>
+//   const handlePaymentSelection = (method) => {
+//     setSelectedPaymentMethod(method);
+//     setShowError(false);
+//   };
 
-      {/* Bottom Buttons */}
-      <button className="cancel-button" onClick={onClose}>Cancel</button>
-      <button className="pay-button" onClick={onConfirmPayment}>Pay</button>
-    </div>
-  );
-};
+//   const handlePay = () => {
+//     if (!selectedPaymentMethod) {
+//       setShowError(true);
+//     } else {
+//       console.log("Payment Method:", selectedPaymentMethod); // For debugging/logging
+//       onConfirmPayment(selectedPaymentMethod);
+//     }
+//   };
 
-export default Pay;
+//   return (
+//     <div className="payment-container">
+//       <h2>Payment</h2>
+//       <div className="receipt-summary">
+//         <h3>Subtotal: ${subtotal.toFixed(2)}</h3>
+//         <h3>Tax: ${taxAmount.toFixed(2)}</h3>
+//         <h3>Total: ${total.toFixed(2)}</h3>
+//       </div>
+//       {showError && <p className="payment-error">Please select a payment method.</p>}
+//       <div className="payment-methods">
+//         {["Credit Card", "Cash", "Gift Card", "Student Swipe"].map((method) => (
+//           <button
+//             key={method}
+//             className={`payment-button ${selectedPaymentMethod === method ? "selected" : ""}`}
+//             onClick={() => handlePaymentSelection(method)}
+//           >
+//             {method}
+//           </button>
+//         ))}
+//       </div>
+//       <div className="action-buttons">
+//         <button className="cancel-button" onClick={onCancel}>Cancel</button>
+//         <button className="pay-button" onClick={handlePay}>Pay</button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Pay;
