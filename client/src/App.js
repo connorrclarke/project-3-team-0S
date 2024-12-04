@@ -12,7 +12,7 @@ import ManageItems from "./views/ManagerView/ManageItems";
 import Reports from "./views/ManagerView/MonthlyStatistics";
 
 import Drink from "./views/CustomerView/Drink";
-import Appetizer from "./views/CustomerView/Appetizer";
+import Appetizer from "./views/CustomerView/Appetizer"; //don't know why its giving error
 import BiggerPlate from "./views/CustomerView/Biggerplate";
 import Entree from "./views/CustomerView/Entree";
 import Side from "./views/CustomerView/Side";
