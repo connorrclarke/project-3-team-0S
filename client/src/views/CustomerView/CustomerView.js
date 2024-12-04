@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CustomerView.css';
 import Receipt from './ReceiptKiosk';
@@ -10,8 +10,15 @@ const api = {
 
 const CustomerView = () => {
     const navigate = useNavigate();
-
+    const translateButtonRef = useRef(null);
     const[weather, setWeather] = useState({});
+    const[receipt, setReceipt] = useState([]);
+    const applyTax = true;
+
+    const subtotal = receipt.reduce((acc, item) => acc + item.price, 0);
+    const taxRate = 0.0825;
+    const taxAmount = applyTax ? subtotal * taxRate : 0;
+    const total = subtotal + taxAmount;
 
     useEffect(() => {
         fetch(`${api.base}weather?q=College Station&units=metric&APPID=${api.key}`)
@@ -21,6 +28,33 @@ const CustomerView = () => {
             })
             .catch((error) => console.error('Error fetching weather data:', error));
     }, []);
+
+    const loadGoogleTranslateScript = () => {
+        if(!document.querySelector('#google-translate-script')){
+            const script = document.createElement('script');
+            script.id = 'google-translate-script';
+            script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+            script.async = true;
+            document.body.appendChild(script);
+
+            //initialize google translate
+            window.googleTranslateElementInit = () => {
+                new window.google.translate.TranslateElement(
+                    {pageLanguage: 'en'},
+                    translateButtonRef.current
+                );
+            };
+        }
+        else{
+            if(window.googleTranslateElementInit){
+                window.googleTranslateElementInit();
+            }
+        }
+    }
+
+    const translatePage = () => {
+        loadGoogleTranslateScript();
+    }
 
     const goToEmployeeLogin = () => {
         navigate('/');
@@ -65,14 +99,6 @@ const CustomerView = () => {
         setReceipt(updatedReceipt);
     };
 
-    const [receipt, setReceipt] = useState([]);
-    const applyTax = true;
-
-    const subtotal = receipt.reduce((acc, item) => acc + item.price, 0);
-    const taxRate = 0.0825;
-    const taxAmount = applyTax ? subtotal * taxRate : 0;
-    const total = subtotal + taxAmount;
-
     return (
         <div className="customer-layout">
             <div className="top-bar">
@@ -110,7 +136,13 @@ const CustomerView = () => {
 
             <div className="bottom-bar">
                 <button>High Contrast</button>
-                <button>Google Translate</button>
+
+                <button 
+                    ref={translateButtonRef}
+                    onClick={loadGoogleTranslateScript}
+                    className='translate=button'
+                >Google Translate</button>
+
                 <button>Zoom In</button>
                 <button>Zoom Out</button>
             </div> 

@@ -11,10 +11,10 @@ import ManageInventory from "./views/ManagerView/ManageInventory";
 import ManageItems from "./views/ManagerView/ManageItems";
 import Reports from "./views/ManagerView/MonthlyStatistics";
 
-import Drink from "./views/CustomerView/drink";
-import Appetizer from "./views/CustomerView/appetizer";
+import Drink from "./views/CustomerView/Drink";
+import Appetizer from "./views/CustomerView/Appetizer";
 import BiggerPlate from "./views/CustomerView/Biggerplate";
-import Entree from "./views/CustomerView/entree";
+import Entree from "./views/CustomerView/Entree";
 import Side from "./views/CustomerView/Side";
 
 function App() {
