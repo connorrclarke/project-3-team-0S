@@ -205,7 +205,7 @@ const CashierView = () => {
   
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.error || "Payment failed");
+        throw new Error(data.error || "Order creation failed");
       }
   
       setErrorMessage("Payment successful! Your order number is " + data.orderNumber);

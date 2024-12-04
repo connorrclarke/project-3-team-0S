@@ -349,7 +349,7 @@ app.post('/api/order', async (req, res) => {
             throw new Error("Failed to create order");
         }
 
-        res.status(201).json({ message: "Order created successfully", orderId: result.rows[0].OrderId });
+        res.status(201).json({ message: "Order created successfully", orderNumber: result.rows[0].OrderId });
     } catch (error) {
         console.error('Error processing order:', error);
         res.status(500).json({ error: 'Internal server error' });
