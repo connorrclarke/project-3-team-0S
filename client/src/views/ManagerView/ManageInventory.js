@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import AddInventory from './AddInventory';  // A component for adding new inventory items
 
 const API_URL = process.env.REACT_APP_API_URL;
+//const API_URL = "http://localhost:5555/api";
 
 /**
  * A component for managing the inventory, displaying a list of inventory items and allowing new items to be added.

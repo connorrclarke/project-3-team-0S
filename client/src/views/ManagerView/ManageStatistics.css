@@ -82,3 +82,9 @@ canvas {
     border-radius: 20px;
     padding: 20px;
 }
+
+.statistics-page button{
+    background-color: rgba(177, 0, 0, 0.71);
+    color : black;
+    font-size: medium;
+}

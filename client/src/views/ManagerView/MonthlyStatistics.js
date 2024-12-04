@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import './ManageStatistics.css';
-import { Chart as ChartJS } from "chart.js/auto";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = process.env.REACT_APP_API_URL;
+//const API_URL = "http://localhost:5555/api";
 
 const ManageStatistics = () => {
+    const navigate = useNavigate();
+
     const [employeeSales, setEmployeeSales] = useState([]);
+    const [PaymentSales, setPaymentSales] = useState([]);
     const [month, setMonth] = useState(10);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -23,6 +27,22 @@ const ManageStatistics = () => {
             setEmployeeSales(data);
         } catch (err) {
             setError(err.message || 'Error fetching employee sales data');
+            console.error('Error:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+    const fetchPaymentStats = async (month) => {
+        try {
+            setLoading(true);
+            const response = await fetch(`${API_URL}/stats/dailypayment/${month}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch payment sales');
+            }
+            const data = await response.json();
+            setPaymentSales(data);
+        } catch (err) {
+            setError(err.message || 'Error fetching payment sales data');
             console.error('Error:', err);
         } finally {
             setLoading(false);
@@ -45,6 +65,7 @@ const ManageStatistics = () => {
 
     useEffect(() => {
         fetchStatistics(month); // Fetch employee sales when the component mounts or month changes
+        fetchPaymentStats(month)
     }, [month]);
 
     useEffect(() => {
@@ -55,6 +76,7 @@ const ManageStatistics = () => {
         const selectedMonth = parseInt(event.target.value, 10); // Convert month to integer
         setMonth(selectedMonth);
         fetchStatistics(selectedMonth);
+
     };
 
     const EmployeeSalesChartData = {
@@ -75,11 +97,29 @@ const ManageStatistics = () => {
         datasets: [
             {
                 label: 'All time Orders',
-                x: "Item Name",
-                x: "Amount Sold",
+
                 data: itemSales.map((item) => item.TimesOrdered),
                 backgroundColor: 'rgba(153, 102, 255, 0.2)',
                 borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1,
+            },
+        ],
+    };
+    const PaymentTypeData = {
+        labels: PaymentSales.map((Item) => `${Item.Item}`),
+        datasets: [
+            {
+                label: 'Times Used',
+                data: PaymentSales.map((Item) => Item.TimesUsed),
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'black',
+                borderWidth: 1,
+            },
+            {
+                label: 'Total Sales',
+                data: PaymentSales.map((Item) => Item.TotalAmount),
+                backgroundColor: 'rgba(100, 192, 100, 0.2)',
+                borderColor: 'black',
                 borderWidth: 1,
             },
         ],
@@ -146,13 +186,21 @@ const ManageStatistics = () => {
                 </select>
             </div>
             <div className="charts">
-                <Bar data={EmployeeSalesChartData} options={chartOptions} />
+                <Bar data={EmployeeSalesChartData} options={chartOptions}/>
 
             </div>
-             .
+            .
             <div className={"charts"}>
-                <Bar data={ItemSalesData} options={{ responsive: true, plugins: { title: { display: true, text: 'Top Item Sales' } } }} />
+                <Bar data={ItemSalesData}
+                     options={{responsive: true, plugins: {title: {display: true, text: 'Top Item Sales'}}}}/>
             </div>
+            .
+            <div className={"charts"}>
+                <Bar data={PaymentTypeData}
+                     options={{responsive: true, plugins: {title: {display: true, text: `Payment Types on Month: ${month}` }}}}/>
+            </div>
+
+            <button className={"backButton"} onClick={() => navigate("/manager")}>Back</button>
         </div>
     );
 };
