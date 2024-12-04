@@ -2,6 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import './ManageStatistics.css';
 import { useNavigate } from "react-router-dom";
+import {
+    Chart,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+} from 'chart.js';
+
+// Register the components
+Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const API_URL = process.env.REACT_APP_API_URL;
 //const API_URL = "http://localhost:5555/api";
@@ -15,6 +27,10 @@ const ManageStatistics = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [itemSales, setItemSales] = useState([]);
+
+    let chartInstance;
+
+
 
     const fetchStatistics = async (month) => {
         try {
