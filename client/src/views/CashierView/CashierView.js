@@ -19,6 +19,7 @@ const CashierView = () => {
   const [errorPopupVisible, setErrorPopupVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [menuItems, setMenuItems] = useState({
     entrees: [],
     sides: [],
@@ -194,30 +195,48 @@ const CashierView = () => {
       setErrorPopupVisible(true);
       return;
     }
-  
+    
+    setIsProcessing(true); // Show the "Processing..." popup
+
     try {
       const response = await fetch(`http://localhost:5555/api/order`, {
-      // const response = await fetch(`${API_URL}/order`, {
+      //const response = await fetch(`${API_URL}/order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ total: finalTotal.toFixed(2), method: selectedPaymentMethod }),
       });
-  
+
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || "Order creation failed");
       }
-  
-      setErrorMessage("Payment successful! Your order number is " + data.orderNumber);
+
+        // Update inventory for each individual item in the receipt
+        for (const entry of receipt) {
+          const itemsToUpdate = entry.items || [entry.name];
+            
+          for (const menuItemName of itemsToUpdate) {
+            //const inventoryResponse = await fetch(`${API_URL}/updateInventory`, {
+            const inventoryResponse = await fetch(`http://localhost:5555/api/updateInventory`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ menuItemName, quantity: 1 }),
+            });
+
+            const inventoryData = await inventoryResponse.json();
+            if (!inventoryResponse.ok) {
+              throw new Error(inventoryData.error || "Inventory update failed");
+            }
+          }
+      }
+
+      setErrorMessage(`Payment successful! Your order number is ${data.orderNumber}`);
       setErrorPopupVisible(true);
-      setShowPay(false);
-      setReceipt([]);
-      setDiscount(0);
-      setSelectedCategory("Bowl");
-      setSelectedPaymentMethod(null);
     } catch (error) {
       setErrorMessage(error.message || "Payment failed. Please try again.");
       setErrorPopupVisible(true);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -233,13 +252,36 @@ const CashierView = () => {
 
   return (
     <div className="cashier-layout">
+      
       {errorPopupVisible && (
         <div className="popup error-popup">
           <div className="popup-content">
             <h3>{errorMessage}</h3>
-            <button onClick={() => setErrorPopupVisible(false)}>OK</button>
+            <button
+              onClick={() => {
+                setErrorPopupVisible(false);
+                // Only reset if it's a successful order (i.e., no error)
+                if (errorMessage.startsWith("Payment successful!")) {
+                  setShowPay(false);
+                  setReceipt([]);
+                  setDiscount(0);
+                  setSelectedCategory("Bowl");
+                  setSelectedPaymentMethod(null);
+                }
+              }}
+            >
+              OK
+            </button>
           </div>
         </div>
+      )}
+
+      {isProcessing && (
+          <div className="popup processing-popup">
+              <div className="popup-content">
+                  <h3>Processing...</h3>
+              </div>
+          </div>
       )}
 
       {showDiscountPopup && (

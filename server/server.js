@@ -331,7 +331,7 @@ app.post('/api/order', async (req, res) => {
     const { total, method } = req.body;
 
     // Hardcoded employee ID for demonstration purposes
-    const employeeId = 11;
+    const employeeId = 1;
 
     if (!total || !method) {
         return res.status(400).json({ error: "Total amount and payment method are required." });
@@ -352,7 +352,68 @@ app.post('/api/order', async (req, res) => {
         res.status(201).json({ message: "Order created successfully", orderNumber: result.rows[0].OrderId });
     } catch (error) {
         console.error('Error processing order:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error {Ordering}' });
+    }
+});
+
+/**
+ * Endpoint to update inventory based on a menu item order.
+ * 
+ * @async
+ * @function
+ * @name updateInventory
+ * @route POST /api/updateInventory
+ * @param {Object} req - The request object containing the menu item name and quantity.
+ * @param {Object} res - The response object that will send a confirmation message.
+ * @returns {Object} A message confirming the inventory update.
+ * @throws {Error} If there is an issue updating the inventory in the database.
+ */
+app.post('/api/updateInventory', async (req, res) => {
+    const { menuItemName, quantity } = req.body;
+
+    if (!menuItemName || typeof quantity !== 'number' || quantity <= 0) {
+        return res.status(400).json({ error: "Invalid input: menuItemName and quantity are required." });
+    }
+
+    const sqlGetIngredients = `
+        SELECT i."InventoryId", i."Quantity" 
+        FROM "MenuInventoryJunction" mij
+        JOIN "Inventory" i ON mij."InventoryId" = i."InventoryId"
+        JOIN "MenuItems" mi ON mij."MenuItemId" = mi."MenuItemId"
+        WHERE mi."Name" = $1;
+    `;
+    const sqlUpdateInventory = `
+        UPDATE "Inventory" 
+        SET "Quantity" = "Quantity" - $1 
+        WHERE "InventoryId" = $2;
+    `;
+
+    try {
+        // Get the inventory items associated with the menu item
+        const result = await pool.query(sqlGetIngredients, [menuItemName]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Menu item not found or no ingredients associated." });
+        }
+
+        // Update the inventory for each ingredient
+        for (const row of result.rows) {
+            const { InventoryId, Quantity } = row;
+
+            // Ensure sufficient inventory
+            if (Quantity < quantity) {
+                return res.status(400).json({ 
+                    error: `Insufficient inventory for ingredient ID ${InventoryId}. Current: ${Quantity}, Required: ${quantity}` 
+                });
+            }
+
+            await pool.query(sqlUpdateInventory, [quantity, InventoryId]);
+        }
+
+        res.status(200).json({ message: "Inventory updated successfully!" });
+    } catch (error) {
+        console.error("Error updating inventory:", error);
+        res.status(500).json({ error: "Internal server error {Inventory}" });
     }
 });
 
