@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const OrderControls = ({
   fetchLastReceipt,
@@ -9,13 +10,24 @@ const OrderControls = ({
   onClearOrder,
   onPay,
 }) => {
+  const { logout } = useAuth0();
+
+  const handleLogout = () => {
+    logout({
+      logoutParams: {
+        returnTo: `${window.location.origin}/customer`, // Redirect to the base URL after logout
+      },
+      federated: true, // Ensures Auth0 session is also cleared
+    });
+  };
+
   return (
     <div className="order-controls">
       <div className="logo-container">
         <img src="/panda-express-logo.svg" alt="Panda Express Logo" className="logo" />
       </div>
-      <button className="toCustomerView" onClick={() => window.location.href = '/customer'}>
-        Back to Customer View
+      <button className="toCustomerView" onClick={handleLogout}>
+        Logout and Return to Customer View
       </button>
       {/* <button onClick={fetchLastReceipt}>Print Last Receipt</button> */}
       <button onClick={onAddDiscount}>{hasDiscount ? 'Update Discount' : 'Add Discount'}</button>
