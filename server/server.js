@@ -325,32 +325,45 @@ app.post('/api/items', async (req, res) => {
     const { Name, Price, Seasonal, Calories, Category, Available } = req.body;
 
     try {
-        // Fetch the current maximum MenuItemId
-        const maxIdResult = await pool.query('SELECT MAX("MenuItemId") AS maxId FROM "MenuItems"');
-        const maxId = maxIdResult.rows[0].maxid || 0; // Default to 0 if no rows exist
-
-        // Generate the new MenuItemId
-        const newMenuItemId = maxId + 1;
-
-        // Insert the new item into the table
-        const insertQuery = `
+        const insertMenuQuery = `
             INSERT INTO "MenuItems" 
-            ("MenuItemId", "Name", "Price", "Seasonal", "Calories", "Category", "available") 
-            VALUES ($1, $2, $3, $4, $5, $6, $7) 
+            ("Name", "Price", "Seasonal", "Calories", "Category", "available") 
+            VALUES ($1, $2, $3, $4, $5, $6) 
             RETURNING *;
         `;
+        const menuValues = [Name, Price, Seasonal, Calories, Category, Available];
+        const insertMenuResult = await pool.query(insertMenuQuery, menuValues);
+        const newMenuItem = insertMenuResult.rows[0];
 
-        const values = [newMenuItemId, Name, Price, Seasonal, Calories, Category, Available];
-        const insertResult = await pool.query(insertQuery, values);
-        console.log(`InsertQuery: ${insertQuery}`)
+        // Insert a corresponding inventory item
+        const insertInventoryQuery = `
+            INSERT INTO "Inventory" 
+            ("Ingredient") 
+            VALUES ($1)
+            RETURNING *;
+        `;
+        const inventoryValues = [Name];
+        const insertInventoryResult = await pool.query(insertInventoryQuery, inventoryValues);
+        const newInventoryItem = insertInventoryResult.rows[0];
 
-        // Respond with the newly created item
-        res.status(201).json(insertResult.rows[0]);
+        // Link the menu item and inventory item
+        const linkQuery = `
+            INSERT INTO "MenuInventoryJunction" ("MenuItemId", "InventoryId") 
+            VALUES ($1, $2);
+        `;
+        await pool.query(linkQuery, [newMenuItem.MenuItemId, newInventoryItem.InventoryId]);
+
+        // Respond with both the new menu item and inventory item
+        res.status(201).json({
+            menuItem: newMenuItem,
+            inventoryItem: newInventoryItem,
+        });
     } catch (err) {
         console.error('Error adding new item:', err);
-        res.status(500).json({ error: 'Failed to add new item to the menu' });
+        res.status(500).json({ error: 'Failed to add new menu and inventory item' });
     }
 });
+
 
 // Update the availability of a menu item
 app.patch('/api/items/:id', async (req, res) => {
@@ -531,7 +544,6 @@ app.get('/api/stats/salesinMonth/:month', async (req, res) => {
     }
 });
 
-
 app.get('/api/stats/top-employee-sales/:month', async (req, res) => {
     try {
         const { month } = req.params; // Get the month parameter from the URL
@@ -576,7 +588,6 @@ app.get('/api/stats/dailypayment/:month', async (req, res) => {
                 o."PaymentType"
             ;`;
 
-
         const result = await pool.query(query, [month]);  // Execute the query with the month parameter
 
         if (result.rows.length === 0) {
@@ -589,9 +600,6 @@ app.get('/api/stats/dailypayment/:month', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
-
-
 
 app.get('/api/stats/top-item-sales/', async (req, res) => {
     try {
@@ -609,8 +617,7 @@ app.get('/api/stats/top-item-sales/', async (req, res) => {
             GROUP BY
                 mi."Name"
             ;
-    `;
-
+        `;
 
         const result = await pool.query(query);  // Execute the query with the month parameter
 
