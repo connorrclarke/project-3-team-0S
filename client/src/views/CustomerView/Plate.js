@@ -2,10 +2,16 @@ import React from 'react';
 import '../../App.css';
 import './CustomerView.css';
 import { useNavigate } from 'react-router-dom';
+import {useZoom, ZoomProvider} from "./ZoomContext";
 
 const Plate = () => {
   const navigate = useNavigate();
 
+  const { zoomLevel, updateZoomLevel } = useZoom();
+
+  const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2));
+  const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));
+  const handleResetZoom = () => updateZoomLevel(1);
   // Handling the "Add" and "Cancel" button actions
   const handleCancel = () => {
     navigate('/customer'); // Redirecting back to the CustomerView page
@@ -42,9 +48,18 @@ const Plate = () => {
       <div className="bottom-bar">
         <button onClick={handleCancel} className="cancel-button">Cancel</button>
         <button onClick={handleAdd} className="add-button">Add</button>
+        <button onClick={handleZoomIn}>Zoom In</button>
+        <button onClick={handleZoomOut}>Zoom Out</button>
+        <button onClick={handleResetZoom}>Reset Zoom</button>
       </div>
     </div>
   );
 };
 
-export default Plate;
+const WrappedPlate = () => (
+    <ZoomProvider>
+      <Plate />
+    </ZoomProvider>
+);
+
+export default WrappedPlate;
