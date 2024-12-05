@@ -5,6 +5,7 @@ import AddItems from './AddItems';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
+
 const ManageInventory = () => {
     const [items, setItems] = useState([]);
     const [error, setError] = useState(null);

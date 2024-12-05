@@ -9,6 +9,14 @@ import Checkout from './views/CustomerView/Checkout';
 import ManageEmployees from './views/ManagerView/ManageEmployees';
 import ManageInventory from "./views/ManagerView/ManageInventory";
 import ManageItems from "./views/ManagerView/ManageItems";
+import Reports from "./views/ManagerView/MonthlyStatistics";
+
+import Drink from "./views/CustomerView/Drink";
+import Appetizer from "./views/CustomerView/Appetizer"; //don't know why its giving error
+import BiggerPlate from "./views/CustomerView/Biggerplate";
+import Entree from "./views/CustomerView/Entree";
+import Side from "./views/CustomerView/Side";
+import Alacarte from "./views/CustomerView/Alacarte";
 
 function App() {
   return (
@@ -23,6 +31,15 @@ function App() {
         <Route path= "/employees" element = {<ManageEmployees/>} />
         <Route path= "/inventory" element = {<ManageInventory/>} />
         <Route path= "/items" element = {<ManageItems/>} />
+        <Route path= "/reports" element = {<Reports/>} />
+
+
+        <Route path= "/drinks" element = {<Drink/>} />
+        <Route path= "/appetizers" element = {<Appetizer/>} />
+        <Route path= "/bigger-plate" element = {<BiggerPlate/>} />
+        <Route path= "/entree" element = {<Entree/>} />
+        <Route path= "/sides" element = {<Side/>} />
+        <Route path= "/alacarte" element = {<Alacarte/>} />
 
         {/* Add other routes here for different views */}
 
