@@ -17,6 +17,17 @@ const entrees = [
     "String Bean Chicken",
     "Black Pepper Steak"
 ];
+const importAll = (requireContext) => {
+    const images = {};
+    requireContext.keys().forEach((key) => {
+        const fileName = key.replace("./", "").replace(/\.(png|jpe?g|gif)$/i, "");
+        images[fileName] = requireContext(key);
+    });
+    return images;
+};
+
+const images = importAll(require.context("./Pictures", false, /\.(png|jpe?g|gif)$/));
+
 const EntreeSelection = () => {
     const navigate = useNavigate();
     const { selectedEntree, setSelectedEntree } = useEntreeSelection();
@@ -48,7 +59,10 @@ const EntreeSelection = () => {
             </div>
             <div className="button-container">
                 {entrees.map((entree, index) => (
-                    <button 
+                    <button
+                        style={{
+                            backgroundImage: `url(${images[entree]})`,
+                        }}
                         key={index}
                         className={`entree-circle ${
                             selectedEntree.includes(entree) ? "selected" : ""
@@ -57,6 +71,8 @@ const EntreeSelection = () => {
                     >
                         {entree}
                     </button>
+
+
                 ))}
             </div>
             <div className="bottom-bar">
