@@ -1,22 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useEntreeSelection } from "../../contexts/EntreeSelectionContext";
 import "./CustomerView.css";
 
-const entrees = [
-    "Bourbon Chicken",
-    "Orange Chicken",
-    "Honey Walnut Shrimp",
-    "Teriyaki Chicken",
-    "Broccoli Beef",
-    "Kung Pao Chicken",
-    "Honey Sesame Chicken",
-    "Beijing Beef",
-    "Sweetfire Chicken",
-    "Mushroom Chicken",
-    "String Bean Chicken",
-    "Black Pepper Steak"
-];
 const importAll = (requireContext) => {
     const images = {};
     requireContext.keys().forEach((key) => {
@@ -30,7 +16,27 @@ const images = importAll(require.context("./Pictures", false, /\.(png|jpe?g|gif)
 
 const EntreeSelection = () => {
     const navigate = useNavigate();
+    const [entrees, setEntrees] = useState([]);
     const { selectedEntree, setSelectedEntree } = useEntreeSelection();
+
+    const API_URL = process.env.REACT_APP_API_URL;
+    //const API_URL = "http://localhost:5555/api";
+
+    useEffect(() => {
+        const fetchEntrees = async () => {
+            try {
+                const response = await fetch(`${API_URL}/menu-items/entrees`);
+                if (!response.ok) throw new Error('Failed to fetch entrees.');
+
+                const data = await response.json();
+                setEntrees([...entrees, ...data.filter((item) => item.available).map((item) => item.Name)]);
+            } catch (error) {
+                console.error('Error fetching entrees:', error);
+            }
+        };
+
+        fetchEntrees();
+    }, []);
 
     // Select one entree and update the selection
     const selectEntree = (entree) => {

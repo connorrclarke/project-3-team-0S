@@ -1,58 +1,38 @@
-/**
- * A la carte Component
- *
- * This component represents the page where customers can customize their alacarte order.
- * It allows users to select sides and entrees from the menu and provides options
- * to either add the selected items to their order or cancel and return to the main view.
- *
- * @author Siddhi Mittal
- */
-import React, {} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CustomerView.css';
 
-// List of side items available in the menu
-const sides = [
-    "Chow Mein", 
-    "Fried Rice", 
-    "White Rice", 
-    "Super Greens"
-];
-
-// List of entree items available in the menu
-const entrees = [
-    "Bourbon Chicken",
-    "Orange Chicken",
-    "Honey Walnut Shrimp",
-    "Teriyaki Chicken",
-    "Broccoli Beef",
-    "Kung Pao Chicken",
-    "Honey Sesame Chicken",
-    "Beijing Beef",
-    "Sweetfire Chicken",
-    "Mushroom Chicken",
-    "String Bean Chicken",
-    "Black Pepper Steak"
-];
-
 const Alacarte = () => {
-    const navigate = useNavigate(); // Hook for navigating between pages
+    const navigate = useNavigate();
+    const [sides, setSides] = useState([]);
+    const [entrees, setEntrees] = useState([]);
 
-    /**
-     * Handles the "Cancel" button click by navigating back to the CustomerView page
-     * without saving the current selection.
-     */
-    const handleCancel = () => {
-        navigate('/customer'); // Redirecting back to the CustomerView page
-    };
+    const API_URL = process.env.REACT_APP_API_URL;
+    // const API_URL = "http://localhost:5555/api";
 
-    /**
-     * Handles the "Add" button click by navigating back to the CustomerView page.
-     * (Future functionality could include saving the current selection before navigating.)
-     */
-    const handleAdd = () => {
-        navigate('/customer'); // Redirecting back to the CustomerView page
-    };
+    useEffect(() => {
+        const fetchMenuItems = async () => {
+            try {
+                const responseSides = await fetch(`${API_URL}/menu-items/sides`);
+                const responseEntrees = await fetch(`${API_URL}/menu-items/entrees`);
+
+                if (!responseSides.ok || !responseEntrees.ok) throw new Error('Failed to fetch menu items.');
+
+                const sidesData = await responseSides.json();
+                const entreesData = await responseEntrees.json();
+
+                setSides(sidesData.filter((item) => item.available).map((item) => item.Name));
+                setEntrees(entreesData.filter((item) => item.available).map((item) => item.Name));
+            } catch (error) {
+                console.error('Error fetching menu items:', error);
+            }
+        };
+
+        fetchMenuItems();
+    }, []);
+
+    const handleCancel = () => navigate('/customer');
+    const handleAdd = () => navigate('/customer');
 
     return (
         <div className="plate-layout">

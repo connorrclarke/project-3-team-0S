@@ -1,12 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./CustomerView.css";
 
 const DrinkSelection = () => {
     const [selected, setSelected] = useState("");
-    const navigate = useNavigate(); // Hook for navigating between pages
+    const [drinks, setDrinks] = useState([]);
+    const navigate = useNavigate();
 
-    const drinks = ["Fountain", "Mexican Coke", "Apple Juice", "Water Bottle"];
+    const API_URL = process.env.REACT_APP_API_URL;
+    // const API_URL = "http://localhost:5555/api";
+
+    useEffect(() => {
+        const fetchDrinks = async () => {
+            try {
+                const response = await fetch(`${API_URL}/menu-items/drinks`);
+                if (!response.ok) throw new Error('Failed to fetch drinks.');
+
+                const data = await response.json();
+                setDrinks([...drinks, ...data.filter((item) => item.available).map((item) => item.Name)]);
+            } catch (error) {
+                console.error('Error fetching drinks:', error);
+            }
+        };
+
+        fetchDrinks();
+    }, []);
 
     const handleSelect = (drink) => {
         setSelected(drink);
