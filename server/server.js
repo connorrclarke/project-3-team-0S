@@ -175,7 +175,7 @@ app.get('/api/menu-items/appetizers', async (req, res) => {
  */
 app.get('/api/menu-items/drinks', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM "MenuItems" WHERE "Category" = \'Drinks\';');
+        const result = await pool.query('SELECT * FROM "MenuItems" WHERE "Category" = \'Drink\';');
         res.json(result.rows);
     } catch (error) {
         console.error('Error fetching sides:', error);
