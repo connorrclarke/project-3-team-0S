@@ -1,6 +1,7 @@
 /* General Styling */
 body {
   font-family: Arial, sans-serif;
+  overflow: hidden;
 }
 
 .cashier-layout {
@@ -247,7 +248,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  height: calc(100vh - 150px);
+  height: calc(100vh - 220px);
 }
 
 .receipt {
