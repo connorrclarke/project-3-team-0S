@@ -75,6 +75,86 @@ app.get('/api/menu-items', async (req, res) => {
 });
 
 /**
+ * Endpoint to get all menu items that are entrees.
+ * 
+ * @async
+ * @function
+ * @name getEntrees
+ * @route GET /api/menu-items/entrees
+ * @returns {Object} JSON object containing entree menu items.
+ * @throws {Error} If there is an issue fetching entree menu items from the database.
+ */
+app.get('/api/menu-items/entrees', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM "MenuItems" WHERE "Category" = \'Entree\';');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching entrees:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * Endpoint to get all menu items that are sides.
+ * 
+ * @async
+ * @function
+ * @name getSides
+ * @route GET /api/menu-items/sides
+ * @returns {Object} JSON object containing side menu items.
+ * @throws {Error} If there is an issue fetching side menu items from the database.
+ */
+app.get('/api/menu-items/sides', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM "MenuItems" WHERE "Category" = \'Side\';');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching sides:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * Endpoint to get all menu items that are appetizers.
+ * 
+ * @async
+ * @function
+ * @name getAppetizers
+ * @route GET /api/menu-items/appetizers
+ * @returns {Object} JSON object containing appetizer menu items.
+ * @throws {Error} If there is an issue fetching appetizer menu items from the database.
+ */
+app.get('/api/menu-items/appetizers', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM "MenuItems" WHERE "Category" = \'Appetizer\';');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching sides:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * Endpoint to get all menu items that are drinks.
+ * 
+ * @async
+ * @function
+ * @name getDrinks
+ * @route GET /api/menu-items/drinks
+ * @returns {Object} JSON object containing drink menu items.
+ * @throws {Error} If there is an issue fetching drink menu items from the database.
+ */
+app.get('/api/menu-items/drinks', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM "MenuItems" WHERE "Category" = \'Drinks\';');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching sides:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
  * Endpoint to get all employees.
  *
  * @async
@@ -243,6 +323,108 @@ app.patch('/api/items/:id', async (req, res) => {
     }
 });
 
+/**
+ * Endpoint to create a new order.
+ * 
+ * @async
+ * @function
+ * @name createOrder
+ * @route POST /api/order
+ * @param {Object} req - The request object containing the order details.
+ * @param {Object} res - The response object that will send a confirmation message.
+ * @returns {Object} A message confirming the order creation and the order ID.
+ * @throws {Error} If there is an issue creating the order in the database.
+ */
+app.post('/api/order', async (req, res) => {
+    const { total, method } = req.body;
+
+    // Hardcoded employee ID for demonstration purposes
+    const employeeId = 1;
+
+    if (!total || !method) {
+        return res.status(400).json({ error: "Total amount and payment method are required." });
+    }
+
+    try {
+        const query = `
+            INSERT INTO "Orders" ("EmployeeId", "SaleDate", "AmountSold", "PaymentType") 
+            VALUES ($1, NOW(), $2, $3)
+            RETURNING "OrderId";
+        `;
+        const values = [employeeId, total, method];
+        const result = await pool.query(query, values);
+        if (result.rowCount === 0) {
+            throw new Error("Failed to create order");
+        }
+
+        res.status(201).json({ message: "Order created successfully", orderNumber: result.rows[0].OrderId });
+    } catch (error) {
+        console.error('Error processing order:', error);
+        res.status(500).json({ error: 'Internal server error {Ordering}' });
+    }
+});
+
+/**
+ * Endpoint to update inventory based on a menu item order.
+ * 
+ * @async
+ * @function
+ * @name updateInventory
+ * @route POST /api/updateInventory
+ * @param {Object} req - The request object containing the menu item name and quantity.
+ * @param {Object} res - The response object that will send a confirmation message.
+ * @returns {Object} A message confirming the inventory update.
+ * @throws {Error} If there is an issue updating the inventory in the database.
+ */
+app.post('/api/updateInventory', async (req, res) => {
+    const { menuItemName, quantity } = req.body;
+
+    if (!menuItemName || typeof quantity !== 'number' || quantity <= 0) {
+        return res.status(400).json({ error: "Invalid input: menuItemName and quantity are required." });
+    }
+
+    const sqlGetIngredients = `
+        SELECT i."InventoryId", i."Quantity" 
+        FROM "MenuInventoryJunction" mij
+        JOIN "Inventory" i ON mij."InventoryId" = i."InventoryId"
+        JOIN "MenuItems" mi ON mij."MenuItemId" = mi."MenuItemId"
+        WHERE mi."Name" = $1;
+    `;
+    const sqlUpdateInventory = `
+        UPDATE "Inventory" 
+        SET "Quantity" = "Quantity" - $1 
+        WHERE "InventoryId" = $2;
+    `;
+
+    try {
+        // Get the inventory items associated with the menu item
+        const result = await pool.query(sqlGetIngredients, [menuItemName]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Menu item not found or no ingredients associated." });
+        }
+
+        // Update the inventory for each ingredient
+        for (const row of result.rows) {
+            const { InventoryId, Quantity } = row;
+
+            // Ensure sufficient inventory
+            if (Quantity < quantity) {
+                return res.status(400).json({ 
+                    error: `Insufficient inventory for ingredient ID ${InventoryId}. Current: ${Quantity}, Required: ${quantity}` 
+                });
+            }
+
+            await pool.query(sqlUpdateInventory, [quantity, InventoryId]);
+        }
+
+        res.status(200).json({ message: "Inventory updated successfully!" });
+    } catch (error) {
+        console.error("Error updating inventory:", error);
+        res.status(500).json({ error: "Internal server error {Inventory}" });
+    }
+});
+
 // Endpoint to get least popular items
 app.get('/api/stats/least-popular', async (req, res) => {
     try {
@@ -387,7 +569,7 @@ app.get('/api/stats/top-item-sales/', async (req, res) => {
     }
 });
 
-
+// Server start
 app.listen(port, () => { console.log(`Server started on http://localhost:${port}`); });
 
 module.exports = app;
