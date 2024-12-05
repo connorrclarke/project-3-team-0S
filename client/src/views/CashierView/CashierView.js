@@ -20,6 +20,8 @@ const CashierView = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [lastReceipt, setLastReceipt] = useState(null);
+  const [showLastReceiptPopup, setShowLastReceiptPopup] = useState(false);
   const [menuItems, setMenuItems] = useState({
     entrees: [],
     sides: [],
@@ -36,11 +38,11 @@ const CashierView = () => {
         }
         const data = await response.json();
         const categorizedItems = {
-          entrees: data.filter(item => item.Category === 'Entree' && item.available).map(item => item.Name),
-          sides: data.filter(item => item.Category === 'Side' && item.available).map(item => item.Name),
-          appetizers: data.filter(item => item.Category === 'Appetizer' && item.available).map(item => item.Name),
-          drinks: data.filter(item => item.Category === 'Drink' && item.available).map(item => item.Name),
-        };
+          entrees: data?.filter(item => item.Category === 'Entree' && item.available).map(item => item.Name) || [],
+          sides: data?.filter(item => item.Category === 'Side' && item.available).map(item => item.Name) || [],
+          appetizers: data?.filter(item => item.Category === 'Appetizer' && item.available).map(item => item.Name) || [],
+          drinks: data?.filter(item => item.Category === 'Drink' && item.available).map(item => item.Name) || [],
+        };        
         setMenuItems(categorizedItems);
       } catch (err) {
         console.error('Error fetching menu items:', err);
@@ -75,9 +77,9 @@ const CashierView = () => {
   };
 
   const getPriceByItem = (item) => {
-    if (menuItems.sides.includes(item)) {
+    if (menuItems?.sides?.includes(item)) {
       return 4.4;
-    } else if (menuItems.entrees.includes(item)) {
+    } else if (menuItems?.entrees?.includes(item)) {
       return 5.2;
     }
     return 0;
@@ -97,12 +99,12 @@ const CashierView = () => {
         const sideCount = entry.items.filter(i => menuItems.sides.includes(i)).length;
         const entreeCount = entry.items.filter(i => menuItems.entrees.includes(i)).length;
   
-        if (menuItems.sides.includes(item) && sideCount >= limit.sides) {
+        if (menuItems?.sides?.includes(item) && sideCount >= limit.sides) {
           setErrorMessage(`You can only add ${limit.sides} side(s) for a ${selectedCategory}.`);
           setErrorPopupVisible(true);
           return;
         }
-        if (menuItems.entrees.includes(item) && entreeCount >= limit.entrees) {
+        if (menuItems?.entrees?.includes(item) && entreeCount >= limit.entrees) {
           setErrorMessage(`You can only add ${limit.entrees} entree(s) for a ${selectedCategory}.`);
           setErrorPopupVisible(true);
           return;
@@ -230,7 +232,26 @@ const CashierView = () => {
           }
       }
 
-      setErrorMessage(`Payment successful! Your order number is ${data.orderNumber}`);
+      setLastReceipt({
+        paymentType: selectedPaymentMethod,
+        items: receipt.map(entry => ({
+          category: entry.category,
+          price: entry.price,
+          items: entry.items.map(item => ({
+            name: item,
+            price: menuItems.sides.includes(item) ? 4.40 : 5.20,
+          })),
+        })),
+        discount,
+        totals: {
+          subtotal,
+          discountAdjustedSubtotal,
+          taxAmount,
+          total: finalTotal,
+        },
+      });      
+
+      setErrorMessage(`Payment successful! Your order number is #${data.orderNumber}`);
       setErrorPopupVisible(true);
     } catch (error) {
       setErrorMessage(error.message || "Payment failed. Please try again.");
@@ -248,6 +269,15 @@ const CashierView = () => {
     setReceipt([]);
     setDiscount(0);
     setApplyTax(true);
+  };
+
+  const fetchLastReceipt = () => {
+    if (!lastReceipt) {
+      setErrorMessage("No orders have been placed today. A receipt is not available.");
+      setErrorPopupVisible(true);
+      return;
+    }
+    setShowLastReceiptPopup(true);
   };  
 
   return (
@@ -260,6 +290,7 @@ const CashierView = () => {
             <button
               onClick={() => {
                 setErrorPopupVisible(false);
+
                 // Only reset if it's a successful order (i.e., no error)
                 if (errorMessage.startsWith("Payment successful!")) {
                   setShowPay(false);
@@ -268,6 +299,7 @@ const CashierView = () => {
                   setSelectedCategory("Bowl");
                   setSelectedPaymentMethod(null);
                 }
+                
               }}
             >
               OK
@@ -298,6 +330,26 @@ const CashierView = () => {
             <button onClick={() => setShowDiscountPopup(false)}>Cancel</button>
           </div>
         </div>
+      )}
+
+      {showLastReceiptPopup && lastReceipt && (
+          <div className="popup receipt-popup">
+              <div className="popup-content">
+                  <h2>Last Receipt</h2>
+                  <p><strong>Payment Method:</strong> {lastReceipt.paymentType}</p>
+                  <Receipt
+                      receipt={lastReceipt.items}
+                      applyTax={applyTax}
+                      subtotal={lastReceipt.totals.subtotal}
+                      discountAdjustedSubtotal={lastReceipt.totals.discountAdjustedSubtotal}
+                      taxAmount={lastReceipt.totals.taxAmount}
+                      discount={lastReceipt.discount}
+                      total={lastReceipt.totals.total}
+                      showRemoveButtons={false}
+                  />
+                  <button onClick={() => setShowLastReceiptPopup(false)}>Close</button>
+              </div>
+          </div>
       )}
 
       {showPay ? (
@@ -423,14 +475,16 @@ const CashierView = () => {
                 </button>
               ))}
             </div>
-
+          </div>
+          <div className="order-controls">
             <OrderControls
-              onPay={handlePay}
+              fetchLastReceipt={fetchLastReceipt}
+              onAddDiscount={() => setShowDiscountPopup(true)}
+              hasDiscount={discount > 0}
               toggleTax={() => setApplyTax(!applyTax)}
               applyTax={applyTax}
               onClearOrder={clearOrder}
-              onAddDiscount={() => setShowDiscountPopup(true)}
-              hasDiscount={discount > 0}
+              onPay={handlePay}
             />
           </div>
         </>

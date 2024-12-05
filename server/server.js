@@ -417,29 +417,6 @@ app.post('/api/updateInventory', async (req, res) => {
     }
 });
 
-/**
- * Endpoint to get the most recent order.
- *
- * @async
- * @function
- * @name getMostRecentOrder
- * @route GET /api/lastOrder
- * @returns {Object} JSON object containing the most recent order details.
- * @throws {Error} If there is an issue fetching the most recent order from the database.
- */
-app.get('/api/lastOrder', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM "Orders" ORDER BY "OrderId" DESC LIMIT 1;');
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'No orders found' });
-        }
-        res.json(result.rows[0]);
-    } catch (error) {
-        console.error('Error fetching most recent order:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
 // Server start
 app.listen(port, () => { console.log(`Server started on http://localhost:${port}`); });
 
