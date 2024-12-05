@@ -57,6 +57,7 @@ const ManageEmployees = () => {
             const response = await fetch(`${API_URL}/fire/${employeeId}`);
             //const response = await fetch(`http://localhost:5555/api/fire/${employeeId}`);
             const data = await response.json();
+            setEmployees(data);
             if (!response.ok) {
                 throw new Error('Error firing employee');
             }
