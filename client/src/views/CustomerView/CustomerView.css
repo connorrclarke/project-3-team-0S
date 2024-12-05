@@ -240,11 +240,10 @@ h2{
     flex: 1 1 300px; 
     max-width: 400px;
     padding: 20px;
-    border-right: 1px solid #ddd;
     box-sizing: border-box;
 }
 
-/* Receipt Sectione*/
+/* Receipt Section*/
 
 .receipt-item-checkout {
     display: flex;
