@@ -28,7 +28,6 @@ const ManageStatistics = () => {
     const [loading, setLoading] = useState(true);
     const [itemSales, setItemSales] = useState([]);
 
-    let chartInstance;
 
 
 

@@ -14,7 +14,6 @@ import './Manager.css';
  */
 const AddItems = ({ onClose, onSubmit }) => {
     const [formData, setFormData] = useState({
-        MenuItemID: '',
         Name: '',
         Price: '',
         Seasonal: false,
@@ -52,16 +51,7 @@ const AddItems = ({ onClose, onSubmit }) => {
             <div className="modal-content">
                 <h2>Add New Menu Item</h2>
                 <form onSubmit={handleSubmit}>
-                    <label>
-                        Menu Item ID:
-                        <input
-                            type="number"
-                            name="MenuItemID"
-                            value={formData.MenuItemID}
-                            onChange={handleChange}
-                            required
-                        />
-                    </label>
+
                     <label>
                         Item Name:
                         <input

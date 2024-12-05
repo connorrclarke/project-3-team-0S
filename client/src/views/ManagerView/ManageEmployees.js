@@ -5,35 +5,35 @@ import Hire from './Hire';
 
 // Define the API base URL
 const API_URL = process.env.REACT_APP_API_URL;
+//const API_URL = "http://localhost:5555/api";
 
 const ManageEmployees = () => {
     const [employees, setEmployees] = useState([]);
     const [error, setError] = useState(null);
     const [showHireModal, setShowHireModal] = useState(false);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchEmployees = async () => {
-            try {
-                const response = await fetch(`${API_URL}/employees`);  // Use API_URL here
-                //const response = await fetch('http://localhost:5555/api/employees');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setEmployees(data);
-            } catch (err) {
-                setError(err.message);
-                console.error('Error fetching employees:', err);
+    const fetchEmployees = async () => {
+        try {
+            const response = await fetch(`${API_URL}/employees`);  // Use API_URL here
+            //const response = await fetch('http://localhost:5555/api/employees');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        };
+            const data = await response.json();
+            setEmployees(data);
+        } catch (err) {
+            setError(err.message);
+            console.error('Error fetching employees:', err);
+        }
+    };
+    useEffect(() => {
 
         fetchEmployees();
     }, []);
 
     const handleHireSubmit = async (formData) => {
         try {
-            const response = await fetch(`${API_URL}/employees`, {
+            const response = await fetch(`${API_URL}/hire`, {
             //const response = await fetch('http://localhost:5555/api/employees', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -44,9 +44,11 @@ const ManageEmployees = () => {
             }
             const newEmployee = await response.json();
             setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
+            await fetchEmployees();
         } catch (err) {
             console.error('Error adding employee:', err);
         }
+
     };
 
     const handleFireEmeployee = async (employeeId)=>
@@ -59,8 +61,8 @@ const ManageEmployees = () => {
                 throw new Error('Error firing employee');
             }
             else    {
-                window.location.reload();
-                console.log(data.message);
+                await fetchEmployees();
+
             }
         } catch (err) {
             console.error('Error adding employee:', err);

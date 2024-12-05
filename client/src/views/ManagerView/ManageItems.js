@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import AddItems from './AddItems';
 
 const API_URL = process.env.REACT_APP_API_URL;
+//const API_URL = "http://localhost:5555/api";
 
 
 const ManageInventory = () => {
