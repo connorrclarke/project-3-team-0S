@@ -10,8 +10,9 @@
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useSideSelection } from "../../SideSelectionContext";
-import { useEntreeSelection } from "../../EntreeSelectionContext";
+import { useSideSelection } from "../../contexts/SideSelectionContext";
+import { useEntreeSelection } from "../../contexts/EntreeSelectionContext";
+import { useReceipt } from '../../contexts/ReceiptContext';
 import { useAuth0 } from '@auth0/auth0-react';
 import './CustomerView.css';
 import Receipt from './ReceiptKiosk';
@@ -27,7 +28,7 @@ const CustomerView = () => {
     const { isAuthenticated, loginWithRedirect, logout } = useAuth0(); // Auth0 hooks
     const translateButtonRef = useRef(null); // Ref for Google Translate button
     const[weather, setWeather] = useState({}); // State for storing weather data
-    const[receipt, setReceipt] = useState([]); // State for storing receipt items
+    const { addItem, removeItem, receipt } = useReceipt(); // Using context for receipt data
     const applyTax = true; // Flag to indicate if tax should be applied
     const { resetSideSelection} = useSideSelection();
     const { resetEntreeSelection } = useEntreeSelection();
@@ -96,26 +97,21 @@ const CustomerView = () => {
         }
     };
 
+    // Adding item to receipt
     useEffect(() => {
         if (location.state?.newItem) {
             const { name, price, sides, entrees } = location.state.newItem;
     
-            setReceipt((prevReceipt) => {
-                const updatedReceipt = [
-                    ...prevReceipt,
-                    {
-                        name: `${name} - ${sides} & ${entrees}`,
-                        price: price,
-                        sides,
-                        entrees
-                    }
-                ];
-                return updatedReceipt;
+            addItem({
+                name: `${name} - ${sides} & ${entrees}`,
+                price: price,
+                sides,
+                entrees
             });
-    
+
             navigate('/customer', { replace: true, state: {} });  // Reset state after handling item
         }
-    }, [location.state, navigate]);
+    }, [location.state, addItem, navigate]);
 
     // Inside CustomerView component
     const resetSelections = () => {
@@ -126,51 +122,37 @@ const CustomerView = () => {
     // Navigates to bowl menu page
     const goToBowlPage = () => {
         resetSelections(); // Reset selections before navigating
-
-        const bowlItem = { name: 'Bowl', price: 5.99 };
-
-        // Check if a Bowl has already been added to the receipt
-        const isBowlAlreadyAdded = receipt.some(item => item.name === bowlItem.name);
-
-        if (!isBowlAlreadyAdded) {
-            setReceipt((prevReceipt) => [
-                ...prevReceipt,
-                bowlItem // Add the bowl to receipt if not already added
-            ]);
-        }
-        
         navigate('/bowl');
     };
 
     // Navigates to plate menu page
     const goToPlatePage = () => {
+        resetSelections();
         navigate('/plate');
-        const newItem = { name: 'Plate', price: 7.99 };
-        setReceipt(prevReceipt => [...prevReceipt, newItem]);
+        const Item = { name: 'Plate', price: 7.99 };
     };
 
     // Navigates to bigger plate menu page
     const goToBiggerPlatePage = () => {
+        resetSelections();
         navigate('/bigger-plate');
-        const newItem = { name: 'Bigger Plate', price: 9.99 };
-        setReceipt(prevReceipt => [...prevReceipt, newItem]);
+        const Item = { name: 'Bigger Plate', price: 9.99 };
     };
 
     // Navigates to appetizer menu page
     const goToAppetizersPage = () => {
         navigate('/appetizers');
-        const newItem = { name: 'Appetizer', price: 3.99 };
-        setReceipt(prevReceipt => [...prevReceipt, newItem]);
+        const Item = { name: 'Appetizer', price: 3.99 };
     };
 
     // Navigates to drinks menu page
     const goToDrinksPage = () => {
         navigate('/drinks');
-        const newItem = { name: 'Drink', price: 2.99 };
-        setReceipt(prevReceipt => [...prevReceipt, newItem]);
+        const Item = { name: 'Drink', price: 2.99 };
     };
     
     const goToAlacartePage = () => {
+        resetSelections();
         navigate('/alacarte');
     }
 
@@ -185,8 +167,9 @@ const CustomerView = () => {
     * @param {number} index - The index of the item to remove.
     */
     const removeItemFromReceipt = (index) => {
-        const updatedReceipt = receipt.filter((_, i) => i !== index);
-        setReceipt(updatedReceipt);
+        // const updatedReceipt = receipt.filter((_, i) => i !== index);
+        // setReceipt(updatedReceipt);
+        removeItem(index)
     };
 
     return (

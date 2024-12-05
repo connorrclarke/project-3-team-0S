@@ -9,14 +9,16 @@
  */
 import React from "react";
 import { useNavigate } from 'react-router-dom';
-import { useSideSelection } from "../../SideSelectionContext";
-import { useEntreeSelection } from "../../EntreeSelectionContext";
+import { useSideSelection } from "../../contexts/SideSelectionContext";
+import { useEntreeSelection } from "../../contexts/EntreeSelectionContext";
+import { useReceipt } from "../../contexts/ReceiptContext";
 import './CustomerView.css';
 
 const Bowl = () => {
     const navigate = useNavigate(); // Hook for navigating between pages
     const { selectedSide, resetSideSelection} = useSideSelection();
     const { selectedEntree, resetEntreeSelection } = useEntreeSelection();
+    const { addItem } = useReceipt(); // Access addItem from context
 
     /**
      * Handles the "Cancel" button click by navigating back to the CustomerView page
@@ -38,18 +40,19 @@ const Bowl = () => {
         } else if (!selectedEntree || selectedEntree === "Entree") {
             alert("Please select an entree.");
         } else {
-            // Pass selected items to CustomerView for receipt and payment calculation
-            const Item = {
-                name: 'Bowl',
+            const item = {
+                // name: `Bowl - ${selectedSide} & ${selectedEntree}`,
+                name:`Bowl`,
                 price: 5.99,
                 sides: selectedSide,
                 entrees: selectedEntree,
             };
-            navigate('/customer', { state: { newItem: Item } });
+            addItem(item);  // Call addItem to add the item to the receipt
 
             // Reset selections after adding to avoid duplicate bowl add
             resetSideSelection();
             resetEntreeSelection();
+            navigate('/customer'); // Redirect to CustomerView
         }
     };
 

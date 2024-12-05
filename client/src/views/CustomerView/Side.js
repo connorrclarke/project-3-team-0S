@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { useSideSelection } from "../../SideSelectionContext";
+import { useSideSelection } from "../../contexts/SideSelectionContext";
 import "./CustomerView.css";
 
 const SelectSides = () => {

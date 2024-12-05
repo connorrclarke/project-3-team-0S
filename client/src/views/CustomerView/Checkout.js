@@ -10,12 +10,14 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import './CustomerView.css';
+import { useReceipt } from '../../contexts/ReceiptContext';
 
 const Checkout = () => {
     const navigate = useNavigate(); // Hook for navigating between pages
     const location = useLocation(); // Hook to access the current location and state
     const { receipt, total } = location.state || {}; // Get receipt and total from state
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+    const { clearReceipt } = useReceipt(); // Using context for receipt data
 
     // Tax rate and tax calculation
     const taxRate = 0.0825;
@@ -42,6 +44,7 @@ const Checkout = () => {
         // More payment logic here
 
         // Going back to customer page
+        clearReceipt();
         navigate('/customer')
     };
 

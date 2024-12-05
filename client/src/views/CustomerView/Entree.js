@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { useEntreeSelection } from "../../EntreeSelectionContext";
+import { useEntreeSelection } from "../../contexts/EntreeSelectionContext";
 import "./CustomerView.css";
 
 const entrees = [
