@@ -32,8 +32,6 @@ function App() {
         <Route path= "/inventory" element = {<ManageInventory/>} />
         <Route path= "/items" element = {<ManageItems/>} />
         <Route path= "/reports" element = {<Reports/>} />
-
-
         <Route path= "/drinks" element = {<Drink/>} />
         <Route path= "/appetizers" element = {<Appetizer/>} />
         <Route path= "/bigger-plate" element = {<BiggerPlate/>} />

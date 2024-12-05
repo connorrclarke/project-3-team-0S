@@ -14,6 +14,9 @@ const OrderControls = ({
       <div className="logo-container">
         <img src="/panda-express-logo.svg" alt="Panda Express Logo" className="logo" />
       </div>
+      <button className="toCustomerView" onClick={() => window.location.href = '/customer'}>
+        Back to Customer View
+      </button>
       {/* <button onClick={fetchLastReceipt}>Print Last Receipt</button> */}
       <button onClick={onAddDiscount}>{hasDiscount ? 'Update Discount' : 'Add Discount'}</button>
       <button onClick={toggleTax}>{applyTax ? 'No Tax' : 'Apply Tax'}</button>
