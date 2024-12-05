@@ -1,17 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./CustomerView.css";
 
 const AppetizerSelection = () => {
     const [selected, setSelected] = useState("");
-    const navigate = useNavigate(); // Hook for navigating between pages
+    const [appetizers, setAppetizers] = useState([]);
+    const navigate = useNavigate();
+    
+    const API_URL = process.env.REACT_APP_API_URL;
+    // const API_URL = "http://localhost:5555/api";
 
-    const appetizers = [
-        "Egg Roll",
-        "Spring Roll",
-        "Cream Cheese Rangoons",
-        "Apple Pie Roll",
-    ];
+    useEffect(() => {
+        const fetchAppetizers = async () => {
+            try {
+                const response = await fetch(`${API_URL}/menu-items/appetizers`);
+                if (!response.ok) throw new Error('Failed to fetch appetizers.');
+
+                const data = await response.json();
+                setAppetizers([...appetizers, ...data.filter((item) => item.available).map((item) => item.Name)]);
+            } catch (error) {
+                console.error('Error fetching appetizers:', error);
+            }
+        };
+
+        fetchAppetizers();
+    }, []);
 
     const handleSelect = (appetizer) => {
         setSelected(appetizer);

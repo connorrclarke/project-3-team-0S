@@ -1,14 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useSideSelection } from "../../contexts/SideSelectionContext";
 import "./CustomerView.css";
 
 const SelectSides = () => {
+    const [sides, setSides] = useState([]);
     const [localSelectedSide, setLocalSelectedSide] = useState(null);
     const { setSelectedSide } = useSideSelection();
     const navigate = useNavigate();
 
-    const sides = ["Chow Mein", "Fried Rice", "White Rice", "Super Greens"];
+    const API_URL = process.env.REACT_APP_API_URL;
+    //const API_URL = "http://localhost:5555/api";
+
+    useEffect(() => {
+        const fetchSides = async () => {
+            try {
+                const response = await fetch(`${API_URL}/menu-items/sides`);
+                if (!response.ok) throw new Error('Failed to fetch sides.');
+
+                const data = await response.json();
+                setSides([...sides, ...data.filter((item) => item.available).map((item) => item.Name)]);
+            } catch (error) {
+                console.error('Error fetching sides:', error);
+            }
+        };
+
+        fetchSides();
+    }, []);
     
     const handleAdd = () => {
         if (localSelectedSide) {
