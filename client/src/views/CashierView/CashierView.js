@@ -10,6 +10,7 @@ const CashierView = () => {
   const navigate = useNavigate();
   const { logout } = useAuth0();
   const API_URL = process.env.REACT_APP_API_URL;
+  //const API_URL = "http://localhost:5555/api";
 
   const [selectedCategory, setSelectedCategory] = useState('Bowl');
   const [receipt, setReceipt] = useState([]);
@@ -88,18 +89,29 @@ const CashierView = () => {
   };
 
   const addItemToReceipt = (item) => {
-    if (['Bowl', 'Plate', 'Bigger Plate'].includes(selectedCategory)) {
+    const price = categoryPrices[selectedCategory] || getPriceByItem(item);
+    if (['Appetizers', 'Drinks', 'À la carte'].includes(selectedCategory)) {
+      // Standalone items
+      const newEntry = {
+        category: selectedCategory,
+        items: [item], // Ensure 'items' is always an array
+        price: price,
+      };
+      setReceipt((prevReceipt) => [...prevReceipt, newEntry]);
+    } else {
+      // Combo items
       const limit = categoryLimits[selectedCategory];
       const existingCategoryIndex = receipt.findIndex(
-        entry => entry.category === selectedCategory && 
-                 (entry.items.filter(i => menuItems.sides.includes(i)).length < limit.sides || 
-                  entry.items.filter(i => menuItems.entrees.includes(i)).length < limit.entrees)
+        (entry) =>
+          entry.category === selectedCategory &&
+          (entry.items.filter((i) => menuItems.sides.includes(i)).length < limit.sides ||
+            entry.items.filter((i) => menuItems.entrees.includes(i)).length < limit.entrees)
       );
   
       if (existingCategoryIndex !== -1) {
         const entry = receipt[existingCategoryIndex];
-        const sideCount = entry.items.filter(i => menuItems.sides.includes(i)).length;
-        const entreeCount = entry.items.filter(i => menuItems.entrees.includes(i)).length;
+        const sideCount = entry.items.filter((i) => menuItems.sides.includes(i)).length;
+        const entreeCount = entry.items.filter((i) => menuItems.entrees.includes(i)).length;
   
         if (menuItems?.sides?.includes(item) && sideCount >= limit.sides) {
           setErrorMessage(`You can only add ${limit.sides} side(s) for a ${selectedCategory}.`);
@@ -114,9 +126,7 @@ const CashierView = () => {
   
         setReceipt((prevReceipt) =>
           prevReceipt.map((entry, index) =>
-            index === existingCategoryIndex
-              ? { ...entry, items: [...entry.items, item] }
-              : entry
+            index === existingCategoryIndex ? { ...entry, items: [...entry.items, item] } : entry
           )
         );
       } else {
@@ -127,16 +137,8 @@ const CashierView = () => {
         };
         setReceipt((prevReceipt) => [...prevReceipt, newEntry]);
       }
-    } else if (selectedCategory === 'Appetizers' || selectedCategory === 'Drinks') {
-      const price = categoryPrices[selectedCategory];
-      const newItem = { name: item, price };
-      setReceipt((prevReceipt) => [...prevReceipt, newItem]);
-    } else {
-      const price = getPriceByItem(item);
-      const newItem = { name: item, price };
-      setReceipt((prevReceipt) => [...prevReceipt, newItem]);
     }
-  };
+  };  
 
   const removeItemFromReceipt = (index) => {
     const updatedReceipt = receipt.filter((_, i) => i !== index);
