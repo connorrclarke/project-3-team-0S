@@ -28,9 +28,7 @@ const CustomerView = () => {
     const { isAuthenticated, loginWithRedirect, logout } = useAuth0(); // Auth0 hooks
     const translateButtonRef = useRef(null); // Ref for Google Translate button
     const [weather, setWeather] = useState({}); // State for storing weather data
-    const [receipt, setReceipt] = useState([]);
     const [highContrast, setHighContrast] = useState(false);
-    const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
     const { addItem, removeItem, receipt } = useReceipt(); // Using context for receipt data
     const applyTax = true; // Flag to indicate if tax should be applied
     const { resetSideSelection} = useSideSelection();
