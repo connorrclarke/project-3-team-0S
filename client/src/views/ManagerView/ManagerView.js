@@ -20,7 +20,7 @@ const ManagerView = ({ setView }) => {
             <button onClick={() => navigate('/')}>Return to CashierView</button>
             <button onClick={() => navigate('/employees')}>Manage Employees</button>
             <button onClick={() => navigate('/inventory')}>Manage Inventory</button>
-            <button onClick={() => navigate('/items')}>Manage Items</button>
+            <button onClick={() => navigate('/items')}>Manage Menu Items</button>
             <button onClick={()=> navigate('/reports')}>Monthly Statistics</button>
         </div>
     );

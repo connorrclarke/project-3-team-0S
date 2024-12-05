@@ -10,17 +10,19 @@
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import './CustomerView.css';
 import Receipt from './ReceiptKiosk';
 
 // API details for fetching weather information
-const api = {
+const weatherApi = {
     key: 'd453e1ec5fc10a70f578d8c724e586cd',
     base: 'https://api.openweathermap.org/data/2.5/'
 };  
 
 const CustomerView = () => {
     const navigate = useNavigate(); // Hook for programmatic navigation
+    const { isAuthenticated, loginWithRedirect, logout } = useAuth0(); // Auth0 hooks
     const translateButtonRef = useRef(null); // Ref for Google Translate button
     const[weather, setWeather] = useState({}); // State for storing weather data
     const[receipt, setReceipt] = useState([]); // State for storing receipt items
@@ -37,7 +39,7 @@ const CustomerView = () => {
      * and updates the weather state.
      */
     useEffect(() => {
-        fetch(`${api.base}weather?q=College Station&units=metric&APPID=${api.key}`)
+        fetch(`${weatherApi.base}weather?q=College Station&units=metric&APPID=${weatherApi.key}`)
             .then((res) => res.json())
             .then((result) => {
                 setWeather(result);
@@ -74,7 +76,15 @@ const CustomerView = () => {
 
     // Navigates to employee login page
     const goToEmployeeLogin = () => {
-        navigate('/');
+        navigate('/login');
+    };
+
+    const handleLoginLogout = () => {
+        if (isAuthenticated) {
+            logout({ returnTo: window.location.origin });
+        } else {
+            loginWithRedirect();
+        }
     };
 
     // Navigates to bowl menu page
@@ -139,8 +149,8 @@ const CustomerView = () => {
                     ? `College Station: ${(weather.main.temp * 1.8 + 32).toFixed(1)}°F` 
                     : 'Loading weather...'}
                 </div>
-                <button className="employee-login-button" onClick={goToEmployeeLogin}>
-                    Employee Login
+                <button className="employee-login-button" onClick={handleLoginLogout}>
+                    {isAuthenticated ? 'Logout' : 'Employee Login'}
                 </button>
             </div>
 

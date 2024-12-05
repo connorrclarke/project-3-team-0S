@@ -4,9 +4,11 @@ import CategoryTabs from './CategoryTabs';
 import OrderControls from './OrderControls';
 import './CashierView.css';
 import { useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const CashierView = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth0();
   const API_URL = process.env.REACT_APP_API_URL;
 
   const [selectedCategory, setSelectedCategory] = useState('Bowl');
@@ -278,7 +280,12 @@ const CashierView = () => {
       return;
     }
     setShowLastReceiptPopup(true);
-  };  
+  };
+
+  const handleLogoutAndReturn = () => {
+    logout({ returnTo: window.location.origin }); // Auth0 logout
+    navigate('/customer'); // Navigate to the Customer View
+  };
 
   return (
     <div className="cashier-layout">

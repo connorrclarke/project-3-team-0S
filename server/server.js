@@ -1,5 +1,6 @@
 // Import required packages
 const express = require('express');
+const { auth } = require('express-openid-connect');
 const { Pool } = require('pg');
 const cors = require('cors');
 const dotenv = require('dotenv').config();
@@ -20,6 +21,34 @@ const pool = new Pool({
     port: process.env.PSQL_PORT,
     ssl: { rejectUnauthorized: false }
 });
+
+const config = {
+    authRequired: false, // Users can access public routes without logging in
+    auth0Logout: true, // Use Auth0 logout endpoint
+    secret: process.env.AUTH0_SECRET,
+    baseURL: process.env.AUTH0_BASE_URL,
+    clientID: process.env.AUTH0_CLIENT_ID,
+    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+};
+app.use(auth(config));
+
+app.get('/', (req, res) => {
+    res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
+});
+
+app.get('/protected', (req, res) => {
+    if (!req.oidc.isAuthenticated()) {
+        return res.status(401).send('Unauthorized');
+    }
+    res.json({ message: `Hello, ${req.oidc.user.name}!` });
+});
+
+const { requiresAuth } = require('express-openid-connect');
+
+app.get('/profile', requiresAuth(), (req, res) => {
+  res.send(JSON.stringify(req.oidc.user));
+});
+
 
 /**
  * Handles server shutdown and cleans up database connections.
@@ -430,10 +459,6 @@ app.post('/api/updateInventory', async (req, res) => {
     try {
         // Get the inventory items associated with the menu item
         const result = await pool.query(sqlGetIngredients, [menuItemName]);
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: "Menu item not found or no ingredients associated." });
-        }
 
         // Update the inventory for each ingredient
         for (const row of result.rows) {
