@@ -27,7 +27,7 @@ const OrderControls = ({
         <img src="/panda-express-logo.svg" alt="Panda Express Logo" className="logo" />
       </div>
       <button className="toCustomerView" onClick={handleLogout}>
-        Logout and Return to Customer View
+        Logout and Return<br/> to Customer View
       </button>
       {/* <button onClick={fetchLastReceipt}>Print Last Receipt</button> */}
       <button onClick={onAddDiscount}>{hasDiscount ? 'Update Discount' : 'Add Discount'}</button>
