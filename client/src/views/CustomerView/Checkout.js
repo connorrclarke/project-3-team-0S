@@ -38,8 +38,11 @@ const Checkout = () => {
             alert("Please select a payment method before proceeding.");
             return;
         }
-        alert(`Payment method selected: ${selectedPaymentMethod}`);
+        alert(`Payment method selected: ${selectedPaymentMethod}. Your payment has been processed`);
         // More payment logic here
+
+        // Going back to customer page
+        navigate('/customer')
     };
 
     const handleSelectPaymentMethod = (method) => {

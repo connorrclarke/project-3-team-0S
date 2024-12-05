@@ -1,30 +1,25 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { useSideSelection } from "../../SideSelectionContext";
 import "./CustomerView.css";
 
 const SelectSides = () => {
-    const [selectedSides, setSelectedSides] = useState([]);
+    const [localSelectedSide, setLocalSelectedSide] = useState(null);
+    const { setSelectedSide } = useSideSelection();
     const navigate = useNavigate();
 
     const sides = ["Chow Mein", "Fried Rice", "White Rice", "Super Greens"];
-    const toggleSide = (side) => {
-        if (selectedSides.includes(side)) {
-            setSelectedSides(selectedSides.filter((s) => s !== side));
-        } else if (selectedSides.length < 2) {
-            setSelectedSides([...selectedSides, side]);
-        }
-    };
-
+    
     const handleAdd = () => {
-        if (selectedSides.length === 0) {
-            alert("Please select at least one side.");
+        if (localSelectedSide) {
+            setSelectedSide(localSelectedSide); // Update the shared state
+            navigate(-1); // Go back to the previous page
         } else {
-            alert(`Added: ${selectedSides.join(", ")}`);
+            alert("Please select a side!");
         }
     };
 
     const handleCancel = () => {
-        setSelectedSides([]);
         navigate(-1); // Go back to the previous page
     };
 
@@ -37,10 +32,8 @@ const SelectSides = () => {
                 {sides.map((side) => (
                     <button
                         key={side}
-                        className={`sides-circle ${
-                            selectedSides.includes(side) ? "selected" : ""
-                        }`}
-                        onClick={() => toggleSide(side)}
+                        className={`sides-circle ${localSelectedSide === side ? "selected" : ""}`}
+                        onClick={() => setLocalSelectedSide(side)}
                     >
                         {side}
                     </button>

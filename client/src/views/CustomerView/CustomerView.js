@@ -9,7 +9,9 @@
  * @author Siddhi Mittal
  */
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useSideSelection } from "../../SideSelectionContext";
+import { useEntreeSelection } from "../../EntreeSelectionContext";
 import { useAuth0 } from '@auth0/auth0-react';
 import './CustomerView.css';
 import Receipt from './ReceiptKiosk';
@@ -27,6 +29,12 @@ const CustomerView = () => {
     const[weather, setWeather] = useState({}); // State for storing weather data
     const[receipt, setReceipt] = useState([]); // State for storing receipt items
     const applyTax = true; // Flag to indicate if tax should be applied
+    const { resetSideSelection} = useSideSelection();
+    const { resetEntreeSelection } = useEntreeSelection();
+
+    // Fetching passed state (side and entree selections)
+    const location = useLocation();
+    // const { selectedSide, selectedEntree } = location.state || {}; // Access the passed state
 
     // Calculate receipt totals
     const subtotal = receipt.reduce((acc, item) => acc + item.price, 0);
@@ -74,11 +82,12 @@ const CustomerView = () => {
         }
     }
 
-    // Navigates to employee login page
-    const goToEmployeeLogin = () => {
-        navigate('/login');
-    };
+    // // Navigates to employee login page
+    // const goToEmployeeLogin = () => {
+    //     navigate('/login');
+    // };
 
+    // Navigates to employee login page
     const handleLoginLogout = () => {
         if (isAuthenticated) {
             logout({ returnTo: window.location.origin });
@@ -87,11 +96,50 @@ const CustomerView = () => {
         }
     };
 
+    useEffect(() => {
+        if (location.state?.newItem) {
+            const { name, price, sides, entrees } = location.state.newItem;
+    
+            setReceipt((prevReceipt) => {
+                const updatedReceipt = [
+                    ...prevReceipt,
+                    {
+                        name: `${name} - ${sides} & ${entrees}`,
+                        price: price,
+                        sides,
+                        entrees
+                    }
+                ];
+                return updatedReceipt;
+            });
+    
+            navigate('/customer', { replace: true, state: {} });  // Reset state after handling item
+        }
+    }, [location.state, navigate]);
+
+    // Inside CustomerView component
+    const resetSelections = () => {
+        resetSideSelection(); // Reset side selection
+        resetEntreeSelection(); // Reset entree selection
+    };
+
     // Navigates to bowl menu page
     const goToBowlPage = () => {
+        resetSelections(); // Reset selections before navigating
+
+        const bowlItem = { name: 'Bowl', price: 5.99 };
+
+        // Check if a Bowl has already been added to the receipt
+        const isBowlAlreadyAdded = receipt.some(item => item.name === bowlItem.name);
+
+        if (!isBowlAlreadyAdded) {
+            setReceipt((prevReceipt) => [
+                ...prevReceipt,
+                bowlItem // Add the bowl to receipt if not already added
+            ]);
+        }
+        
         navigate('/bowl');
-        const newItem = { name: 'Bowl', price: 5.99 };
-        setReceipt(prevReceipt => [...prevReceipt, newItem]);
     };
 
     // Navigates to plate menu page
