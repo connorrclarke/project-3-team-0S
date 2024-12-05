@@ -292,6 +292,37 @@ app.get('/api/items', async (req, res) => {
     }
 });
 
+app.post('/api/items', async (req, res) => {
+    const { Name, Price, Seasonal, Calories, Category, Available } = req.body;
+
+    try {
+        // Fetch the current maximum MenuItemId
+        const maxIdResult = await pool.query('SELECT MAX("MenuItemId") AS maxId FROM "MenuItems"');
+        const maxId = maxIdResult.rows[0].maxid || 0; // Default to 0 if no rows exist
+
+        // Generate the new MenuItemId
+        const newMenuItemId = maxId + 1;
+
+        // Insert the new item into the table
+        const insertQuery = `
+            INSERT INTO "MenuItems" 
+            ("MenuItemId", "Name", "Price", "Seasonal", "Calories", "Category", "available") 
+            VALUES ($1, $2, $3, $4, $5, $6, $7) 
+            RETURNING *;
+        `;
+
+        const values = [newMenuItemId, Name, Price, Seasonal, Calories, Category, Available];
+        const insertResult = await pool.query(insertQuery, values);
+        console.log(`InsertQuery: ${insertQuery}`)
+
+        // Respond with the newly created item
+        res.status(201).json(insertResult.rows[0]);
+    } catch (err) {
+        console.error('Error adding new item:', err);
+        res.status(500).json({ error: 'Failed to add new item to the menu' });
+    }
+});
+
 // Update the availability of a menu item
 app.patch('/api/items/:id', async (req, res) => {
     const { id } = req.params;
