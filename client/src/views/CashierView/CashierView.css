@@ -24,6 +24,7 @@ body {
   overflow-y: auto;
   background: linear-gradient(0, #D1292E, #e49289);
   border-radius: 10px;
+  height: calc(100vh - 250px); /* might need to remove this!!!! */
 }
 
 .category-tabs {

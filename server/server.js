@@ -325,32 +325,45 @@ app.post('/api/items', async (req, res) => {
     const { Name, Price, Seasonal, Calories, Category, Available } = req.body;
 
     try {
-        // Fetch the current maximum MenuItemId
-        const maxIdResult = await pool.query('SELECT MAX("MenuItemId") AS maxId FROM "MenuItems"');
-        const maxId = maxIdResult.rows[0].maxid || 0; // Default to 0 if no rows exist
-
-        // Generate the new MenuItemId
-        const newMenuItemId = maxId + 1;
-
-        // Insert the new item into the table
-        const insertQuery = `
+        const insertMenuQuery = `
             INSERT INTO "MenuItems" 
-            ("MenuItemId", "Name", "Price", "Seasonal", "Calories", "Category", "available") 
-            VALUES ($1, $2, $3, $4, $5, $6, $7) 
+            ("Name", "Price", "Seasonal", "Calories", "Category", "available") 
+            VALUES ($1, $2, $3, $4, $5, $6) 
             RETURNING *;
         `;
+        const menuValues = [Name, Price, Seasonal, Calories, Category, Available];
+        const insertMenuResult = await pool.query(insertMenuQuery, menuValues);
+        const newMenuItem = insertMenuResult.rows[0];
 
-        const values = [newMenuItemId, Name, Price, Seasonal, Calories, Category, Available];
-        const insertResult = await pool.query(insertQuery, values);
-        console.log(`InsertQuery: ${insertQuery}`)
+        // Insert a corresponding inventory item
+        const insertInventoryQuery = `
+            INSERT INTO "Inventory" 
+            ("Ingredient") 
+            VALUES ($1)
+            RETURNING *;
+        `;
+        const inventoryValues = [Name];
+        const insertInventoryResult = await pool.query(insertInventoryQuery, inventoryValues);
+        const newInventoryItem = insertInventoryResult.rows[0];
 
-        // Respond with the newly created item
-        res.status(201).json(insertResult.rows[0]);
+        // Link the menu item and inventory item
+        const linkQuery = `
+            INSERT INTO "MenuInventoryJunction" ("MenuItemId", "InventoryId") 
+            VALUES ($1, $2);
+        `;
+        await pool.query(linkQuery, [newMenuItem.MenuItemId, newInventoryItem.InventoryId]);
+
+        // Respond with both the new menu item and inventory item
+        res.status(201).json({
+            menuItem: newMenuItem,
+            inventoryItem: newInventoryItem,
+        });
     } catch (err) {
         console.error('Error adding new item:', err);
-        res.status(500).json({ error: 'Failed to add new item to the menu' });
+        res.status(500).json({ error: 'Failed to add new menu and inventory item' });
     }
 });
+
 
 // Update the availability of a menu item
 app.patch('/api/items/:id', async (req, res) => {
@@ -531,7 +544,6 @@ app.get('/api/stats/salesinMonth/:month', async (req, res) => {
     }
 });
 
-
 app.get('/api/stats/top-employee-sales/:month', async (req, res) => {
     try {
         const { month } = req.params; // Get the month parameter from the URL
@@ -576,7 +588,6 @@ app.get('/api/stats/dailypayment/:month', async (req, res) => {
                 o."PaymentType"
             ;`;
 
-
         const result = await pool.query(query, [month]);  // Execute the query with the month parameter
 
         if (result.rows.length === 0) {
@@ -589,9 +600,6 @@ app.get('/api/stats/dailypayment/:month', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
-
-
 
 app.get('/api/stats/top-item-sales/', async (req, res) => {
     try {
@@ -609,8 +617,7 @@ app.get('/api/stats/top-item-sales/', async (req, res) => {
             GROUP BY
                 mi."Name"
             ;
-    `;
-
+        `;
 
         const result = await pool.query(query);  // Execute the query with the month parameter
 
@@ -622,6 +629,63 @@ app.get('/api/stats/top-item-sales/', async (req, res) => {
     } catch (error) {
         console.error('Error fetching employee sales:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * Endpoint to reset inventory to initial values.
+ *
+ * @async
+ * @function
+ * @name resetInventory
+ * @route POST /api/reset-inventory
+ * @returns {Object} A confirmation message that the inventory has been reset.
+ * @throws {Error} If there is an issue resetting the inventory.
+ */
+app.post('/api/resetInventory', async (req, res) => {
+    const resetInventorySQL = `
+        TRUNCATE "Inventory" RESTART IDENTITY CASCADE;
+
+        INSERT INTO "Inventory" ("InventoryId", "Ingredient", "Quantity", "QuantityUnit") VALUES
+        (1, 'Chicken', 100, 'orders remaining'),
+        (2, 'Orange Mix', 100, 'orders remaining'),
+        (3, 'Beef', 100, 'orders remaining'),
+        (4, 'Beijing Mix', 100, 'orders remaining'),
+        (5, 'Kung Pao Mix', 100, 'orders remaining'),
+        (6, 'Shrimp', 100, 'orders remaining'),
+        (7, 'Honey Walnut Mix', 100, 'orders remaining'),
+        (8, 'Teriyaki Mix', 100, 'orders remaining'),
+        (9, 'SweetFire Mix', 100, 'orders remaining'),
+        (10, 'Black Pepper Mix', 100, 'orders remaining'),
+        (11, 'Broccoli', 100, 'orders remaining'),
+        (12, 'Broccoli Beef Sauce', 100, 'orders remaining'),
+        (13, 'Sweet and Sour Mix', 100, 'orders remaining'),
+        (14, 'White Rice', 100, 'orders remaining'),
+        (15, 'Fried Rice Vegetables', 100, 'orders remaining'),
+        (16, 'Chow Mein', 100, 'orders remaining'),
+        (17, 'Egg Rolls', 100, 'orders remaining'),
+        (18, 'Spring Rolls', 100, 'orders remaining'),
+        (19, 'Soda', 100, 'orders remaining'),
+        (20, 'Cups', 100, 'orders remaining'),
+        (21, 'Mexican Coke', 100, 'orders remaining'),
+        (22, 'Apple Juice', 100, 'orders remaining'),
+        (23, 'Water Bottle', 100, 'orders remaining'),
+        (24, 'Bourbon Mix', 100, 'orders remaining'),
+        (25, 'Honey Sesame Mix', 100, 'orders remaining'),
+        (26, 'Mushroom Mix', 100, 'orders remaining'),
+        (27, 'String Bean Mix', 100, 'orders remaining'),
+        (28, 'Super Greens', 100, 'orders remaining'),
+        (29, 'Cream Cheese Rangoons', 100, 'orders remaining'),
+        (30, 'Apple Pie Rolls', 100, 'orders remaining'),
+        (31, 'Mushrooms', 100, 'orders remaining');
+    `;
+
+    try {
+        await pool.query(resetInventorySQL);
+        res.status(200).json({ message: 'Inventory has been reset to initial values.' });
+    } catch (error) {
+        console.error('Error resetting inventory:', error);
+        res.status(500).json({ error: 'Failed to reset inventory.' });
     }
 });
 
