@@ -5,6 +5,8 @@
     min-height: 100vh;
     padding-top: 30px; /* Adjust to height of top-bar */
     padding-bottom: 60px; /* Adjust to height of bottom-bar */
+    background-image: url("./Pictures/CustomerBackround.gif");
+
 }
 
 .content-section {
@@ -70,6 +72,7 @@
 }
 
 .category-circle {
+    background-image: url("./Pictures/SweetFire Chicken Breast.png");
     width: 200px;
     height: 200px;
     border-radius: 50%;
@@ -371,4 +374,21 @@ h2{
     cursor: pointer;
 }
 
-  
+/* High Contrast Mode */
+.high-contrast {
+    background-color: #9a9a01;
+    color: black;
+    background-image: none;
+}
+
+.high-contrast button {
+    background-color: yellow;
+    color: black;
+    border: 2px solid white;
+}
+
+.high-contrast .category-circle {
+    background-color: yellow;
+    color: black;
+    border: 2px solid white;
+}
