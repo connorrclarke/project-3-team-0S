@@ -30,24 +30,24 @@ const ManageInventory = () => {
      * @function
      * @returns {void}
      */
-    useEffect(() => {
-        const fetchInventory = async () => {
-            try {
-                const response = await fetch(`${API_URL}/inventory`);  // Use API_URL here
-                //const response = await fetch('http://localhost:5555/api/inventory');  // API endpoint to fetch inventory data
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setInventory(data);
-            } catch (err) {
-                setError(err.message);
-                console.error('Error fetching inventory:', err);
+    const fetchInventory = async () => {
+        try {
+            const response = await fetch(`${API_URL}/inventory`);  // Use API_URL here
+            //const response = await fetch('http://localhost:5555/api/inventory');  // API endpoint to fetch inventory data
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        };
+            const data = await response.json();
+            setInventory(data);
+        } catch (err) {
+            setError(err.message);
+            console.error('Error fetching inventory:', err);
+        }
+    };
 
+    useEffect(() => {
         fetchInventory();
-    }, []); // Empty dependency array means this will run only once, when the component mounts
+    }, []);
 
     /**
      * Handles the submission of a new inventory item through the AddInventory component.
@@ -76,10 +76,28 @@ const ManageInventory = () => {
         }
     };
 
+    const handleResetInventory = async () => {
+        try {
+            // const response = await fetch(`${API_URL}/resetInventory`, {
+            const response = await fetch(`http://localhost:5555/api/resetInventory`, {
+                method: 'POST',
+            });
+            if (!response.ok) {
+                throw new Error('Error resetting inventory');
+            }
+            await fetchInventory(); // Refresh the inventory list after resetting
+            alert('Inventory has been reset to initial values.');
+        } catch (err) {
+            console.error('Error resetting inventory:', err);
+            alert('Failed to reset inventory.');
+        }
+    };
+
     return (
         <div className="manager-view">
             <button onClick={() => navigate('/manager')}>Return to ManagerView</button>
             <button onClick={() => setShowAddInventoryModal(true)}>Add Inventory Item</button>
+            <button onClick={handleResetInventory}>Reset Inventory</button>
             {error && <div>Error fetching inventory: {error}</div>}
             <div className="table-wrapper">
                 <table>

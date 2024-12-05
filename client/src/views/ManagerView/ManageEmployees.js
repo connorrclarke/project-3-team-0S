@@ -97,9 +97,10 @@ const ManageEmployees = () => {
                         <td>{employee.PhoneNumber}</td>
                         <td>{employee.Employed ? 'Yes' : 'No'}</td>
                         <td>
-                            <button className="manageEmployeeRed" onClick={() => handleFireEmeployee(employee.EmployeeId)}>Fire</button>
+                            {employee.Employed && (
+                                <button className="manageEmployeeRed" onClick={() => handleFireEmeployee(employee.EmployeeId)}>Fire</button>
+                            )}
                         </td>
-
                     </tr>
                 ))}
                 </tbody>

@@ -625,6 +625,63 @@ app.get('/api/stats/top-item-sales/', async (req, res) => {
     }
 });
 
+/**
+ * Endpoint to reset inventory to initial values.
+ *
+ * @async
+ * @function
+ * @name resetInventory
+ * @route POST /api/reset-inventory
+ * @returns {Object} A confirmation message that the inventory has been reset.
+ * @throws {Error} If there is an issue resetting the inventory.
+ */
+app.post('/api/resetInventory', async (req, res) => {
+    const resetInventorySQL = `
+        TRUNCATE "Inventory" RESTART IDENTITY CASCADE;
+
+        INSERT INTO "Inventory" ("InventoryId", "Ingredient", "Quantity", "QuantityUnit") VALUES
+        (1, 'Chicken', 100, 'orders remaining'),
+        (2, 'Orange Mix', 100, 'orders remaining'),
+        (3, 'Beef', 100, 'orders remaining'),
+        (4, 'Beijing Mix', 100, 'orders remaining'),
+        (5, 'Kung Pao Mix', 100, 'orders remaining'),
+        (6, 'Shrimp', 100, 'orders remaining'),
+        (7, 'Honey Walnut Mix', 100, 'orders remaining'),
+        (8, 'Teriyaki Mix', 100, 'orders remaining'),
+        (9, 'SweetFire Mix', 100, 'orders remaining'),
+        (10, 'Black Pepper Mix', 100, 'orders remaining'),
+        (11, 'Broccoli', 100, 'orders remaining'),
+        (12, 'Broccoli Beef Sauce', 100, 'orders remaining'),
+        (13, 'Sweet and Sour Mix', 100, 'orders remaining'),
+        (14, 'White Rice', 100, 'orders remaining'),
+        (15, 'Fried Rice Vegetables', 100, 'orders remaining'),
+        (16, 'Chow Mein', 100, 'orders remaining'),
+        (17, 'Egg Rolls', 100, 'orders remaining'),
+        (18, 'Spring Rolls', 100, 'orders remaining'),
+        (19, 'Soda', 100, 'orders remaining'),
+        (20, 'Cups', 100, 'orders remaining'),
+        (21, 'Mexican Coke', 100, 'orders remaining'),
+        (22, 'Apple Juice', 100, 'orders remaining'),
+        (23, 'Water Bottle', 100, 'orders remaining'),
+        (24, 'Bourbon Mix', 100, 'orders remaining'),
+        (25, 'Honey Sesame Mix', 100, 'orders remaining'),
+        (26, 'Mushroom Mix', 100, 'orders remaining'),
+        (27, 'String Bean Mix', 100, 'orders remaining'),
+        (28, 'Super Greens', 100, 'orders remaining'),
+        (29, 'Cream Cheese Rangoons', 100, 'orders remaining'),
+        (30, 'Apple Pie Rolls', 100, 'orders remaining'),
+        (31, 'Mushrooms', 100, 'orders remaining');
+    `;
+
+    try {
+        await pool.query(resetInventorySQL);
+        res.status(200).json({ message: 'Inventory has been reset to initial values.' });
+    } catch (error) {
+        console.error('Error resetting inventory:', error);
+        res.status(500).json({ error: 'Failed to reset inventory.' });
+    }
+});
+
 // Server start
 app.listen(port, () => { console.log(`Server started on http://localhost:${port}`); });
 
