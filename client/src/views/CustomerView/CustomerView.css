@@ -230,6 +230,31 @@ h2{
     text-align: left;
 }
 
+.left-section-checkout, .middle-section-checkout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.receipt-section-customer {
+    flex: 1 1 300px; 
+    max-width: 400px;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    box-sizing: border-box;
+}
+
+/* Receipt Sectione*/
+
+.receipt-item-checkout {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    width: 100%;
+    align-items: center;
+}
+
 .receipt-customer {
     background-color: #f8f8f8;
     padding: 20px;
@@ -240,21 +265,6 @@ h2{
     max-height: 100%;
     width: 100%;
     box-sizing: border-box;
-  }
-
-.left-section-checkout, .middle-section-checkout {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.receipt-item-checkout {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-    width: 100%;
-    align-items: center;
 }
 
 .receipt-summary-customer{
@@ -268,6 +278,36 @@ h2{
     align-items: center;
     width: 100%;
 }
+
+.item-name {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    width: 80%;
+}
+
+.item-price {
+    font-weight: normal;
+    margin-left: 10px;
+}
+
+.item-details {
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
+.side, .entree {
+    display: block;
+    font-size: 0.9em;
+    margin-top: 2px;
+}
+
+.remove-button {
+    cursor: pointer;
+    margin-top: 5px;
+    align-self: flex-end;
+}
+
 
 .category-buttons {
     display: grid;

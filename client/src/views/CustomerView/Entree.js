@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { useEntreeSelection } from "../../contexts/EntreeSelectionContext";
 import "./CustomerView.css";
 
 const entrees = [
@@ -29,26 +30,24 @@ const images = importAll(require.context("./Pictures", false, /\.(png|jpe?g|gif)
 
 const EntreeSelection = () => {
     const navigate = useNavigate();
-    const [selectedEntrees, setSelectedEntrees] = useState([]);
+    const { selectedEntree, setSelectedEntree } = useEntreeSelection();
 
-    // Toggle selection of an entree
-    const toggleEntree = (entree) => {
-        if (selectedEntrees.includes(entree)) {
-            setSelectedEntrees(selectedEntrees.filter((e) => e !== entree)); // Remove from selection
-        } else {
-            setSelectedEntrees([...selectedEntrees, entree]); // Add to selection
-        }
+    // Select one entree and update the selection
+    const selectEntree = (entree) => {
+        setSelectedEntree([entree]); // Only allow one entree at a time
     };
 
+    // Add selected entrees and navigate back
     const handleAdd = () => {
-        if (EntreeSelection.length === 0) {
+        if (selectedEntree.length === 0) {
             alert("Please select at least one entree.");
         } else {
-            alert(`Added: ${EntreeSelection.join(", ")}`);
+            navigate(-1); // Go back to the Bowl page
         }
     };
     
     const handleCancel = () => {
+        setSelectedEntree([]); // Clear the selection
         navigate(-1); // Go back to the previous page
     };
     
@@ -66,9 +65,9 @@ const EntreeSelection = () => {
                         }}
                         key={index}
                         className={`entree-circle ${
-                            selectedEntrees.includes(entree) ? "selected" : ""
+                            selectedEntree.includes(entree) ? "selected" : ""
                         }`}
-                        onClick={() => toggleEntree(entree)}
+                        onClick={() => selectEntree(entree)}
                     >
                         {entree}
                     </button>

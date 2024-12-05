@@ -7,18 +7,26 @@
  *
  * @author Siddhi Mittal
  */
-import React, {} from 'react';
+import React from "react";
 import { useNavigate } from 'react-router-dom';
+import { useSideSelection } from "../../contexts/SideSelectionContext";
+import { useEntreeSelection } from "../../contexts/EntreeSelectionContext";
+import { useReceipt } from "../../contexts/ReceiptContext";
 import './CustomerView.css';
 
 const Bowl = () => {
     const navigate = useNavigate(); // Hook for navigating between pages
+    const { selectedSide, resetSideSelection} = useSideSelection();
+    const { selectedEntree, resetEntreeSelection } = useEntreeSelection();
+    const { addItem } = useReceipt(); // Access addItem from context
 
     /**
      * Handles the "Cancel" button click by navigating back to the CustomerView page
      * without saving the current selection.
      */
     const handleCancel = () => {
+        resetSideSelection(); // Reset the side button to "Sides"
+        resetEntreeSelection(); // Reset the entree button to "Entree"
         navigate('/customer'); // Redirecting back to the CustomerView page
     };
 
@@ -27,12 +35,30 @@ const Bowl = () => {
      * (Future functionality could include saving the current selection before navigating.)
      */
     const handleAdd = () => {
-        navigate('/customer'); // Redirecting back to the CustomerView page
+        if (!selectedSide || selectedSide === "Sides") {
+            alert("Please select a side.");
+        } else if (!selectedEntree || selectedEntree === "Entree") {
+            alert("Please select an entree.");
+        } else {
+            const item = {
+                // name: `Bowl - ${selectedSide} & ${selectedEntree}`,
+                name:`Bowl`,
+                price: 5.99,
+                sides: selectedSide,
+                entrees: selectedEntree,
+            };
+            addItem(item);  // Call addItem to add the item to the receipt
+
+            // Reset selections after adding to avoid duplicate bowl add
+            resetSideSelection();
+            resetEntreeSelection();
+            navigate('/customer'); // Redirect to CustomerView
+        }
     };
 
-    // Navigates to sides page
+    // Navigates to the sides page
     const goToSide = () => {
-        navigate('/sides');
+        navigate("/sides");
     };
 
     // Navigates to entree page
@@ -51,11 +77,11 @@ const Bowl = () => {
             <div className="middle-section">
                 <div className="category-description">
                     <p>Choose your side:</p>
-                    <button onClick={goToSide} className="sides-circle">Sides</button>
+                    <button onClick={goToSide} className="sides-circle">{selectedSide}</button>
                 </div>
                 <div className="category-description">
                     <p>Choose your entree:</p>
-                    <button onClick={goToEntree} className="entree-circle">Entree</button>
+                    <button onClick={goToEntree} className="entree-circle">{selectedEntree}</button>
                 </div>
             </div>
 

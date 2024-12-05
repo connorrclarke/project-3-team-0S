@@ -9,7 +9,10 @@
  * @author Siddhi Mittal
  */
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useSideSelection } from "../../contexts/SideSelectionContext";
+import { useEntreeSelection } from "../../contexts/EntreeSelectionContext";
+import { useReceipt } from '../../contexts/ReceiptContext';
 import { useAuth0 } from '@auth0/auth0-react';
 import './CustomerView.css';
 import Receipt from './ReceiptKiosk';
@@ -21,13 +24,23 @@ const api = {
 };
 
 const CustomerView = () => {
-    const navigate = useNavigate();
-    const translateButtonRef = useRef(null);
-    const [weather, setWeather] = useState({});
+    const navigate = useNavigate(); // Hook for programmatic navigation
+    const { isAuthenticated, loginWithRedirect, logout } = useAuth0(); // Auth0 hooks
+    const translateButtonRef = useRef(null); // Ref for Google Translate button
+    const [weather, setWeather] = useState({}); // State for storing weather data
     const [receipt, setReceipt] = useState([]);
     const [highContrast, setHighContrast] = useState(false);
     const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
-    const applyTax = true;
+    const { addItem, removeItem, receipt } = useReceipt(); // Using context for receipt data
+    const applyTax = true; // Flag to indicate if tax should be applied
+    const { resetSideSelection} = useSideSelection();
+    const { resetEntreeSelection } = useEntreeSelection();
+
+    // Fetching passed state (side and entree selections)
+    const location = useLocation();
+    // const { selectedSide, selectedEntree } = location.state || {}; // Access the passed state
+
+    // Calculate receipt totals
 
     const subtotal = receipt.reduce((acc, item) => acc + item.price, 0);
     const taxRate = 0.0825;
@@ -76,11 +89,12 @@ const CustomerView = () => {
         }
     };
 
-    // Navigates to employee login page
-    const goToEmployeeLogin = () => {
-        navigate('/login');
-    };
+    // // Navigates to employee login page
+    // const goToEmployeeLogin = () => {
+    //     navigate('/login');
+    // };
 
+    // Navigates to employee login page
     const handleLoginLogout = () => {
         if (isAuthenticated) {
             logout({ returnTo: window.location.origin });
@@ -89,49 +103,69 @@ const CustomerView = () => {
         }
     };
 
-    //Just in case we need these, they were lost in the merge
-    // // Navigates to bowl menu page
-    // const goToBowlPage = () => {
-    //     navigate('/bowl');
-    //     const newItem = { name: 'Bowl', price: 5.99 };
-    //     setReceipt(prevReceipt => [...prevReceipt, newItem]);
-    // };
+    // Adding item to receipt
+    useEffect(() => {
+        if (location.state?.newItem) {
+            const { name, price, sides, entrees } = location.state.newItem;
+    
+            addItem({
+                name: `${name} - ${sides} & ${entrees}`,
+                price: price,
+                sides,
+                entrees
+            });
 
-    // // Navigates to plate menu page
-    // const goToPlatePage = () => {
-    //     navigate('/plate');
-    //     const newItem = { name: 'Plate', price: 7.99 };
-    //     setReceipt(prevReceipt => [...prevReceipt, newItem]);
-    // };
+            navigate('/customer', { replace: true, state: {} });  // Reset state after handling item
+        }
+    }, [location.state, addItem, navigate]);
 
-    // // Navigates to bigger plate menu page
-    // const goToBiggerPlatePage = () => {
-    //     navigate('/bigger-plate');
-    //     const newItem = { name: 'Bigger Plate', price: 9.99 };
-    //     setReceipt(prevReceipt => [...prevReceipt, newItem]);
-    // };
+    // Inside CustomerView component
+    const resetSelections = () => {
+        resetSideSelection(); // Reset side selection
+        resetEntreeSelection(); // Reset entree selection
+    };
 
-    // // Navigates to appetizer menu page
-    // const goToAppetizersPage = () => {
-    //     navigate('/appetizers');
-    //     const newItem = { name: 'Appetizer', price: 3.99 };
-    //     setReceipt(prevReceipt => [...prevReceipt, newItem]);
-    // };
+    // Navigates to bowl menu page
+    const goToBowlPage = () => {
+        resetSelections(); // Reset selections before navigating
+        navigate('/bowl');
+    };
 
-    // // Navigates to drinks menu page
-    // const goToDrinksPage = () => {
-    //     navigate('/drinks');
-    //     const newItem = { name: 'Drink', price: 2.99 };
-    //     setReceipt(prevReceipt => [...prevReceipt, newItem]);
-    // };
+    // Navigates to plate menu page
+    const goToPlatePage = () => {
+        resetSelections();
+        navigate('/plate');
+        const Item = { name: 'Plate', price: 7.99 };
+    };
 
-    const goToBowlPage = () => navigate('/bowl');
-    const goToPlatePage = () => navigate('/plate');
-    const goToBiggerPlatePage = () => navigate('/bigger-plate');
-    const goToAppetizersPage = () => navigate('/appetizers');
-    const goToDrinksPage = () => navigate('/drinks');
-    const goToAlacartePage = () => navigate('/alacarte');
-    const goToCheckout = () => navigate('/checkout', { state: { receipt, total } });
+    // Navigates to bigger plate menu page
+    const goToBiggerPlatePage = () => {
+        resetSelections();
+        navigate('/bigger-plate');
+        const Item = { name: 'Bigger Plate', price: 9.99 };
+    };
+
+    // Navigates to appetizer menu page
+    const goToAppetizersPage = () => {
+        navigate('/appetizers');
+        const Item = { name: 'Appetizer', price: 3.99 };
+    };
+
+    // Navigates to drinks menu page
+    const goToDrinksPage = () => {
+        navigate('/drinks');
+        const Item = { name: 'Drink', price: 2.99 };
+    };
+    
+    const goToAlacartePage = () => {
+        resetSelections();
+        navigate('/alacarte');
+    }
+
+    // Navigates to checkout page, passing the current receipt and total
+    const goToCheckout = () => {
+        navigate('/checkout', { state: { receipt, total } });
+    };
 
     /**
     * Removes an item from the receipt by its index.
@@ -139,8 +173,9 @@ const CustomerView = () => {
     * @param {number} index - The index of the item to remove.
     */
     const removeItemFromReceipt = (index) => {
-        const updatedReceipt = receipt.filter((_, i) => i !== index);
-        setReceipt(updatedReceipt);
+        // const updatedReceipt = receipt.filter((_, i) => i !== index);
+        // setReceipt(updatedReceipt);
+        removeItem(index)
     };
 
     return (
