@@ -81,6 +81,7 @@ canvas {
     border: black 2px solid;
     border-radius: 20px;
     padding: 20px;
+    margin: 20px;
 }
 
 .statistics-page button{

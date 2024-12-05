@@ -201,8 +201,8 @@ const CashierView = () => {
     setIsProcessing(true); // Show the "Processing..." popup
 
     try {
-      const response = await fetch(`http://localhost:5555/api/order`, {
-      //const response = await fetch(`${API_URL}/order`, {
+      //const response = await fetch(`http://localhost:5555/api/order`, {
+      const response = await fetch(`${API_URL}/order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ total: finalTotal.toFixed(2), method: selectedPaymentMethod }),
@@ -218,8 +218,8 @@ const CashierView = () => {
           const itemsToUpdate = entry.items || [entry.name];
             
           for (const menuItemName of itemsToUpdate) {
-            //const inventoryResponse = await fetch(`${API_URL}/updateInventory`, {
-            const inventoryResponse = await fetch(`http://localhost:5555/api/updateInventory`, {
+            const inventoryResponse = await fetch(`${API_URL}/updateInventory`, {
+            //const inventoryResponse = await fetch(`http://localhost:5555/api/updateInventory`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ menuItemName, quantity: 1 }),

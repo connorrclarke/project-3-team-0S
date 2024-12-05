@@ -95,6 +95,51 @@ const ManageStatistics = () => {
 
     };
 
+    const paymentChartOptions = {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: `Payment Types on Month: ${month}`,
+            },
+            tooltip: {
+                callbacks: {
+                    label: (context) => `${context.dataset.label}: ${context.raw}`,
+                },
+            },
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Payment Type',
+                },
+            },
+            y1: {
+                type: 'linear',
+                position: 'left',
+                title: {
+                    display: true,
+                    text: 'Times Used',
+                },
+                beginAtZero: true,
+            },
+            y2: {
+                type: 'linear',
+                position: 'right',
+                title: {
+                    display: true,
+                    text: 'Total Sales ($)',
+                },
+                beginAtZero: true,
+                grid: {
+                    drawOnChartArea: false, // Avoid grid lines overlapping
+                },
+            },
+        },
+    };
+    
+
     const EmployeeSalesChartData = {
         labels: employeeSales.map((employee) => `Employee ${employee.EmployeeId}`),
         datasets: [
@@ -130,6 +175,7 @@ const ManageStatistics = () => {
                 backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'black',
                 borderWidth: 1,
+                yAxisID: 'y1',
             },
             {
                 label: 'Total Sales',
@@ -137,6 +183,7 @@ const ManageStatistics = () => {
                 backgroundColor: 'rgba(100, 192, 100, 0.2)',
                 borderColor: 'black',
                 borderWidth: 1,
+                yAxisID: 'y2',
             },
         ],
     };
@@ -205,15 +252,15 @@ const ManageStatistics = () => {
                 <Bar data={EmployeeSalesChartData} options={chartOptions}/>
 
             </div>
-            .
+            
             <div className={"charts"}>
                 <Bar data={ItemSalesData}
                      options={{responsive: true, plugins: {title: {display: true, text: 'Top Item Sales'}}}}/>
             </div>
-            .
+            
             <div className={"charts"}>
                 <Bar data={PaymentTypeData}
-                     options={{responsive: true, plugins: {title: {display: true, text: `Payment Types on Month: ${month}` }}}}/>
+                     options={paymentChartOptions}/>
             </div>
 
             <button className={"backButton"} onClick={() => navigate("/manager")}>Back</button>

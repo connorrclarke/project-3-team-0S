@@ -74,6 +74,7 @@
     height: 100vh; /* Full viewport height */
     gap: 1rem; /* Space between buttons */
     background-image: url("./Images/backround.jpg");
+    padding: 20px;
 }
 
 .manager-view button {
