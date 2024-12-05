@@ -78,8 +78,8 @@ const ManageInventory = () => {
 
     const handleResetInventory = async () => {
         try {
-            // const response = await fetch(`${API_URL}/resetInventory`, {
-            const response = await fetch(`http://localhost:5555/api/resetInventory`, {
+            const response = await fetch(`${API_URL}/resetInventory`, {
+            //const response = await fetch(`http://localhost:5555/api/resetInventory`, {
                 method: 'POST',
             });
             if (!response.ok) {

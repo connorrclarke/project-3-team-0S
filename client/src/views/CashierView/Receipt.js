@@ -17,32 +17,26 @@ const Receipt = ({
         <h2>Receipt</h2>
         {receipt.map((entry, index) => (
           <div key={index}>
-            {entry.category ? (
-              <div className="receipt-category">
-                <div className="category-header">
-                  <span>
-                    {entry.category} - ${entry.price.toFixed(2)}
-                  </span>
-                  {showRemoveButtons && (
-                    <img src="/removeItem.svg" alt="Remove item" className="remove-button" onClick={() => onRemove(index)}/>
-                  )}
-                </div>
-                {entry.items?.map((item, itemIndex) => (
-                  <div key={itemIndex} className="receipt-item" style={{ marginLeft: "20px" }}>
-                    {item}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="receipt-item">
+            <div className="receipt-category">
+              <div className="category-header">
                 <span>
-                  {entry.name} - ${entry.price.toFixed(2)}
+                  {entry.category} - ${entry.price.toFixed(2)}
                 </span>
                 {showRemoveButtons && (
-                  <img src="/removeItem.svg" alt="Remove item" className="remove-button" onClick={() => onRemove(index)}/>
+                  <img
+                    src="/removeItem.svg"
+                    alt="Remove item"
+                    className="remove-button"
+                    onClick={() => onRemove(index)}
+                  />
                 )}
               </div>
-            )}
+              {entry.items?.map((item, itemIndex) => (
+                <div key={itemIndex} className="receipt-item" style={{ marginLeft: "20px" }}>
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
         ))}
         <h3>Subtotal: ${subtotal.toFixed(2)}</h3>
