@@ -9,33 +9,37 @@ body {
     transition: font-size 0.2s ease-in-out;
 }
 
-/* CustomerView Page */
 .customer-layout {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    width: 100%; /* Ensures the layout uses the full width */
-    padding-top: 50px; /* Adjust to height of top-bar */
-    padding-bottom: 60px; /* Adjust to height of bottom-bar */
-    box-sizing: border-box; /* Prevent overflow issues */
+    width: 100%;
+    padding-top: 50px;
+    padding-bottom: 60px;
+    box-sizing: border-box;
 }
 
 .content-section {
-    display: flex; /* Aligns items side by side */
-    justify-content: center; /* Centers the buttons */
-    align-items: center; /* Vertically centers items */
-    flex-wrap: wrap;
-    gap: 20px; /* Adds spacing between the circular buttons */
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 20px;
     padding: 20px;
-    width: 100%; /* Ensures the section spans the full width */
+    width: 100%;
     box-sizing: border-box;
+}
+
+.receipt-section-customer {
+    flex: 1;
+    max-width: 300px;
 }
 
 .top-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px 20px; /* Add padding to control distance from screen edges */
+    padding: 0 20px 20px;
     background-color: #f5f5f5;
     width: 100%;
     position: fixed;

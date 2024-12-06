@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './CustomerView.css';
+import './Customeronly.css';
 import Receipt from './ReceiptKiosk';
 import {useZoom, ZoomProvider} from "./ZoomContext";
 
