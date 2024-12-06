@@ -8,7 +8,7 @@
  * @author Luke Lopez
  */
 import React from 'react';
-import '../../App.css';
+import './Manager.css';
 import { useNavigate } from "react-router-dom";
 
 const ManagerView = ({ setView }) => {
@@ -20,8 +20,8 @@ const ManagerView = ({ setView }) => {
             <button onClick={() => navigate('/')}>Return to CashierView</button>
             <button onClick={() => navigate('/employees')}>Manage Employees</button>
             <button onClick={() => navigate('/inventory')}>Manage Inventory</button>
-            <button>Manage Items</button>
-            <button>Monthly Statistics</button>
+            <button onClick={() => navigate('/items')}>Manage Menu Items</button>
+            <button onClick={()=> navigate('/reports')}>Monthly Statistics</button>
         </div>
     );
 };

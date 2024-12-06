@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import '../../App.css';
+import './Manager.css';
 import { useNavigate } from "react-router-dom";
 import AddInventory from './AddInventory';  // A component for adding new inventory items
+
+const API_URL = process.env.REACT_APP_API_URL;
+//const API_URL = "http://localhost:5555/api";
 
 /**
  * A component for managing the inventory, displaying a list of inventory items and allowing new items to be added.
@@ -27,23 +30,24 @@ const ManageInventory = () => {
      * @function
      * @returns {void}
      */
-    useEffect(() => {
-        const fetchInventory = async () => {
-            try {
-                const response = await fetch('http://localhost:5000/api/inventory');  // API endpoint to fetch inventory data
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setInventory(data); // Update inventory state with fetched data
-            } catch (err) {
-                setError(err.message); // Set error message if fetch fails
-                console.error('Error fetching inventory:', err);
+    const fetchInventory = async () => {
+        try {
+            const response = await fetch(`${API_URL}/inventory`);  // Use API_URL here
+            //const response = await fetch('http://localhost:5555/api/inventory');  // API endpoint to fetch inventory data
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        };
+            const data = await response.json();
+            setInventory(data);
+        } catch (err) {
+            setError(err.message);
+            console.error('Error fetching inventory:', err);
+        }
+    };
 
+    useEffect(() => {
         fetchInventory();
-    }, []); // Empty dependency array means this will run only once, when the component mounts
+    }, []);
 
     /**
      * Handles the submission of a new inventory item through the AddInventory component.
@@ -56,18 +60,36 @@ const ManageInventory = () => {
      */
     const handleAddInventorySubmit = async (formData) => {
         try {
-            const response = await fetch('http://localhost:5000/api/inventory', {
+            const response = await fetch(`${API_URL}/inventory`, {
+            //const response = await fetch('http://localhost:5555/api/inventory', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData), // Send new inventory item data as JSON in the request body
+                body: JSON.stringify(formData),
             });
             if (!response.ok) {
                 throw new Error('Error adding inventory item');
             }
             const newItem = await response.json();
-            setInventory((prevInventory) => [...prevInventory, newItem]); // Add the new item to the inventory state
+            setInventory((prevInventory) => [...prevInventory, newItem]);
         } catch (err) {
             console.error('Error adding inventory item:', err);
+        }
+    };
+
+    const handleResetInventory = async () => {
+        try {
+            const response = await fetch(`${API_URL}/resetInventory`, {
+            //const response = await fetch(`http://localhost:5555/api/resetInventory`, {
+                method: 'POST',
+            });
+            if (!response.ok) {
+                throw new Error('Error resetting inventory');
+            }
+            await fetchInventory(); // Refresh the inventory list after resetting
+            alert('Inventory has been reset to initial values.');
+        } catch (err) {
+            console.error('Error resetting inventory:', err);
+            alert('Failed to reset inventory.');
         }
     };
 
@@ -75,9 +97,8 @@ const ManageInventory = () => {
         <div className="manager-view">
             <button onClick={() => navigate('/manager')}>Return to ManagerView</button>
             <button onClick={() => setShowAddInventoryModal(true)}>Add Inventory Item</button>
-            {error && <div>Error fetching inventory: {error}</div>}  {/* Show error message if fetch fails */}
-
-            {/* Add a div wrapper for the table with scrollable styles */}
+            <button onClick={handleResetInventory}>Reset Inventory</button>
+            {error && <div>Error fetching inventory: {error}</div>}
             <div className="table-wrapper">
                 <table>
                     <thead>
@@ -92,7 +113,7 @@ const ManageInventory = () => {
                     {inventory.map((item) => (
                         <tr key={item.InventoryId}>
                             <td>{item.InventoryId}</td>
-                            <td>{item.Ingredient }</td>
+                            <td>{item.Ingredient}</td>
                             <td>{item.Quantity}</td>
                             <td>{item.QuantityUnit}</td>
                         </tr>
@@ -103,8 +124,8 @@ const ManageInventory = () => {
 
             {showAddInventoryModal && (
                 <AddInventory
-                    onClose={() => setShowAddInventoryModal(false)}  // Close the modal
-                    onSubmit={handleAddInventorySubmit}  // Handle form submission for adding new inventory item
+                    onClose={() => setShowAddInventoryModal(false)}
+                    onSubmit={handleAddInventorySubmit}
                 />
             )}
         </div>

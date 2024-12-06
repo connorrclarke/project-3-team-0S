@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import './Manager.css';
+
+//const API_URL = process.env.REACT_APP_API_URL ;
+//const API_URL =  'http://localhost:5555/api';
 
 /**
  * Modal component for adding a new inventory item.
@@ -18,41 +23,45 @@ import React, { useState } from 'react';
  * @returns {JSX.Element} A modal form for adding inventory.
  */
 const AddInventory = ({ onClose, onSubmit }) => {
-    // State for form inputs
     const [ingredient, setIngredient] = useState('');
     const [quantity, setQuantity] = useState('');
     const [quantityUnit, setQuantityUnit] = useState('');
     const [error, setError] = useState(null);
 
     /**
-     * Handles the form submission by creating the form data object and calling the onSubmit prop function.
-     * It also handles resetting the form and closing the modal upon successful submission.
+     * Handles the form submission.
      *
      * @param {Object} e - The event object.
-     *
-     * @returns {void}
      */
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Create the form data object
         const formData = {
-            Ingredient: ingredient,
-            Quantity: quantity,
-            QuantityUnit: quantityUnit,
+            itemName: ingredient,
+            quantity: parseInt(quantity, 10),
+            description: quantityUnit,
         };
 
         try {
-            await onSubmit(formData);
 
-            setIngredient('');
-            setQuantity('');
-            setQuantityUnit('');
-            onClose();  // Close the modal after successful submission
+
+
+            onSubmit(formData); // Notify parent component
+            resetForm();
+            onClose();
         } catch (err) {
-            setError('Error adding inventory item');
+            setError('Failed to add the inventory item. Please try again.');
             console.error('Error:', err);
         }
+    };
+
+    /**
+     * Resets the form inputs and error state.
+     */
+    const resetForm = () => {
+        setIngredient('');
+        setQuantity('');
+        setQuantityUnit('');
+        setError(null);
     };
 
     return (
@@ -78,6 +87,7 @@ const AddInventory = ({ onClose, onSubmit }) => {
                             value={quantity}
                             onChange={(e) => setQuantity(e.target.value)}
                             required
+                            min="1"
                         />
                     </div>
                     <div>
@@ -92,13 +102,27 @@ const AddInventory = ({ onClose, onSubmit }) => {
                     </div>
                     {error && <div className="error">{error}</div>}
                     <div className="modal-buttons">
-                        <button type="submit">Add Item</button>
-                        <button type="button" onClick={onClose}>Cancel</button>
+                        <button type="submit" className="submit-button">Add Item</button>
+                        <button
+                            type="button"
+                            className="cancel-button"
+                            onClick={() => {
+                                resetForm();
+                                onClose();
+                            }}
+                        >
+                            Cancel
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     );
+};
+
+AddInventory.propTypes = {
+    onClose: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
 };
 
 export default AddInventory;

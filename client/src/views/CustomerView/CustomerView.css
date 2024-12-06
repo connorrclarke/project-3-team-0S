@@ -17,6 +17,7 @@ body {
     padding-top: 50px;
     padding-bottom: 60px;
     box-sizing: border-box;
+    background-image: url("./Pictures/CustomerBackround.gif");
 }
 
 .content-section {
@@ -64,6 +65,21 @@ body {
     color: white;
 }
 
+.receipt-section-customer {
+    flex: 1 1 300px; 
+    max-width: 400px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.main-section {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
 button {
     padding: 0.8em 1.5em;
     font-size: 1em;
@@ -91,6 +107,8 @@ button:hover {
     font-size: 1.25em;
     cursor: pointer;
     transition: font-size 0.2s ease-in-out, transform 0.2s ease-in-out;
+    border-color: black;
+    border: solid 3px;
 }
 
 .sides-circle, .entree-circle {
@@ -102,6 +120,31 @@ button:hover {
     align-items: center;
     justify-content: center;
     font-size: 1.25em;
+    padding: 35px 20px;
+    background-color: #f5f5f5;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    height: 50px;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; /* Prevent overflow caused by padding */
+}
+
+.checkout-button {
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button {
+    padding: 15px 30px;
+    font-size: 16px;
+    border: none;
     cursor: pointer;
     transition: font-size 0.2s ease-in-out;
 }
@@ -120,7 +163,31 @@ button:hover {
     gap: 20px;
 }
 
-.bottom-bar {
+
+.category-description {
+    text-align: center;
+}
+
+.sides-circle {
+    border: 2px solid transparent;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.entree-circle {
+    border: 2px solid transparent;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: #ff9999;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -135,6 +202,16 @@ button:hover {
     border-top: 1px solid #ddd;
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.sides-circle.selected, .entree-circle.selected, 
+.sides-carte-circle.selected, .entree-carte-circle.selected {
+    border-color: black;
+    border-width: 3px;
 }
 
 .cancel-button,
@@ -163,13 +240,243 @@ button:hover {
 .checkout-button {
     padding: 0.8em 1.5em;
     font-size: 1em;
+ }
+/* Checkout Page */
+h2{
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+.checkout-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 60px; 
+    padding-bottom: 60px; 
+}
+
+.checkout-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    width: 100;
+    margin: 30px;
+}
+
+.left-section-checkout {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.left-section-checkout, .middle-section-checkout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.receipt-section-customer {
+    flex: 1 1 300px; 
+    max-width: 400px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Receipt Section*/
+
+.receipt-item-checkout {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    width: 100%;
+    align-items: center;
+}
+
+.receipt-customer {
+    background-color: #f8f8f8;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    max-height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    border-color: black;
+    border: solid 3px;
+}
+
+.receipt-summary-customer{
+    margin-top: 50px;
+}
+
+.receipt-summary-customer p {
+    font-weight: bold;
+    padding-left: 5px;
+    text-align: left;
+    align-items: center;
+    width: 100%;
+}
+
+.item-name {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    width: 80%;
+}
+
+.item-price {
+    font-weight: normal;
+    margin-left: 10px;
+}
+
+.item-details {
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
+.side, .entree {
+    display: block;
+    font-size: 0.9em;
+    margin-top: 2px;
+}
+
+.remove-button {
+    cursor: pointer;
+    margin-top: 5px;
+    align-self: flex-end;
+}
+
+
+.category-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
+.category-button {
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-color: #f2a900;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.1s ease-in-out;
+}
+
+.category-button:hover {
+    transform: scale(1.05);
+}
+
+.category-button.selected{
+    border-color: black;
+    border-width: 3px;
+}
+
+.cancel-button, .pay-button {
+    padding: 15px 30px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.cancel-button {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.pay-button {
     background-color: #4caf50;
     color: white;
     cursor: pointer;
 }
 
+
 .title-bar h1 {
     font-size: 2em;
     margin: 0;
     text-align: center;
+}
+/* A la Carte*/
+.button-alacarte-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;  
+    width: 100%;
+}
+
+.sides-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-right: 30px;
+    flex: 1 2 200px;
+    padding-top: 20px;
+    display: flex;
+}
+
+.entrees-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-right: 30px;
+    flex: 1 2 200px;
+    padding-top: 20px;
+    display: flex;
+}
+
+.sides-carte-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    border: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.entree-carte-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #ff9999;
+    border: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* High Contrast Mode */
+.high-contrast {
+    background-color: #9a9a01;
+    color: black;
+    background-image: none;
+}
+
+.high-contrast button {
+    background-color: yellow;
+    color: black;
+    border: 2px solid white;
+}
+
+.high-contrast .category-circle {
+    background-color: yellow;
+    color: black;
+    border: 2px solid white;
 }

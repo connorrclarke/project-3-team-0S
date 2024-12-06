@@ -1,0 +1,230 @@
+.app-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.category-tabs {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin: 10px 0;
+}
+
+.category-tabs button {
+    padding: 10px;
+    border: none;
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+.category-tabs .active {
+    background-color: darkgray;
+    font-weight: bold;
+}
+
+.manager-button {
+    background-color: orange;
+    font-weight: bold;
+}
+.options{
+    width: fit-content;
+}
+.options .add-item-button{
+    width: auto;
+    height: auto;
+    background-color: green;
+}
+.options .rem-item-button{
+    width: auto;
+    height: auto;
+    background-color: red;
+}
+
+.item-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.receipt {
+    width: 100%;
+    max-width: 300px;
+    margin: 10px 0;
+    border: 1px solid black;
+    padding: 10px;
+}
+
+.order-controls {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* ManagerView.css */
+.manager-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Full viewport height */
+    gap: 1rem; /* Space between buttons */
+    background-image: url("./Images/backround.jpg");
+    padding: 20px;
+}
+
+.manager-view button {
+    width: 290px; /* Set button width */
+    height: 100px;
+    padding: 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.manageEmployee button{
+    width: 200px; /* Set button width */
+    height: 100px;
+    padding: 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+
+}
+
+table {
+    width: 80%;
+
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+th {
+    background-color: #f2f2f2;
+    width: auto;
+}
+td .manageEmployeeGreen{
+    width: 200px;
+    height: 100px;
+    padding: 1rem;
+    font-size: 3rem;
+    cursor: pointer;
+    color: black;
+    background-color: green;
+
+}
+td .manageEmployeeRed {
+    width: Auto ;
+    height: auto;
+    padding: 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: center;
+    background-color: red;
+}
+
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    max-width: 90%;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content form input {
+    margin-bottom: 10px;
+    padding: 8px;
+}
+
+.modal-content form button {
+    margin-top: 10px;
+}
+/* Styles for Submit and Cancel buttons in the modal */
+/* Styles for Submit and Cancel buttons in the modal */
+.modal .submit-button {
+    background-color: #4CAF50; /* Green */
+    width: 290px; /* Set width to 100px */
+    color: white;
+    padding: 8px ; /* Adjusted padding for a smaller button */
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+}
+
+.submit-button:hover {
+    background-color: #45a049;
+}
+
+.modal .cancel-button {
+    background-color: red;
+    width: 290px; /* Set width to 100px */
+    color: white;
+    padding: 8px ; /* Adjusted padding for a smaller button */
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+}
+
+.cancel-button:hover {
+    background-color: #d32f2f;
+}
+
+.table-wrapper {
+    max-width: 80%;
+    padding: 1rem;
+    overflow-y: scroll;
+    margin-top: 20px;
+    border: 2px red solid   ;
+}
+.table-wrapper tbody{
+    background-color: bisque;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+thead {
+    background-color: #f2f2f2;
+}

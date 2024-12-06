@@ -1,28 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import { useSideSelection } from "../../contexts/SideSelectionContext";
 import "./CustomerView.css";
 
 const SelectSides = () => {
-    const [selectedSides, setSelectedSides] = useState([]);
+    const [sides, setSides] = useState([]);
+    const [localSelectedSide, setLocalSelectedSide] = useState(null);
+    const { setSelectedSide } = useSideSelection();
+    const navigate = useNavigate();
 
-    const sides = ["Chow Mein", "Fried Rice", "White Rice", "Super Greens"];
-    const toggleSide = (side) => {
-        if (selectedSides.includes(side)) {
-            setSelectedSides(selectedSides.filter((s) => s !== side));
-        } else if (selectedSides.length < 2) {
-            setSelectedSides([...selectedSides, side]);
-        }
-    };
+    const API_URL = process.env.REACT_APP_API_URL;
+    //const API_URL = "http://localhost:5555/api";
 
+    useEffect(() => {
+        const fetchSides = async () => {
+            try {
+                const response = await fetch(`${API_URL}/menu-items/sides`);
+                if (!response.ok) throw new Error('Failed to fetch sides.');
+
+                const data = await response.json();
+                setSides([...sides, ...data.filter((item) => item.available).map((item) => item.Name)]);
+            } catch (error) {
+                console.error('Error fetching sides:', error);
+            }
+        };
+
+        fetchSides();
+    }, []);
+    
     const handleAdd = () => {
-        if (selectedSides.length === 0) {
-            alert("Please select at least one side.");
+        if (localSelectedSide) {
+            setSelectedSide(localSelectedSide); // Update the shared state
+            navigate(-1); // Go back to the previous page
         } else {
-            alert(`Added: ${selectedSides.join(", ")}`);
+            alert("Please select a side!");
         }
     };
 
     const handleCancel = () => {
-        setSelectedSides([]);
+        navigate(-1); // Go back to the previous page
     };
 
     return (
@@ -34,10 +50,8 @@ const SelectSides = () => {
                 {sides.map((side) => (
                     <button
                         key={side}
-                        className={`sides-circle ${
-                            selectedSides.includes(side) ? "selected" : ""
-                        }`}
-                        onClick={() => toggleSide(side)}
+                        className={`sides-circle ${localSelectedSide === side ? "selected" : ""}`}
+                        onClick={() => setLocalSelectedSide(side)}
                     >
                         {side}
                     </button>
