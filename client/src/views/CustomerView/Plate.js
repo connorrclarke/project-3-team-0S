@@ -64,8 +64,13 @@ const Plate = ({ dishType = 'Plate' }) => {
   };
 
   // Navigates to entree page
-  const goToEntree = () => {
-    navigate('/entree', { state: { dishType }});
+  const goToEntree1 = () => {
+    navigate('/entree1');
+  };
+
+  // Navigates to entree page
+  const goToEntree2 = () => {
+    navigate('/entree2');
   };
 
 
@@ -84,11 +89,11 @@ const Plate = ({ dishType = 'Plate' }) => {
         </div>
         <div className="category-description">
           <p>Choose your 1st entree:</p>
-          <button onClick={goToEntree} className="entree-circle">{selectedEntree1}</button>
+          <button onClick={goToEntree1} className="entree-circle">{selectedEntree1}</button>
         </div>
         <div className="category-description">
           <p>Choose your 2nd entree:</p>
-          <button onClick={goToEntree} className="entree-circle">{selectedEntree2}</button>
+          <button onClick={goToEntree2} className="entree-circle">{selectedEntree2}</button>
         </div>
       </div>
 

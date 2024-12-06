@@ -45,7 +45,7 @@ const DrinkSelection = () => {
                 entrees: null, // Ensure entrees is null for drinks
             };
             addItem(item);
-            navigate('/customer', { state: { newItem: item } });
+            navigate('/customer');
         } else {
             alert("Please select a drink!");
         }

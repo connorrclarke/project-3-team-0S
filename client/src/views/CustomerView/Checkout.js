@@ -85,17 +85,23 @@ const Checkout = () => {
 
             <div className="checkout-content">
                 {/* Left column for receipt */}
-                <div className="left-section-checkout">
+                <div className="checkout-left-section">
                     <h2>Receipt</h2>
-                    <div className="receipt-customer">
+                    <div className="checkout-receipt-customer">
                         {receipt?.map((item, index) => (
-                            <div key={index} className="receipt-item-checkout">
-                                <span>{item.name}</span>
-                                <span>${item.price.toFixed(2)}</span>
+                            <div key={index} className="checkout-receipt-item-checkout">
+                                <span className="checkout-item-name">{item.name}</span>
+                                <span className="checkout-item-price">${item.price.toFixed(2)}</span>
+
+                                {/* Display sides if available */}
+                                {item.sides && <div className="checkout-item-details">Sides: {item.sides}</div>}
+                                
+                                {/* Display entrees if available */}
+                                {item.entrees && <div className="checkout-item-details">Entrees: {item.entrees}</div>}
                             </div>
                         ))}
                     </div>
-                    <div className="receipt-summary-customer">
+                    <div className="checkout-receipt-summary-customer">
                         <p>Subtotal: ${total.toFixed(2)}</p>
                         <p>Tax: ${taxAmount.toFixed(2)}</p>
                         <p>Total: ${(total + taxAmount).toFixed(2)}</p>
@@ -119,19 +125,8 @@ const Checkout = () => {
                         ))}
                     </div>
                 </div>
-
-                {/* Right column for additional options if needed */}
-                {/* <div className="right-section">
-                    {/* <div className="bottom-middle-buttons">
-                        <button>High Contrast</button>
-                        <button>Google Translate</button>
-                        <button>Zoom In</button>
-                        <button>Zoom Out</button>
-                    </div> 
-                </div> */}
+                
             </div>
-
-            
 
             {/* Bottom buttons for cancel/pay */}
             <div className="bottom-bar">

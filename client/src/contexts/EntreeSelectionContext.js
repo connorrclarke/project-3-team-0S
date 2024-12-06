@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 
+// Create context for entree selections
 const EntreeSelectionContext = createContext();
 
 export const EntreeSelectionProvider = ({ children }) => {
@@ -7,7 +8,7 @@ export const EntreeSelectionProvider = ({ children }) => {
     const [selectedEntree2, setSelectedEntree2] = useState("Entree");
     const [selectedEntree3, setSelectedEntree3] = useState("Entree");
 
-    // Function to reset both entrees to the default value
+    // Function to reset all entrees
     const resetEntreeSelection = () => {
         setSelectedEntree1("Entree");
         setSelectedEntree2("Entree");
@@ -18,12 +19,12 @@ export const EntreeSelectionProvider = ({ children }) => {
         <EntreeSelectionContext.Provider
             value={{
                 selectedEntree1,
-                selectedEntree2,
-                selectedEntree3,
                 setSelectedEntree1,
+                selectedEntree2,
                 setSelectedEntree2,
+                selectedEntree3,
                 setSelectedEntree3,
-                resetEntreeSelection,
+                resetEntreeSelection
             }}
         >
             {children}
@@ -32,3 +33,4 @@ export const EntreeSelectionProvider = ({ children }) => {
 };
 
 export const useEntreeSelection = () => useContext(EntreeSelectionContext);
+

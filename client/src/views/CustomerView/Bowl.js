@@ -69,8 +69,8 @@ const Bowl = ({ dishType = 'Bowl' }) => {
     };
 
     // Navigates to entree page
-    const goToEntree = () => {
-        navigate('/entree', { state: { dishType } });
+    const goToEntree1 = () => {
+        navigate('/entree1');
     };
 
     return (
@@ -88,7 +88,7 @@ const Bowl = ({ dishType = 'Bowl' }) => {
                 </div>
                 <div className="category-description">
                     <p>Choose your entree:</p>
-                    <button onClick={goToEntree} className="entree-circle">
+                    <button onClick={goToEntree1} className="entree-circle">
                         {selectedEntree1}
                         {/* {selectedEntree1 ? selectedEntree1 : "Select Entree"} */}
                     </button>
