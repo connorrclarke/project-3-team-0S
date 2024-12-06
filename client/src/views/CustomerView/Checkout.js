@@ -19,6 +19,8 @@ const Checkout = () => {
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
     const { clearReceipt } = useReceipt(); // Using context for receipt data
 
+    const API_URL = process.env.REACT_APP_API_URL;
+
     // Tax rate and tax calculation
     const taxRate = 0.0825;
     const taxAmount = total * taxRate;
@@ -33,20 +35,42 @@ const Checkout = () => {
 
     /**
      * Handles the "Pay" button click to process the payment.
-     * (Future functionality could include integrating with a payment API.)
      */
-    const handlePay = () => {
+    const handlePay = async () => {
         if (!selectedPaymentMethod) {
             alert("Please select a payment method before proceeding.");
             return;
         }
-        alert(`Payment method selected: ${selectedPaymentMethod}. Your payment has been processed`);
-        // More payment logic here
-
-        // Going back to customer page
-        clearReceipt();
-        navigate('/customer')
-    };
+    
+        try {
+            const response = await fetch(`${API_URL}/order`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ total: (total + taxAmount).toFixed(2), method: selectedPaymentMethod }),
+            });
+    
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || "Order creation failed");
+            }
+    
+            // Update inventory for each receipt item
+            for (const item of receipt) {
+                await fetch(`${API_URL}/updateInventory`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ menuItemName: item.name, quantity: 1 }),
+                });
+            }
+    
+            alert(`Payment successful! Order #${data.orderNumber} confirmed.`);
+            clearReceipt();
+            navigate('/customer');
+        } catch (error) {
+            console.error("Error processing payment:", error);
+            alert(error.message || "Payment failed. Please try again.");
+        }
+    };    
 
     const handleSelectPaymentMethod = (method) => {
         setSelectedPaymentMethod(method);
