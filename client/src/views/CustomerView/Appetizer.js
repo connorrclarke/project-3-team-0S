@@ -32,7 +32,7 @@ const AppetizerSelection = () => {
 
     const handleAdd = () => {
         if (selected) {
-            alert(`You added: ${selected}`);
+            navigate('/customer', { state: { newItem: { name: selected, price: 1.75 } } });
         } else {
             alert("Please select an appetizer!");
         }

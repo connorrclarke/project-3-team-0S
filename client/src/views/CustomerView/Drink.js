@@ -32,7 +32,7 @@ const DrinkSelection = () => {
 
     const handleAdd = () => {
         if (selected) {
-            alert(`You added: ${selected}`);
+            navigate('/customer', { state: { newItem: { name: selected, price: 2.50 } } });
         } else {
             alert("Please select a drink!");
         }
