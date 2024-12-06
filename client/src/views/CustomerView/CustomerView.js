@@ -92,12 +92,7 @@ const CustomerView = () => {
             }
         }
     };
-
-    // // Navigates to employee login page
-    // const goToEmployeeLogin = () => {
-    //     navigate('/login');
-    // };
-
+    
     // Navigates to employee login page
     const handleLoginLogout = () => {
         if (isAuthenticated) {
@@ -112,45 +107,27 @@ const CustomerView = () => {
         if (location.state?.newItem) {
             const { name, price, sides, entrees } = location.state.newItem;
     
-            addItem({
-                name: `${name} - ${sides} & ${entrees}`,
-                price: price,
-                sides,
-                entrees
-            });
-
+            // Check if both sides and entrees are null or undefined
+            if (sides || entrees) {
+                addItem({
+                    name: `${name} - ${sides ? sides : ''} & ${entrees ? entrees : ''}`, // Conditionally add sides and entrees
+                    price: price,
+                    sides,
+                    entrees
+                });
+            } else {
+                // Add the item without sides or entrees if both are null
+                addItem({
+                    name: name,
+                    price: price,
+                    sides: null,
+                    entrees: null
+                });
+            }
+    
             navigate('/customer', { replace: true, state: {} });  // Reset state after handling item
         }
-    }, [location.state, addItem, navigate]);
-
-    // Adding drinks to receipt
-    useEffect(() => {
-        if (location.state?.newDrink) {
-            const { name, price } = location.state.newDrink;
-    
-            addItem({
-                name,
-                price,
-            });
-    
-            navigate('/customer', { replace: true, state: {} }); // Reset state after handling
-        }
-    }, [location.state?.newDrink, addItem, navigate]);
-    
-    // Adding appetizers to receipt
-    useEffect(() => {
-        if (location.state?.newAppetizer) {
-            const { name, price } = location.state.newAppetizer;
-    
-            addItem({
-                name,
-                price,
-            });
-    
-            navigate('/customer', { replace: true, state: {} }); // Reset state after handling
-        }
-    }, [location.state?.newAppetizer, addItem, navigate]);
-    
+    }, [location.state, addItem, navigate]);    
 
     // Inside CustomerView component
     const resetSelections = () => {

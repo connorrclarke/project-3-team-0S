@@ -24,20 +24,20 @@ const Receipt = ({ receipt, applyTax, subtotal, taxAmount, total, onRemove }) =>
             <ul>
                 {receipt.map((item, index) => (
                     <li key={index} className="receipt-item-checkout">
-                        <div className="item-name">
-                            <span>{item.name}</span>
-                            <span className="item-price">${item.price.toFixed(2)}</span>
+                        <div className="item-row">
+                            <span className="item-name">{item.name}</span>
+                            <span className="item-actions">
+                                <span className="item-price">${item.price.toFixed(2)}</span>
+                                <img
+                                    src="/removeItem.svg"
+                                    alt="Remove item"
+                                    className="remove-button"
+                                    onClick={() => onRemove(index)}
+                                />
+                            </span>
                         </div>
-                        <div className="item-details">
-                            <span className="side">{item.sides}</span>
-                            <span className="entree">{item.entrees}</span>
-                        </div>
-                        <img
-                            src="/removeItem.svg"
-                            alt="Remove item"
-                            className="remove-button"
-                            onClick={() => onRemove(index)}
-                        />
+                        {item.sides && <div className="item-details">{item.sides}</div>}
+                        {item.entrees && <div className="item-details">{item.entrees}</div>}
                     </li>
                 ))}
             </ul>

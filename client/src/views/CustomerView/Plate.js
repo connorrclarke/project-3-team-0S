@@ -10,10 +10,16 @@
 import React from 'react';
 import './CustomerView.css';
 import { useNavigate } from 'react-router-dom';
+import { useSideSelection } from "../../contexts/SideSelectionContext";
+import { useEntreeSelection } from "../../contexts/EntreeSelectionContext";
+import { useReceipt } from "../../contexts/ReceiptContext";
 import { useZoom, ZoomProvider } from "./ZoomContext";
 
-const Plate = () => {
+const Plate = ({ dishType = 'Plate' }) => {
   const navigate = useNavigate(); // Hook for navigating between pages
+  const { selectedSide, resetSideSelection} = useSideSelection();
+  const { selectedEntree1, selectedEntree2, resetEntreeSelection } = useEntreeSelection();
+  const { addItem } = useReceipt(); // Access addItem from context
   const { zoomLevel, updateZoomLevel } = useZoom();
 
   const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2));
@@ -25,15 +31,37 @@ const Plate = () => {
    * without saving the current selection.
    */
   const handleCancel = () => {
+    resetSideSelection(); // Reset the side button to "Sides"
+    resetEntreeSelection(); // Reset the entree button to "Entree"
     navigate('/customer'); // Redirecting back to the CustomerView page
   };
 
   /**
    * Handles the "Add" button click by navigating back to the CustomerView page.
-   * (Future functionality could include saving the current selection before navigating.)
    */
   const handleAdd = () => {
-    navigate('/customer'); // Redirecting back to the CustomerView page
+    if (!selectedSide || selectedSide === "Sides") {
+        alert("Please select a side.");
+    }
+    else if (selectedEntree1 === "Entree" || selectedEntree2 === "Entree") {
+      alert("Please select both entrees.");
+    }
+    else {
+        const item = {
+            // name: `Bowl - ${selectedSide} & ${selectedEntree}`,
+            name:`${dishType}`,
+            price: 9.80,
+            sides: selectedSide,
+            // entrees: selectedEntree,
+            entrees: `${selectedEntree1} & ${selectedEntree2}`,
+        };
+        addItem(item);  // Call addItem to add the item to the receipt
+
+        // Reset selections after adding to avoid duplicate bowl add
+        resetSideSelection();
+        resetEntreeSelection();
+        navigate('/customer'); // Redirect to CustomerView
+    }
   };
 
   // Navigates to sides page
@@ -43,7 +71,7 @@ const Plate = () => {
 
   // Navigates to entree page
   const goToEntree = () => {
-    navigate('/entree');
+    navigate('/entree', { state: { dishType }});
   };
 
 
@@ -51,22 +79,22 @@ const Plate = () => {
     <div className="plate-layout">
       {/* Title bar */}
       <div className="title-bar">
-        <h1>Plate</h1>
+        <h1>{dishType}</h1>
       </div>
 
       {/* Middle section with circle buttons */}
       <div className="middle-section">
         <div className="category-description">
           <p>Choose your side:</p>
-          <button onClick={goToSide} className="sides-circle">Sides</button>
+          <button onClick={goToSide} className="sides-circle">{selectedSide}</button>
         </div>
         <div className="category-description">
           <p>Choose your 1st entree:</p>
-          <button onClick={goToEntree} className="entree-circle">Entree</button>
+          <button onClick={goToEntree} className="entree-circle">{selectedEntree1}</button>
         </div>
         <div className="category-description">
           <p>Choose your 2nd entree:</p>
-          <button onClick={goToEntree} className="entree-circle">Entree</button>
+          <button onClick={goToEntree} className="entree-circle">{selectedEntree2}</button>
         </div>
       </div>
 

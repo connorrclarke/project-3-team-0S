@@ -15,10 +15,10 @@ import { useReceipt } from "../../contexts/ReceiptContext";
 import { useZoom, ZoomProvider } from "./ZoomContext";
 import './CustomerView.css';
 
-const Bowl = () => {
+const Bowl = ({ dishType = 'Bowl' }) => {
     const navigate = useNavigate(); // Hook for navigating between pages
     const { selectedSide, resetSideSelection} = useSideSelection();
-    const { selectedEntree, resetEntreeSelection } = useEntreeSelection();
+    const { selectedEntree1, resetEntreeSelection } = useEntreeSelection();
     const { addItem } = useReceipt(); // Access addItem from context
 
     const { zoomLevel, updateZoomLevel } = useZoom();
@@ -39,20 +39,20 @@ const Bowl = () => {
 
     /**
      * Handles the "Add" button click by navigating back to the CustomerView page.
-     * (Future functionality could include saving the current selection before navigating.)
      */
     const handleAdd = () => {
         if (!selectedSide || selectedSide === "Sides") {
             alert("Please select a side.");
-        } else if (!selectedEntree || selectedEntree === "Entree") {
+        } 
+        else if (!selectedEntree1 || selectedEntree1 === "Entree") {
             alert("Please select an entree.");
         } else {
             const item = {
-                // name: `Bowl - ${selectedSide} & ${selectedEntree}`,
-                name:`Bowl`,
-                price: 5.99,
+                // name: `${dishType} - ${selectedSide} & ${selectedEntree1}`,
+                name:`${dishType}`,
+                price: 8.30,
                 sides: selectedSide,
-                entrees: selectedEntree,
+                entrees: selectedEntree1,
             };
             addItem(item);  // Call addItem to add the item to the receipt
 
@@ -70,14 +70,14 @@ const Bowl = () => {
 
     // Navigates to entree page
     const goToEntree = () => {
-        navigate('/entree');
+        navigate('/entree', { state: { dishType } });
     };
 
     return (
         <div className="bowl-layout">
             {/* Title bar */}
             <div className="title-bar">
-                <h1>Bowl</h1>
+                <h1>{dishType}</h1>
             </div>
 
             {/* Middle section with two circle buttons */}
@@ -88,7 +88,10 @@ const Bowl = () => {
                 </div>
                 <div className="category-description">
                     <p>Choose your entree:</p>
-                    <button onClick={goToEntree} className="entree-circle">{selectedEntree}</button>
+                    <button onClick={goToEntree} className="entree-circle">
+                        {selectedEntree1}
+                        {/* {selectedEntree1 ? selectedEntree1 : "Select Entree"} */}
+                    </button>
                 </div>
             </div>
 
