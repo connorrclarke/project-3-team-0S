@@ -191,6 +191,11 @@ const CustomerView = () => {
 
     // Navigates to checkout page, passing the current receipt and total
     const goToCheckout = () => {
+        const subtotal = receipt.reduce((acc, item) => acc + item.price, 0);
+        const taxRate = 0.0825;
+        const taxAmount = subtotal * taxRate;
+        const total = subtotal + taxAmount;
+        
         navigate('/checkout', { state: { receipt, total } });
     };
 

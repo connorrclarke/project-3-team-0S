@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSideSelection } from "../../contexts/SideSelectionContext";
 import { useEntreeSelection } from "../../contexts/EntreeSelectionContext";
 import { useReceipt } from "../../contexts/ReceiptContext";
+import { useZoom, ZoomProvider } from "./ZoomContext";
 import './CustomerView.css';
 
 const Bowl = () => {
@@ -19,6 +20,12 @@ const Bowl = () => {
     const { selectedSide, resetSideSelection} = useSideSelection();
     const { selectedEntree, resetEntreeSelection } = useEntreeSelection();
     const { addItem } = useReceipt(); // Access addItem from context
+
+    const { zoomLevel, updateZoomLevel } = useZoom();
+
+    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2));
+    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));
+    const handleResetZoom = () => updateZoomLevel(1);
 
     /**
      * Handles the "Cancel" button click by navigating back to the CustomerView page
@@ -88,10 +95,19 @@ const Bowl = () => {
             {/* Bottom bar with "Cancel" and "Add" buttons */}
             <div className="bottom-bar">
                 <button onClick={handleCancel} className="cancel-button">Cancel</button>
+                <button onClick={handleZoomIn}>Zoom In</button>
+                <button onClick={handleZoomOut}>Zoom Out</button>
+                <button onClick={handleResetZoom}>Reset Zoom</button>
                 <button onClick={handleAdd} className="add-button" >Add</button>
             </div>
         </div>
     );
 };
 
-export default Bowl;
+const WrappedBowl = () => (
+    <ZoomProvider>
+      <Bowl />
+    </ZoomProvider>
+);
+
+export default WrappedBowl;
