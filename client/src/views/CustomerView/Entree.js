@@ -46,11 +46,16 @@ const EntreeSelection = ({ dishType }) => {
 
     // Update selectEntree to handle all three entrees
     const selectEntree = (entree, index) => {
-        if (index === 1) {
+        if (index === 8) {
             setSelectedEntree1(entree);
-        } else if (index === 4) {
+        }
+        else if (index === 2) {
+            setSelectedEntree1(entree);
+        }
+        else if (index === 3) {
             setSelectedEntree2(entree);
-        } else if (index === 3) {
+        } 
+        else if (index === 3) {
             setSelectedEntree3(entree);
         }
     };
