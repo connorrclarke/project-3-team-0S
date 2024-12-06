@@ -4,12 +4,17 @@ import './CustomerView.css';
 import { useSideSelection } from "../../contexts/SideSelectionContext";
 import { useEntreeSelection } from "../../contexts/EntreeSelectionContext";
 import { useReceipt } from "../../contexts/ReceiptContext";
+import { useZoom, ZoomProvider } from "./ZoomContext";
 
 function Biggerplate({ dishType = 'Bigger Plate' }) {
     const navigate = useNavigate(); // Hook for navigating between pages
     const { selectedSide, resetSideSelection} = useSideSelection();
     const { selectedEntree1, selectedEntree2, selectedEntree3, resetEntreeSelection } = useEntreeSelection();
     const { addItem } = useReceipt(); // Access addItem from context
+    const { zoomLevel, updateZoomLevel } = useZoom();
+    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2));
+    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));
+    const handleResetZoom = () => updateZoomLevel(1);
 
     /**
      * Handles the "Cancel" button click by navigating back to the CustomerView page
@@ -81,6 +86,7 @@ function Biggerplate({ dishType = 'Bigger Plate' }) {
                     <button onClick={goToEntree} className="entree-circle">{selectedEntree2}</button>
                 </div>
 
+
                 <div classNae="category-description">
                     <p>Choose your 3rd entree:</p>
                     <button onClick={goToEntree} className="entree-circle">{selectedEntree3}</button>
@@ -89,10 +95,19 @@ function Biggerplate({ dishType = 'Bigger Plate' }) {
 
             <div className="bottom-bar">
                 <button onClick={handleCancel} className="cancel-button">Cancel</button>
+                <button onClick={handleZoomIn}>Zoom In</button>
+                <button onClick={handleZoomOut}>Zoom Out</button>
+                <button onClick={handleResetZoom}>Reset Zoom</button>
                 <button onClick={handleAdd} className="add-button">Add</button>
             </div>
         </div>
     );
 }
 
-export default Biggerplate;
+const WrappedBiggerplate = () => (
+    <ZoomProvider>
+        <Biggerplate />
+    </ZoomProvider>
+);
+
+export default WrappedBiggerplate;

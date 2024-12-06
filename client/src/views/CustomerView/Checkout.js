@@ -11,6 +11,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import './CustomerView.css';
 import { useReceipt } from '../../contexts/ReceiptContext';
+import { useZoom, ZoomProvider } from "./ZoomContext";
 
 const Checkout = () => {
     const navigate = useNavigate(); // Hook for navigating between pages
@@ -18,6 +19,11 @@ const Checkout = () => {
     const { receipt, total } = location.state || {}; // Get receipt and total from state
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
     const { clearReceipt } = useReceipt(); // Using context for receipt data
+    const { zoomLevel, updateZoomLevel } = useZoom();
+
+    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2));
+    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));
+    const handleResetZoom = () => updateZoomLevel(1);
 
     const API_URL = process.env.REACT_APP_API_URL;
 
@@ -136,10 +142,19 @@ const Checkout = () => {
             {/* Bottom buttons for cancel/pay */}
             <div className="bottom-bar">
                 <button className="cancel-button" onClick={handleCancel}>Cancel</button>
+                <button onClick={handleZoomIn}>Zoom In</button>
+                <button onClick={handleZoomOut}>Zoom Out</button>
+                <button onClick={handleResetZoom}>Reset Zoom</button>
                 <button className="pay-button" onClick={handlePay}>Pay</button>
             </div>
         </div>
     );
 };
 
-export default Checkout;
+const WrappedCheckout = () => (
+    <ZoomProvider>
+        <Checkout />
+    </ZoomProvider>
+);
+
+export default WrappedCheckout;
