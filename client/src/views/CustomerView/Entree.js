@@ -14,13 +14,12 @@ const importAll = (requireContext) => {
 
 const images = importAll(require.context("./Pictures", false, /\.(png|jpe?g|gif)$/));
 
-const EntreeSelection = () => {
+const EntreeSelection = ({ dishType }) => {
     const navigate = useNavigate();
     const [entrees, setEntrees] = useState([]);
-    const { selectedEntree, setSelectedEntree } = useEntreeSelection();
+    const { selectedEntree1, selectedEntree2, selectedEntree3, setSelectedEntree1, setSelectedEntree2, setSelectedEntree3 } = useEntreeSelection();
 
     const API_URL = process.env.REACT_APP_API_URL;
-    //const API_URL = "http://localhost:5555/api";
 
     useEffect(() => {
         const fetchEntrees = async () => {
@@ -29,55 +28,58 @@ const EntreeSelection = () => {
                 if (!response.ok) throw new Error('Failed to fetch entrees.');
 
                 const data = await response.json();
-                setEntrees([...entrees, ...data.filter((item) => item.available).map((item) => item.Name)]);
+                setEntrees(data.filter((item) => item.available).map((item) => item.Name));
             } catch (error) {
                 console.error('Error fetching entrees:', error);
             }
         };
 
         fetchEntrees();
-    }, []);
+    }, [API_URL]);
 
-    // Select one entree and update the selection
-    const selectEntree = (entree) => {
-        setSelectedEntree([entree]); // Only allow one entree at a time
-    };
-
-    // Add selected entrees and navigate back
-    const handleAdd = () => {
-        if (selectedEntree.length === 0) {
-            alert("Please select at least one entree.");
-        } else {
-            navigate(-1); // Go back to the Bowl page
+    // Update selectEntree to handle all three entrees
+    const selectEntree = (entree, index) => {
+        if (index === 1) {
+            setSelectedEntree1(entree);
+        } else if (index === 2) {
+            setSelectedEntree2(entree);
+        } else if (index === 3) {
+            setSelectedEntree3(entree);
         }
     };
-    
+
+    const handleAdd = () => {
+        // Adjust validation based on the dishType (Bowl, Plate, Bigger Plate)
+        if (dishType === "Bowl" && !selectedEntree1) {
+            alert("Please select one entree.");
+        } else if (dishType === "Plate" && (!selectedEntree1 || !selectedEntree2)) {
+            alert("Please select two entrees.");
+        } else if (dishType === "Bigger Plate" && (!selectedEntree1 || !selectedEntree2 || !selectedEntree3)) {
+            alert("Please select three entrees.");
+        } else {
+            navigate(-1); 
+        }
+    };
+
     const handleCancel = () => {
         navigate(-1); // Go back to the previous page
     };
-    
 
     return (
         <div className="plate-layout">
             <div className="title-bar">
-                <h2>Select an Entree</h2>
+                <h2>Select Your Entrees</h2>
             </div>
             <div className="button-container">
                 {entrees.map((entree, index) => (
-                    <button
-                        style={{
-                            backgroundImage: `url(${images[entree]})`,
-                        }}
-                        key={index}
-                        className={`entree-circle ${
-                            selectedEntree.includes(entree) ? "selected" : ""
-                        }`}
-                        onClick={() => selectEntree(entree)}
-                    >
-                        {entree}
-                    </button>
-
-
+                    <div key={index}>
+                        <button
+                            className={`entree-circle ${[selectedEntree1, selectedEntree2, selectedEntree3].includes(entree) ? "selected" : ""}`}
+                            onClick={() => selectEntree(entree, index + 1)} // Passing the index (1, 2, or 3)
+                        >
+                            {entree}
+                        </button>
+                    </div>
                 ))}
             </div>
             <div className="bottom-bar">
@@ -89,3 +91,6 @@ const EntreeSelection = () => {
 };
 
 export default EntreeSelection;
+
+
+

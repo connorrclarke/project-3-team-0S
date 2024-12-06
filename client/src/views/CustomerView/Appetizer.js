@@ -15,19 +15,19 @@ const AppetizerSelection = () => {
             try {
                 const response = await fetch(`${API_URL}/menu-items/appetizers`);
                 if (!response.ok) throw new Error('Failed to fetch appetizers.');
-
+    
                 const data = await response.json();
-                setAppetizers([...appetizers, ...data.filter((item) => item.available).map((item) => item.Name)]);
+                setAppetizers(data.filter((item) => item.available).map((item) => item.Name));
             } catch (error) {
                 console.error('Error fetching appetizers:', error);
             }
         };
-
+    
         fetchAppetizers();
-    }, []);
+    }, []);    
 
     const handleSelect = (appetizer) => {
-        setSelected(appetizer);
+        if (appetizer) setSelected(appetizer);
     };
 
     const handleAdd = () => {

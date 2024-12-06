@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./CustomerView.css";
+import { useReceipt } from "../../contexts/ReceiptContext";
 
 const DrinkSelection = () => {
     const [selected, setSelected] = useState("");
     const [drinks, setDrinks] = useState([]);
     const navigate = useNavigate();
+    const { addItem } = useReceipt(); // Access addItem from context
 
     const API_URL = process.env.REACT_APP_API_URL;
     // const API_URL = "http://localhost:5555/api";
@@ -17,7 +19,11 @@ const DrinkSelection = () => {
                 if (!response.ok) throw new Error('Failed to fetch drinks.');
 
                 const data = await response.json();
-                setDrinks([...drinks, ...data.filter((item) => item.available).map((item) => item.Name)]);
+                setDrinks(data.filter((item) => item.available).map((item) => ({
+                    name: item.Name,
+                    price: item.Price || 2.50, // Use fetched price or default
+                    size: item.Size || "Regular", // Example of additional detail
+                })));
             } catch (error) {
                 console.error('Error fetching drinks:', error);
             }
@@ -32,7 +38,14 @@ const DrinkSelection = () => {
 
     const handleAdd = () => {
         if (selected) {
-            navigate('/customer', { state: { newItem: { name: selected, price: 2.50 } } });
+            const item = {
+                name: selected.name,
+                price: selected.price,
+                sides: null,   // Ensure sides is null for drinks
+                entrees: null, // Ensure entrees is null for drinks
+            };
+            addItem(item);
+            navigate('/customer', { state: { newItem: item } });
         } else {
             alert("Please select a drink!");
         }
@@ -60,7 +73,7 @@ const DrinkSelection = () => {
                         }`}
                         onClick={() => handleSelect(item)}
                     >
-                        {item}
+                        {item.name}
                     </button>
                 ))}
             </div>

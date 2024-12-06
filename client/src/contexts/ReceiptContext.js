@@ -14,7 +14,14 @@ export const ReceiptProvider = ({ children }) => {
 
     // Function to add an item to the receipt
     const addItem = (newItem) => {
-        setReceipt((prevReceipt) => [...prevReceipt, newItem]);
+        // setReceipt((prevReceipt) => [...prevReceipt, newItem]);
+        setReceipt((prevReceipt) => {
+            // Prevent adding duplicate items
+            if (prevReceipt.some(item => item.name === newItem.name)) {
+                return prevReceipt; // Don't add the item again
+            }
+            return [...prevReceipt, newItem];
+        });
     };
 
     // Function to remove an item from the receipt by its index
