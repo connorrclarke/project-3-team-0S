@@ -101,7 +101,7 @@ const CustomerView = () => {
         }
     };
 
-    // Adding item to receipt
+    // Adding bowl, plate, bigger plate to receipt
     useEffect(() => {
         if (location.state?.newItem) {
             const { name, price, sides, entrees } = location.state.newItem;
@@ -116,6 +116,35 @@ const CustomerView = () => {
             navigate('/customer', { replace: true, state: {} });  // Reset state after handling item
         }
     }, [location.state, addItem, navigate]);
+
+    // Adding drinks to receipt
+    useEffect(() => {
+        if (location.state?.newDrink) {
+            const { name, price } = location.state.newDrink;
+    
+            addItem({
+                name,
+                price,
+            });
+    
+            navigate('/customer', { replace: true, state: {} }); // Reset state after handling
+        }
+    }, [location.state?.newDrink, addItem, navigate]);
+    
+    // Adding appetizers to receipt
+    useEffect(() => {
+        if (location.state?.newAppetizer) {
+            const { name, price } = location.state.newAppetizer;
+    
+            addItem({
+                name,
+                price,
+            });
+    
+            navigate('/customer', { replace: true, state: {} }); // Reset state after handling
+        }
+    }, [location.state?.newAppetizer, addItem, navigate]);
+    
 
     // Inside CustomerView component
     const resetSelections = () => {
@@ -199,7 +228,11 @@ const CustomerView = () => {
                         taxAmount={taxAmount}
                         total={total}
                     />
-                    <button className="checkout-button" onClick={goToCheckout}>
+                    <button
+                        className={`checkout-button ${receipt.length === 0 ? 'disabled' : ''}`} 
+                        onClick={goToCheckout} 
+                        disabled={receipt.length === 0}
+                    >
                         Checkout
                     </button>
                 </div>
