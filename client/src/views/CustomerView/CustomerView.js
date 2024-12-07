@@ -16,6 +16,7 @@ import { useReceipt } from '../../contexts/ReceiptContext';
 import { useAuth0 } from '@auth0/auth0-react';
 import './CustomerView.css';
 import Receipt from './ReceiptKiosk';
+import { useZoom, ZoomProvider } from "./ZoomContext";
 
 // API details for fetching weather information
 const api = {
@@ -25,6 +26,11 @@ const api = {
 
 const CustomerView = () => {
     const navigate = useNavigate(); // Hook for programmatic navigation
+    const { zoomLevel, updateZoomLevel } = useZoom();
+
+    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2));
+    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));
+    const handleResetZoom = () => updateZoomLevel(1);
     const { isAuthenticated, loginWithRedirect, logout } = useAuth0(); // Auth0 hooks
     const translateButtonRef = useRef(null); // Ref for Google Translate button
     const [weather, setWeather] = useState({}); // State for storing weather data
@@ -234,11 +240,18 @@ const CustomerView = () => {
                 <button ref={translateButtonRef} onClick={translatePage} className="translate-button">
                     Google Translate
                 </button>
-                <button>Zoom In</button>
-                <button>Zoom Out</button>
+                <button onClick={handleZoomIn}>Zoom In</button>
+                <button onClick={handleZoomOut}>Zoom Out</button>
+                <button onClick={handleResetZoom}>Reset Zoom</button>
             </div>
         </div>
     );
 };
 
-export default CustomerView;
+const WrappedCustomerView = () => (
+    <ZoomProvider>
+        <CustomerView />
+    </ZoomProvider>
+);
+
+export default WrappedCustomerView;

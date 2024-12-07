@@ -2,12 +2,19 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./CustomerView.css";
 import { useReceipt } from "../../contexts/ReceiptContext";
+import { useZoom, ZoomProvider } from "./ZoomContext";
+import Drink from "./Drink";
 
 const DrinkSelection = () => {
     const [selected, setSelected] = useState("");
     const [drinks, setDrinks] = useState([]);
     const navigate = useNavigate();
     const { addItem } = useReceipt(); // Access addItem from context
+    const { zoomLevel, updateZoomLevel } = useZoom();
+
+    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2));
+    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));
+    const handleResetZoom = () => updateZoomLevel(1);
 
     const API_URL = process.env.REACT_APP_API_URL;
     // const API_URL = "http://localhost:5555/api";
@@ -81,6 +88,9 @@ const DrinkSelection = () => {
                 <button className="cancel-button" onClick={handleCancel}>
                     Cancel
                 </button>
+                <button onClick={handleZoomIn}>Zoom In</button>
+                <button onClick={handleZoomOut}>Zoom Out</button>
+                <button onClick={handleResetZoom}>Reset Zoom</button>
                 <button className="add-button" onClick={handleAdd}>
                     Add
                 </button>
@@ -89,4 +99,10 @@ const DrinkSelection = () => {
     );
 };
 
-export default DrinkSelection;
+const WrappedDrinkSelection = () => (
+    <ZoomProvider>
+        <DrinkSelection />
+    </ZoomProvider>
+);
+
+export default WrappedDrinkSelection;
