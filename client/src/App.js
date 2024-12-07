@@ -16,7 +16,9 @@ import Checkout from './views/CustomerView/Checkout';
 import Drink from "./views/CustomerView/Drink";
 import Appetizer from "./views/CustomerView/Appetizer";
 import BiggerPlate from "./views/CustomerView/Biggerplate";
-import Entree from "./views/CustomerView/Entree";
+import Entree1 from "./views/CustomerView/Entree1";
+import Entree2 from "./views/CustomerView/Entree2";
+import Entree3 from "./views/CustomerView/Entree3";
 import Side from "./views/CustomerView/Side";
 import Alacarte from "./views/CustomerView/Alacarte";
 
@@ -42,7 +44,9 @@ function App() {
         <Route path="/drinks" element={<Drink />} />
         <Route path="/appetizers" element={<Appetizer />} />
         <Route path="/bigger-plate" element={<BiggerPlate />} />
-        <Route path="/entree" element={<Entree />} />
+        <Route path="/entree1" element={<Entree1 />} />
+        <Route path="/entree2" element={<Entree2 />} />
+        <Route path="/entree3" element={<Entree3 />} />
         <Route path="/sides" element={<Side />} />
         <Route path="/alacarte" element={<Alacarte />} />
       </Routes>

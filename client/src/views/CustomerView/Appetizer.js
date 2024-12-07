@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import "./CustomerView.css";
 import {useZoom, ZoomProvider} from "./ZoomContext";
 import Appetizer from "./Appetizer";
+import { useReceipt } from "../../contexts/ReceiptContext";
 
 const AppetizerSelection = () => {
-    const [selected, setSelected] = useState("");
+    const [selected, setSelected] = useState(null);
     const [appetizers, setAppetizers] = useState([]);
     const navigate = useNavigate();
     const { zoomLevel, updateZoomLevel } = useZoom();
@@ -13,7 +14,8 @@ const AppetizerSelection = () => {
     const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2));
     const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));
     const handleResetZoom = () => updateZoomLevel(1);
-    
+    const { addItem } = useReceipt();
+
     const API_URL = process.env.REACT_APP_API_URL;
     // const API_URL = "http://localhost:5555/api";
 
@@ -22,24 +24,35 @@ const AppetizerSelection = () => {
             try {
                 const response = await fetch(`${API_URL}/menu-items/appetizers`);
                 if (!response.ok) throw new Error('Failed to fetch appetizers.');
-    
+
                 const data = await response.json();
-                setAppetizers(data.filter((item) => item.available).map((item) => item.Name));
+                setAppetizers(data.filter((item) => item.available).map((item) => ({
+                    name: item.Name,
+                    price: item.Price || 1.75,  // Default price if not specified
+                })));
             } catch (error) {
                 console.error('Error fetching appetizers:', error);
             }
         };
-    
+
         fetchAppetizers();
-    }, []);    
+    }, []);
 
     const handleSelect = (appetizer) => {
-        if (appetizer) setSelected(appetizer);
+        setSelected(appetizer);
     };
 
     const handleAdd = () => {
         if (selected) {
-            navigate('/customer', { state: { newItem: { name: selected, price: 1.75 } } });
+            // Check if the item is already in the receipt before adding it
+            const item = {
+                name: selected.name,
+                price: selected.price,
+                sides: null,  // Ensure sides is null for appetizers
+                entrees: null, // Ensure entrees is null for appetizers
+            };
+            addItem(item);
+            navigate('/customer');
         } else {
             alert("Please select an appetizer!");
         }
@@ -61,13 +74,11 @@ const AppetizerSelection = () => {
             <div className="button-container">
                 {appetizers.map((item) => (
                     <button
-                        key={item}
-                        className={`sides-circle ${
-                            selected === item ? "selected" : ""
-                        }`}
+                        key={item.name}
+                        className={`sides-circle ${selected && selected.name === item.name ? "selected" : ""}`}
                         onClick={() => handleSelect(item)}
                     >
-                        {item}
+                        {item.name}
                     </button>
                 ))}
             </div>
