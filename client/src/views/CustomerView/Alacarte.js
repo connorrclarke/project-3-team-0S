@@ -1,20 +1,34 @@
+/**
+ * Alacarte Component
+ *
+ * This component allows customers to select individual sides or entrees from the menu
+ * and add them to the receipt. Each item is added separately, and the component integrates
+ * with a shared receipt context for tracking orders. 
+ * 
+ * @author Siddhi Mittal
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useReceipt } from '../../contexts/ReceiptContext'; // Import the custom hook
 import './CustomerView.css';
 
 const Alacarte = () => {
-    const navigate = useNavigate();
-    const { addItem } = useReceipt();  // Access addItem from ReceiptContext
-    const [sides, setSides] = useState([]);
-    const [entrees, setEntrees] = useState([]);
+    const navigate = useNavigate(); // Hook for navigating between pages
+    const { addItem } = useReceipt(); // Access addItem from ReceiptContext for adding items to the receipt
+    const [sides, setSides] = useState([]); // State to store available sides
+    const [entrees, setEntrees] = useState([]); // State to store available entrees
     const [selectedItem, setSelectedItem] = useState(null);  // Track the selected item (side or entree)
-    const [itemType, setItemType] = useState(null);  // To differentiate side vs entree
-    const [price, setPrice] = useState(0);  // Price based on selected item
-    const [selectedButton, setSelectedButton] = useState(null); // Track selected button for styling
+    const [itemType, setItemType] = useState(null); // Tracks the type of the selected item (either "side" or "entree")
+    const [price, setPrice] = useState(0); // Stores the price of the selected item
+    const [selectedButton, setSelectedButton] = useState(null); // Tracks the currently selected button for styling purposes
 
-    const API_URL = process.env.REACT_APP_API_URL;
+    const API_URL = process.env.REACT_APP_API_URL; // Base API URL from environment variables
 
+    /**
+     * useEffect to fetch menu items (sides and entrees) from the API on component mount.
+     * Filters the fetched data to include only available items.
+     */
     useEffect(() => {
         const fetchMenuItems = async () => {
             try {
@@ -36,8 +50,16 @@ const Alacarte = () => {
         fetchMenuItems();
     }, []);
 
+    /**
+     * Handles the "Cancel" button click by navigating back to the CustomerView page
+     * without saving the current selection.
+     */
     const handleCancel = () => navigate('/customer');
 
+    /**
+     * Handles the "Add" button click to add the selected item to the receipt.
+     * Ensures an item is selected before adding it and resets state after adding.
+     */
     const handleAdd = () => {
         if (!selectedItem) {
             alert("Please select a side or an entree");
@@ -63,6 +85,10 @@ const Alacarte = () => {
         navigate('/customer');  // Redirect to CustomerView
     };
 
+    /**
+     * Handles the selection of a menu item (side or entree).
+     * Updates the state with the selected item's details.
+     */
     const handleItemSelect = (item, type, price, buttonType) => {
         setSelectedItem(item);  // Set selected item (side or entree)
         setItemType(type);  // Set item type (either "side" or "entree")

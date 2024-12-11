@@ -5,8 +5,9 @@
  * It allows users to select sides and entrees for their bowl and provides options
  * to either add the selection to their order or cancel and return to the main view.
  *
- * @author Siddhi Mittal
+ * @author Siddhi Mittal and Meenalika Singh
  */
+
 import React from "react";
 import { useNavigate } from 'react-router-dom';
 import { useSideSelection } from "../../contexts/SideSelectionContext";
@@ -17,15 +18,14 @@ import './CustomerView.css';
 
 const Bowl = ({ dishType = 'Bowl' }) => {
     const navigate = useNavigate(); // Hook for navigating between pages
-    const { selectedSide, resetSideSelection} = useSideSelection();
-    const { selectedEntree1, resetEntreeSelection } = useEntreeSelection();
+    const { selectedSide, resetSideSelection} = useSideSelection();  // Using context for sides reset and selection
+    const { selectedEntree1, resetEntreeSelection } = useEntreeSelection(); // Using context for entrees reset and selection
     const { addItem } = useReceipt(); // Access addItem from context
-
-    const { zoomLevel, updateZoomLevel } = useZoom();
-
-    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2));
-    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));
-    const handleResetZoom = () => updateZoomLevel(1);
+    
+    const { zoomLevel, updateZoomLevel } = useZoom(); // Access zoom level and update functions from context
+    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2)); // Handles zoom in functionality with a maximum zoom level of 2
+    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5)); // Handles zoom out functionality with a minimum zoom level of 0.5
+    const handleResetZoom = () => updateZoomLevel(1); // Resets zoom to the default level (1)
 
     /**
      * Handles the "Cancel" button click by navigating back to the CustomerView page
@@ -48,7 +48,6 @@ const Bowl = ({ dishType = 'Bowl' }) => {
             alert("Please select an entree.");
         } else {
             const item = {
-                // name: `${dishType} - ${selectedSide} & ${selectedEntree1}`,
                 name:`${dishType}`,
                 price: 8.30,
                 sides: selectedSide,
@@ -88,10 +87,7 @@ const Bowl = ({ dishType = 'Bowl' }) => {
                 </div>
                 <div className="category-description">
                     <p>Choose your entree:</p>
-                    <button onClick={goToEntree1} className="entree-circle">
-                        {selectedEntree1}
-                        {/* {selectedEntree1 ? selectedEntree1 : "Select Entree"} */}
-                    </button>
+                    <button onClick={goToEntree1} className="entree-circle">{selectedEntree1}</button>
                 </div>
             </div>
 
@@ -107,6 +103,7 @@ const Bowl = ({ dishType = 'Bowl' }) => {
     );
 };
 
+// Wraps the Bowl component with the ZoomProvider for zoom context
 const WrappedBowl = () => (
     <ZoomProvider>
       <Bowl />

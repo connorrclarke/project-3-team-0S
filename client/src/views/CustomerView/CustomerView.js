@@ -4,10 +4,11 @@
  * This component provides the user interface for the customer-facing view of the POS system.
  * It allows customers to interact with menu categories, view their receipt, and proceed to checkout.
  * Additionally, it displays real-time weather information and includes accessibility features like
- * Google Translate integration and high-contrast mode.
+ * Google Translate integration, Zoom In/Out, and high-contrast mode.
  *
- * @author Siddhi Mittal
+ * @author Siddhi Mittal, Connor Clarke, Luke Lopez, and Meenalika Singh
  */
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSideSelection } from "../../contexts/SideSelectionContext";
@@ -25,27 +26,25 @@ const api = {
 };
 
 const CustomerView = () => {
-    const navigate = useNavigate(); // Hook for programmatic navigation
-    const { zoomLevel, updateZoomLevel } = useZoom();
-
-    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2));
-    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));
-    const handleResetZoom = () => updateZoomLevel(1);
+    const navigate = useNavigate(); // Hook for navigation
     const { isAuthenticated, loginWithRedirect, logout } = useAuth0(); // Auth0 hooks
     const translateButtonRef = useRef(null); // Ref for Google Translate button
     const [weather, setWeather] = useState({}); // State for storing weather data
     const [highContrast, setHighContrast] = useState(false);
     const { addItem, removeItem, receipt } = useReceipt(); // Using context for receipt data
     const applyTax = true; // Flag to indicate if tax should be applied
-    const { resetSideSelection} = useSideSelection();
-    const { resetEntreeSelection } = useEntreeSelection();
+    const { resetSideSelection} = useSideSelection(); // Using context for sides reset
+    const { resetEntreeSelection } = useEntreeSelection(); // Using context for entrees reset
+
+    const { zoomLevel, updateZoomLevel } = useZoom(); // Access zoom level and update functions from context
+    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2)); // Handles zoom in functionality with a maximum zoom level of 2
+    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5)); // Handles zoom out functionality with a minimum zoom level of 0.5
+    const handleResetZoom = () => updateZoomLevel(1); // Resets zoom to the default level (1)
 
     // Fetching passed state (side and entree selections)
     const location = useLocation();
-    // const { selectedSide, selectedEntree } = location.state || {}; // Access the passed state
 
     // Calculate receipt totals
-
     const subtotal = receipt.reduce((acc, item) => acc + item.price, 0);
     const taxRate = 0.0825;
     const taxAmount = applyTax ? subtotal * taxRate : 0;
@@ -63,7 +62,8 @@ const CustomerView = () => {
             })
             .catch((error) => console.error('Error fetching weather data:', error));
     }, []);
-    
+
+    //setting high contrast toggle
     const funtionTest = () => {
         setHighContrast(!highContrast);
     };
@@ -145,28 +145,25 @@ const CustomerView = () => {
     const goToPlatePage = () => {
         resetSelections();
         navigate('/plate');
-        const Item = { name: 'Plate', price: 7.99 };
     };
 
     // Navigates to bigger plate menu page
     const goToBiggerPlatePage = () => {
         resetSelections();
         navigate('/bigger-plate');
-        const Item = { name: 'Bigger Plate', price: 9.99 };
     };
 
     // Navigates to appetizer menu page
     const goToAppetizersPage = () => {
         navigate('/appetizers');
-        const Item = { name: 'Appetizer', price: 3.99 };
     };
 
     // Navigates to drinks menu page
     const goToDrinksPage = () => {
         navigate('/drinks');
-        const Item = { name: 'Drink', price: 2.99 };
     };
     
+    // Navigates to a la carte menu page
     const goToAlacartePage = () => {
         resetSelections();
         navigate('/alacarte');
@@ -188,8 +185,6 @@ const CustomerView = () => {
     * @param {number} index - The index of the item to remove.
     */
     const removeItemFromReceipt = (index) => {
-        // const updatedReceipt = receipt.filter((_, i) => i !== index);
-        // setReceipt(updatedReceipt);
         removeItem(index)
     };
 
@@ -248,6 +243,7 @@ const CustomerView = () => {
     );
 };
 
+// Wraps the CustomerView component with the ZoomProvider for zoom context
 const WrappedCustomerView = () => (
     <ZoomProvider>
         <CustomerView />
