@@ -5,8 +5,9 @@
  * It allows users to select sides, entrees, and drinks for their plate and provides 
  * options to either add the selection to their order or cancel and return to the main view.
  *
- * @author Siddhi Mittal
+ * @author Siddhi Mittal and Meenalika Singh
  */
+
 import React from 'react';
 import './CustomerView.css';
 import { useNavigate } from 'react-router-dom';
@@ -17,14 +18,14 @@ import { useZoom, ZoomProvider } from "./ZoomContext";
 
 const Plate = ({ dishType = 'Plate' }) => {
   const navigate = useNavigate(); // Hook for navigating between pages
-  const { selectedSide, resetSideSelection} = useSideSelection();
-  const { selectedEntree1, selectedEntree2, resetEntreeSelection } = useEntreeSelection();
+  const { selectedSide, resetSideSelection} = useSideSelection();  // Using context for sides reset and selection
+  const { selectedEntree1, selectedEntree2, resetEntreeSelection } = useEntreeSelection();  // Using context for entrees reset and selection
   const { addItem } = useReceipt(); // Access addItem from context
-  const { zoomLevel, updateZoomLevel } = useZoom();
-
-  const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2));
-  const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));
-  const handleResetZoom = () => updateZoomLevel(1);
+  
+  const { zoomLevel, updateZoomLevel } = useZoom(); // Access zoom level and update functions from context
+  const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2)); // Handles zoom in functionality with a maximum zoom level of 2
+  const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5)); // Handles zoom out functionality with a minimum zoom level of 0.5
+  const handleResetZoom = () => updateZoomLevel(1); // Resets zoom to the default level (1)
 
   /**
    * Handles the "Cancel" button click by navigating back to the CustomerView page
@@ -48,11 +49,9 @@ const Plate = ({ dishType = 'Plate' }) => {
     }
     else {
         const item = {
-            // name: `Bowl - ${selectedSide} & ${selectedEntree}`,
             name:`${dishType}`,
             price: 9.80,
             sides: selectedSide,
-            // entrees: selectedEntree,
             entrees: `${selectedEntree1} & ${selectedEntree2}`,
         };
         addItem(item);  // Call addItem to add the item to the receipt
@@ -69,12 +68,12 @@ const Plate = ({ dishType = 'Plate' }) => {
     navigate('/sides');
   };
 
-  // Navigates to entree page
+  // Navigates to first entree page
   const goToEntree1 = () => {
     navigate('/entree1');
   };
 
-  // Navigates to entree page
+  // Navigates to the second entree page
   const goToEntree2 = () => {
     navigate('/entree2');
   };
@@ -115,6 +114,7 @@ const Plate = ({ dishType = 'Plate' }) => {
   );
 };
 
+// Wraps the Plate component with the ZoomProvider for zoom context
 const WrappedPlate = () => (
     <ZoomProvider>
       <Plate />

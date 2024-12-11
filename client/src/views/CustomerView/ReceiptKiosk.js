@@ -21,6 +21,8 @@ const Receipt = ({ receipt, applyTax, subtotal, taxAmount, total, onRemove }) =>
     return (
         <div className="receipt-customer">
             <h2>Receipt</h2>
+
+            {/* List of purchased items */}
             <ul>
                 {receipt.map((item, index) => (
                     <li key={index} className="receipt-item-checkout">
@@ -40,6 +42,8 @@ const Receipt = ({ receipt, applyTax, subtotal, taxAmount, total, onRemove }) =>
                     </li>
                 ))}
             </ul>
+            
+            {/* Summary section displaying subtotal, tax, and total */}
             <div className="receipt-summary-customer">
                 <p>Subtotal: ${subtotal.toFixed(2)}</p>
                 {applyTax && <p>Tax (8.25%): ${taxAmount.toFixed(2)}</p>}

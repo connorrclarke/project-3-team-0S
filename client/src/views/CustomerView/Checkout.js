@@ -19,13 +19,13 @@ const Checkout = () => {
     const { receipt, total } = location.state || {}; // Get receipt and total from state
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
     const { clearReceipt } = useReceipt(); // Using context for receipt data
-    const { zoomLevel, updateZoomLevel } = useZoom();
 
-    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2));
-    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));
-    const handleResetZoom = () => updateZoomLevel(1);
+    const { zoomLevel, updateZoomLevel } = useZoom(); // Access zoom level and update functions from context
+    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2)); // Handles zoom in functionality with a maximum zoom level of 2
+    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));// Handles zoom out functionality with a minimum zoom level of 0.5
+    const handleResetZoom = () => updateZoomLevel(1); // Resets zoom to the default level (1)
 
-    const API_URL = process.env.REACT_APP_API_URL;
+    const API_URL = process.env.REACT_APP_API_URL; // Base API URL from enviroment variables
 
     // Tax rate and tax calculation
     const taxRate = 0.0825;
@@ -70,7 +70,7 @@ const Checkout = () => {
             }
     
             alert(`Payment successful! Order #${data.orderNumber} confirmed.`);
-            clearReceipt();
+            clearReceipt(); // Clear the receipt after a successful payment
             navigate('/customer');
         } catch (error) {
             console.error("Error processing payment:", error);
@@ -146,6 +146,7 @@ const Checkout = () => {
     );
 };
 
+// Wraps the Checkout component with the ZoomProvider for zoom context
 const WrappedCheckout = () => (
     <ZoomProvider>
         <Checkout />

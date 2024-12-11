@@ -1,8 +1,25 @@
+/**
+ * Entree3Selection Component
+ *
+ * This component allows users to select their third entree from the list of available options.
+ * It fetches entree data from the API, displays the options, and provides buttons to either 
+ * confirm the selection or cancel and return to the previous page.
+ *
+ * @author Siddhi Mittal and Meenalika Singh
+ */
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEntreeSelection } from "../../contexts/EntreeSelectionContext"; // Use the entree context
+import { useEntreeSelection } from "../../contexts/EntreeSelectionContext"; 
 import "./CustomerView.css";
 
+/**
+ * Utility function to dynamically import all images from the specified directory.
+ * The function maps image filenames to their respective paths for easy referencing.
+ *
+ * @param {Object} requireContext - The context created by Webpack's `require.context`.
+ * @returns {Object} - An object mapping filenames to image paths.
+ */
 const importAll = (requireContext) => {
     const images = {};
     requireContext.keys().forEach((key) => {
@@ -12,15 +29,24 @@ const importAll = (requireContext) => {
     return images;
 };
 
+// Dynamically import all images from the "Pictures" folder
 const images = importAll(require.context("./Pictures", false, /\.(png|jpe?g|gif)$/));
 
+/**
+ * Entree3Selection component handles the selection of the third entree.
+ * It fetches available entrees from the API and provides navigation options.
+ */
 const Entree3Selection = () => {
-    const navigate = useNavigate();
-    const [entrees, setEntrees] = useState([]);
-    const { selectedEntree3, setSelectedEntree3 } = useEntreeSelection(); // Access selected entree3
+    const navigate = useNavigate(); // Hook for navigating between pages
+    const [entrees, setEntrees] = useState([]); // State to store available entrees
+    const { selectedEntree3, setSelectedEntree3 } = useEntreeSelection(); // Context for managing the third entree selection
 
-    const API_URL = process.env.REACT_APP_API_URL;
+    const API_URL = process.env.REACT_APP_API_URL; // Base API URL from environment variables
 
+    /**
+    * useEffect to fetch entree data from the API on component mount.
+    * Filters the data to include only available entrees.
+    */
     useEffect(() => {
         const fetchEntrees = async () => {
             try {
@@ -37,16 +63,25 @@ const Entree3Selection = () => {
         fetchEntrees();
     }, [API_URL]);
 
+    /**
+     * Handles the "Add" button click.
+     * Navigates back to the previous page if an entree is selected,
+     * otherwise prompts the user to select an entree.
+     */
     const handleAdd = () => {
         if (selectedEntree3) {
-            navigate(-1); // Go to confirmation page or finalize
+            navigate(-1);
         } else {
             alert("Please select your third entree.");
         }
     };
 
+    /**
+     * Handles the "Cancel" button click.
+     * Navigates back to the previous page without saving any selection.
+     */
     const handleCancel = () => {
-        navigate(-1); // Go back to previous page
+        navigate(-1);
     };
 
     return (
@@ -59,7 +94,7 @@ const Entree3Selection = () => {
                     <button
                         key={entree}
                         className={`entree-circle ${selectedEntree3 === entree ? "selected" : ""}`}
-                        onClick={() => setSelectedEntree3(entree)} // Set the entree3
+                        onClick={() => setSelectedEntree3(entree)} 
                     >
                         {entree}
                     </button>

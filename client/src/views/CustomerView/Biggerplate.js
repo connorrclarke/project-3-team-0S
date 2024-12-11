@@ -1,3 +1,13 @@
+/**
+ * Biggerplate Component
+ *
+ * This component represents the page where customers can customize their "Bigger Plate" order.
+ * It allows users to select sides and three entrees for their meal. The page includes options 
+ * to either add the customized meal to their order or cancel and return to the main view.
+ *
+ * @author Siddhi Mittal and Meenalika Singh
+ */
+
 import React, {} from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CustomerView.css';
@@ -8,13 +18,14 @@ import { useZoom, ZoomProvider } from "./ZoomContext";
 
 function Biggerplate({ dishType = 'Bigger Plate' }) {
     const navigate = useNavigate(); // Hook for navigating between pages
-    const { selectedSide, resetSideSelection} = useSideSelection();
-    const { selectedEntree1, selectedEntree2, selectedEntree3, resetEntreeSelection } = useEntreeSelection();
+    const { selectedSide, resetSideSelection} = useSideSelection(); // Context for managing side selection
+    const { selectedEntree1, selectedEntree2, selectedEntree3, resetEntreeSelection } = useEntreeSelection(); // Context for managing entree selection
     const { addItem } = useReceipt(); // Access addItem from context
-    const { zoomLevel, updateZoomLevel } = useZoom();
-    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2));
-    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));
-    const handleResetZoom = () => updateZoomLevel(1);
+
+    const { zoomLevel, updateZoomLevel } = useZoom(); // Access zoom level and update functions from context
+    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2)); // Handles zoom in functionality with a maximum zoom level of 2
+    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5)); // Handles zoom out functionality with a minimum zoom level of 0.5
+    const handleResetZoom = () => updateZoomLevel(1); // Resets zoom to the default level (1)
 
     /**
      * Handles the "Cancel" button click by navigating back to the CustomerView page
@@ -27,30 +38,29 @@ function Biggerplate({ dishType = 'Bigger Plate' }) {
     };
 
     /**
-    * Handles the "Add" button click by navigating back to the CustomerView page.
-    */
+     * Handles the "Add" button click. Validates user input to ensure all fields
+     * are filled out, then adds the customized "Bigger Plate" to the receipt.
+     */
     const handleAdd = () => {
         if (!selectedSide || selectedSide === "Sides") {
-            alert("Please select a side.");
+            alert("Please select a side."); 
         } 
         else if (selectedEntree1 === "Entree" || selectedEntree2 === "Entree" || selectedEntree3 === "Entree") {
-            alert("Please select all entrees.");
+            alert("Please select all entrees."); 
         }
         else {
             const item = {
-                // name: `Bowl - ${selectedSide} & ${selectedEntree}`,
                 name:`${dishType}`,
                 price: 11.30,
                 sides: selectedSide,
-                // entrees: selectedEntree,
                 entrees: `${selectedEntree1} & ${selectedEntree2} &  ${selectedEntree3}`,
             };
-            addItem(item);  // Call addItem to add the item to the receipt
+            addItem(item); // Call addItem to add the item to the receipt
 
             // Reset selections after adding to avoid duplicate bowl add
             resetSideSelection();
             resetEntreeSelection();
-            navigate('/customer'); // Redirect to CustomerView
+            navigate('/customer');
         }
     };
 
@@ -59,15 +69,17 @@ function Biggerplate({ dishType = 'Bigger Plate' }) {
         navigate('/sides');
     };
 
-    // Navigates to entree page
+   // Navigates to the first entree page
     const goToEntree1 = () => {
         navigate('/entree1');
     };
 
+    // Navigates to the second entree page
     const goToEntree2 = () => {
         navigate('/entree2');
     };
 
+    // Navigates to the third entree page
     const goToEntree3 = () => {
         navigate('/entree3');
     };
@@ -112,6 +124,7 @@ function Biggerplate({ dishType = 'Bigger Plate' }) {
     );
 }
 
+// Wraps the Biggerplate component with the ZoomProvider for zoom context
 const WrappedBiggerplate = () => (
     <ZoomProvider>
         <Biggerplate />
