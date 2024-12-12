@@ -33,7 +33,7 @@ This repository contains the implementation of a Panda Express Point-of-Sale (PO
 ├── meetingMinutes/  # Meeting records for sprints
 ├── resetDatabase/   # Scripts and data for resetting the database
 ├── server/          # Backend code and server configurations
-└── docs/            # Documentation output folder (generated with TypeDoc)
+├── docs/            # Documentation output folder (generated with TypeDoc)
 └── README.md        # Project documentation
 ```
 
