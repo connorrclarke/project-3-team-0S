@@ -71,7 +71,7 @@ To clone, build, and run the project locally, follow these steps:
 
 ## 📖 Documentation
 - **High-Level Details**: Refer to this `README.md`.
-- **Code Documentation**: Generated with TypeDoc, hosted in the `docs/` directory.
+- **Code Documentation**: Generated with TypeDoc, hosted in the `docs/` directory. [https://connorrclarke.github.io/project-3-team-0S/](https://connorrclarke.github.io/project-3-team-0S/)
 
 ## 🧑‍💻 Contributors
 - Connor Clarke, Luke Lopez, Meenalika Singh, Siddhi Mittal
