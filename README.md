@@ -7,10 +7,11 @@ This repository contains the implementation of a Panda Express Point-of-Sale (PO
 - Code Documentation: [https://connorrclarke.github.io/project-3-team-0S/](https://connorrclarke.github.io/project-3-team-0S/)
 
 ## 🛠️ Features
+- **Customer Interface**: Enables self-service ordering with visual aids for easy customization.
 - **Cashier Interface**: Streamlined for fast order entry and payment processing.
+- **Manager Portal**: Advanced tools for managing menu items, staff, and system reports.
 - **Inventory Management**: Supports real-time updates and stock tracking.
 - **Accessibility**: Designed with features to assist users with visual impairments and language barriers.
-- **Manager Portal**: Advanced tools for managing menu items, staff, and system reports.
 - **Responsive Design**: Optimized for desktops, tablets, and mobile devices.
 
 ## 🚀 Technologies Used
