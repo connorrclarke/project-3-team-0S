@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: views/CashierView/CashierView.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: views/CashierView/CashierView.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+import Receipt from './Receipt';
+import CategoryTabs from './CategoryTabs';
+import OrderControls from './OrderControls';
+import './CashierView.css';
+import { useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
+
+/**
+ * Main Cashier View.
+ * @function CashierView
+ * @description Component for the cashier interface to manage orders, payments, and receipt generation.
+ * @returns {JSX.Element} The rendered CashierView component.
+ */
+const CashierView = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth0();
+  const API_URL = process.env.REACT_APP_API_URL;
+  //const API_URL = "http://localhost:5555/api";
+
+  const [selectedCategory, setSelectedCategory] = useState('Bowl');
+  const [receipt, setReceipt] = useState([]);
+  const [applyTax, setApplyTax] = useState(true);
+  const [showPay, setShowPay] = useState(false);
+  const [showDiscountPopup, setShowDiscountPopup] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [discountInput, setDiscountInput] = useState('');
+  const [errorPopupVisible, setErrorPopupVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [lastReceipt, setLastReceipt] = useState(null);
+  const [showLastReceiptPopup, setShowLastReceiptPopup] = useState(false);
+  const [menuItems, setMenuItems] = useState({
+    entrees: [],
+    sides: [],
+    appetizers: [],
+    drinks: [],
+  });
+
+  useEffect(() => {
+    /**
+     * Fetches menu items from the API and categorizes them by type.
+     * @async
+     * @function fetchMenuItems
+     * @returns {Promise&lt;void>}
+     */
+    const fetchMenuItems = async () => {
+      try {
+        const response = await fetch(`${API_URL}/menu-items`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        const categorizedItems = {
+          entrees: data?.filter(item => item.Category === 'Entree' &amp;&amp; item.available).map(item => item.Name) || [],
+          sides: data?.filter(item => item.Category === 'Side' &amp;&amp; item.available).map(item => item.Name) || [],
+          appetizers: data?.filter(item => item.Category === 'Appetizer' &amp;&amp; item.available).map(item => item.Name) || [],
+          drinks: data?.filter(item => item.Category === 'Drink' &amp;&amp; item.available).map(item => item.Name) || [],
+        };        
+        setMenuItems(categorizedItems);
+      } catch (err) {
+        console.error('Error fetching menu items:', err);
+      }
+    };
+
+    fetchMenuItems();
+  }, [API_URL]);
+
+  const categories = ['Bowl', 'Plate', 'Bigger Plate', 'Appetizers', 'Drinks', 'À la carte'];
+  const items = {
+    Bowl: [...menuItems.sides, ...menuItems.entrees],
+    Plate: [...menuItems.sides, ...menuItems.entrees],
+    "Bigger Plate": [...menuItems.sides, ...menuItems.entrees],
+    Appetizers: [...menuItems.appetizers],
+    Drinks: [...menuItems.drinks],
+    'À la carte': [...menuItems.sides, ...menuItems.entrees],
+  };
+
+  const categoryPrices = {
+    Bowl: 8.30,
+    Plate: 9.80,
+    "Bigger Plate": 11.30,
+    Appetizers: 1.75,
+    Drinks: 2.5,
+  };
+
+  const categoryLimits = {
+    Bowl: { sides: 1, entrees: 1 },
+    Plate: { sides: 1, entrees: 2 },
+    "Bigger Plate": { sides: 1, entrees: 3 },
+  };
+
+  /**
+   * Calculates the price of an item based on its category.
+   * @function getPriceByItem
+   * @param {string} item - The name of the item.
+   * @returns {number} The price of the item.
+   */
+  const getPriceByItem = (item) => {
+    if (menuItems?.sides?.includes(item)) {
+      return 4.4;
+    } else if (menuItems?.entrees?.includes(item)) {
+      return 5.2;
+    }
+    return 0;
+  };
+
+  /**
+   * Adds an item to the receipt.
+   * @function addItemToReceipt
+   * @param {string} item - The name of the item to add.
+   * @returns {void}
+   */
+  const addItemToReceipt = (item) => {
+    const price = categoryPrices[selectedCategory] || getPriceByItem(item);
+    if (['Appetizers', 'Drinks', 'À la carte'].includes(selectedCategory)) {
+      // Standalone items
+      const newEntry = {
+        category: selectedCategory,
+        items: [item], // Ensure 'items' is always an array
+        price: price,
+      };
+      setReceipt((prevReceipt) => [...prevReceipt, newEntry]);
+    } else {
+      // Combo items
+      const limit = categoryLimits[selectedCategory];
+      const existingCategoryIndex = receipt.findIndex(
+        (entry) =>
+          entry.category === selectedCategory &amp;&amp;
+          (entry.items.filter((i) => menuItems.sides.includes(i)).length &lt; limit.sides ||
+            entry.items.filter((i) => menuItems.entrees.includes(i)).length &lt; limit.entrees)
+      );
+  
+      if (existingCategoryIndex !== -1) {
+        const entry = receipt[existingCategoryIndex];
+        const sideCount = entry.items.filter((i) => menuItems.sides.includes(i)).length;
+        const entreeCount = entry.items.filter((i) => menuItems.entrees.includes(i)).length;
+  
+        if (menuItems?.sides?.includes(item) &amp;&amp; sideCount >= limit.sides) {
+          setErrorMessage(`You can only add ${limit.sides} side(s) for a ${selectedCategory}.`);
+          setErrorPopupVisible(true);
+          return;
+        }
+        if (menuItems?.entrees?.includes(item) &amp;&amp; entreeCount >= limit.entrees) {
+          setErrorMessage(`You can only add ${limit.entrees} entree(s) for a ${selectedCategory}.`);
+          setErrorPopupVisible(true);
+          return;
+        }
+  
+        setReceipt((prevReceipt) =>
+          prevReceipt.map((entry, index) =>
+            index === existingCategoryIndex ? { ...entry, items: [...entry.items, item] } : entry
+          )
+        );
+      } else {
+        const newEntry = {
+          category: selectedCategory,
+          items: [item],
+          price: categoryPrices[selectedCategory],
+        };
+        setReceipt((prevReceipt) => [...prevReceipt, newEntry]);
+      }
+    }
+  };  
+
+  /**
+   * Removes an item from the receipt by index.
+   * @function removeItemFromReceipt
+   * @param {number} index - The index of the item to remove.
+   * @returns {void}
+   */
+  const removeItemFromReceipt = (index) => {
+    const updatedReceipt = receipt.filter((_, i) => i !== index);
+    setReceipt(updatedReceipt);
+
+    const newSubtotal = updatedReceipt.reduce((acc, entry) => acc + (entry.price || 0), 0);
+    if (discount > newSubtotal) {
+      setErrorMessage('The discount has been adjusted because it cannot exceed the subtotal.');
+      setErrorPopupVisible(true);
+      setDiscount(newSubtotal);
+    }
+  };
+
+  const subtotal = receipt.reduce((acc, entry) => acc + (entry.price || 0), 0);
+  const discountAdjustedSubtotal = subtotal - discount;
+  const taxRate = 0.0825;
+  const taxAmount = applyTax ? discountAdjustedSubtotal * taxRate : 0;
+  const finalTotal = discountAdjustedSubtotal + taxAmount;
+
+  /**
+   * Applies a discount to the order.
+   * @function handleAddDiscount
+   * @returns {void}
+   */
+  const handleAddDiscount = () => {
+    const discountValue = parseFloat(discountInput);
+    if (isNaN(discountValue) || discountValue &lt;= 0) {
+      setErrorMessage('Please enter a valid discount amount.');
+      setErrorPopupVisible(true);
+    } else if (discountValue > subtotal) {
+      setErrorMessage('Discount cannot exceed the subtotal amount.');
+      setErrorPopupVisible(true);
+    } else {
+      setDiscount(discountValue);
+      setShowDiscountPopup(false);
+      setDiscountInput('');
+    }
+  };
+
+  /**
+   * Checks if the combo is complete.
+   * @function isComboComplete
+   * @returns {boolean} True if the combo is complete; false otherwise.
+   */
+  const isComboComplete = () => {
+    return receipt.every((item) => {
+      if (item.category === 'Bowl') {
+        return item.items.length === 2;
+      } else if (item.category === 'Plate') {
+        return item.items.length === 3;
+      } else if (item.category === 'Bigger Plate') {
+        return item.items.length === 4;
+      }
+      return true;
+    });
+  };
+
+  /**
+   * Handles the payment process for the order.
+   * @function handlePay
+   * @returns {void}
+   */
+  const handlePay = () => {
+    if (!isComboComplete()) {
+      setErrorMessage('You must finish building combo before you can checkout.');
+      setErrorPopupVisible(true);
+      return;
+    }
+    setShowPay(true);
+  };
+
+  /**
+   * Confirms the payment and sends the order to the backend.
+   * @async
+   * @function handleConfirmPayment
+   * @returns {Promise&lt;void>}
+   */
+  const handleConfirmPayment = async () => {
+    if (!selectedPaymentMethod) {
+      setErrorMessage("Please select a payment method.");
+      setErrorPopupVisible(true);
+      return;
+    }
+    
+    setIsProcessing(true); // Show the "Processing..." popup
+
+    try {
+      //const response = await fetch(`http://localhost:5555/api/order`, {
+      const response = await fetch(`${API_URL}/order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ total: finalTotal.toFixed(2), method: selectedPaymentMethod }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Order creation failed");
+      }
+
+        // Update inventory for each individual item in the receipt
+        for (const entry of receipt) {
+          const itemsToUpdate = entry.items || [entry.name];
+            
+          for (const menuItemName of itemsToUpdate) {
+            const inventoryResponse = await fetch(`${API_URL}/updateInventory`, {
+            //const inventoryResponse = await fetch(`http://localhost:5555/api/updateInventory`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ menuItemName, quantity: 1 }),
+            });
+
+            const inventoryData = await inventoryResponse.json();
+            if (!inventoryResponse.ok) {
+              throw new Error(inventoryData.error || "Inventory update failed");
+            }
+          }
+      }
+
+      setLastReceipt({
+        paymentType: selectedPaymentMethod,
+        items: receipt.map(entry => ({
+          category: entry.category,
+          price: entry.price,
+          items: entry.items.map(item => ({
+            name: item,
+            price: menuItems.sides.includes(item) ? 4.40 : 5.20,
+          })),
+        })),
+        discount,
+        totals: {
+          subtotal,
+          discountAdjustedSubtotal,
+          taxAmount,
+          total: finalTotal,
+        },
+      });      
+
+      setErrorMessage(`Payment successful! Your order number is #${data.orderNumber}`);
+      setErrorPopupVisible(true);
+    } catch (error) {
+      setErrorMessage(error.message || "Payment failed. Please try again.");
+      setErrorPopupVisible(true);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  /**
+   * Navigates to the Manager View.
+   * @function goToManagerView
+   * @returns {void}
+   */
+  const goToManagerView = () => {
+    navigate('/manager');
+  };
+
+  /**
+   * Clears the current order.
+   * @function clearOrder
+   * @returns {void}
+   */
+  const clearOrder = () => {
+    setReceipt([]);
+    setDiscount(0);
+    setApplyTax(true);
+  };
+
+  /**
+   * Fetches the last receipt.
+   * @function fetchLastReceipt
+   * @returns {void}
+   */
+  const fetchLastReceipt = () => {
+    if (!lastReceipt) {
+      setErrorMessage("No orders have been placed today. A receipt is not available.");
+      setErrorPopupVisible(true);
+      return;
+    }
+    setShowLastReceiptPopup(true);
+  };
+
+  /**
+   * Logs out the user and redirects to the Customer View.
+   * @function handleLogoutAndReturn
+   * @returns {void}
+   */
+  const handleLogoutAndReturn = () => {
+    logout({ returnTo: window.location.origin }); // Auth0 logout
+    navigate('/customer'); // Navigate to the Customer View
+  };
+
+  return (
+    &lt;div className="cashier-layout">
+      
+      {errorPopupVisible &amp;&amp; (
+        &lt;div className="popup error-popup">
+          &lt;div className="popup-content">
+            &lt;h3>{errorMessage}&lt;/h3>
+            &lt;button
+              onClick={() => {
+                setErrorPopupVisible(false);
+
+                // Only reset if it's a successful order (i.e., no error)
+                if (errorMessage.startsWith("Payment successful!")) {
+                  setShowPay(false);
+                  setReceipt([]);
+                  setDiscount(0);
+                  setSelectedCategory("Bowl");
+                  setSelectedPaymentMethod(null);
+                }
+                
+              }}
+            >
+              OK
+            &lt;/button>
+          &lt;/div>
+        &lt;/div>
+      )}
+
+      {isProcessing &amp;&amp; (
+          &lt;div className="popup processing-popup">
+              &lt;div className="popup-content">
+                  &lt;h3>Processing...&lt;/h3>
+              &lt;/div>
+          &lt;/div>
+      )}
+
+      {showDiscountPopup &amp;&amp; (
+        &lt;div className="popup">
+          &lt;div className="popup-content">
+            &lt;h3>Enter Discount Amount ($)&lt;/h3>
+            &lt;input
+              type="number"
+              value={discountInput}
+              onChange={(e) => setDiscountInput(e.target.value)}
+              placeholder="Discount in dollars"
+            />
+            &lt;button onClick={handleAddDiscount}>Apply Discount&lt;/button>
+            &lt;button onClick={() => setShowDiscountPopup(false)}>Cancel&lt;/button>
+          &lt;/div>
+        &lt;/div>
+      )}
+
+      {showLastReceiptPopup &amp;&amp; lastReceipt &amp;&amp; (
+          &lt;div className="popup receipt-popup">
+              &lt;div className="popup-content">
+                  &lt;h2>Last Receipt&lt;/h2>
+                  &lt;p>&lt;strong>Payment Method:&lt;/strong> {lastReceipt.paymentType}&lt;/p>
+                  &lt;Receipt
+                      receipt={lastReceipt.items}
+                      applyTax={applyTax}
+                      subtotal={lastReceipt.totals.subtotal}
+                      discountAdjustedSubtotal={lastReceipt.totals.discountAdjustedSubtotal}
+                      taxAmount={lastReceipt.totals.taxAmount}
+                      discount={lastReceipt.discount}
+                      total={lastReceipt.totals.total}
+                      showRemoveButtons={false}
+                  />
+                  &lt;button onClick={() => setShowLastReceiptPopup(false)}>Close&lt;/button>
+              &lt;/div>
+          &lt;/div>
+      )}
+
+      {showPay ? (
+        &lt;div className="checkout-container">
+          &lt;div className="receipt-section">
+            &lt;Receipt
+              receipt={receipt}
+              onRemove={removeItemFromReceipt}
+              applyTax={applyTax}
+              subtotal={subtotal}
+              discountAdjustedSubtotal={discountAdjustedSubtotal}
+              taxAmount={taxAmount}
+              discount={discount}
+              total={finalTotal}
+            />
+          &lt;/div>
+
+          &lt;div className="payment-section">
+            &lt;h3>Payment Method&lt;/h3>
+            {["Credit Card", "Cash", "Gift Card", "Student Swipe"].map((method) => (
+              &lt;button
+                key={method}
+                className={`payment-button ${
+                  selectedPaymentMethod === method ? "selected" : ""
+                }`}
+                onClick={() => setSelectedPaymentMethod(method)}
+              >
+                {method}
+              &lt;/button>
+            ))}
+            &lt;div className="action-buttons">
+              &lt;button className="cancel-button" onClick={() => setShowPay(false)}>Cancel&lt;/button>
+              &lt;button
+                className="pay-button"
+                onClick={() => {
+                  if (selectedPaymentMethod) {
+                    handleConfirmPayment();
+                  } else {
+                    setErrorMessage("Please select a payment method.");
+                    setErrorPopupVisible(true);
+                  }
+                }}
+              >
+                Pay
+              &lt;/button>
+            &lt;/div>
+          &lt;/div>
+        &lt;/div>
+      ) : (
+        &lt;>
+          &lt;div className="receipt-section">
+            &lt;Receipt
+              receipt={receipt}
+              onRemove={removeItemFromReceipt}
+              applyTax={applyTax}
+              subtotal={subtotal}
+              discountAdjustedSubtotal={discountAdjustedSubtotal}
+              taxAmount={taxAmount}
+              discount={discount}
+              total={finalTotal}
+            />
+          &lt;/div>
+
+          &lt;div className="mainSection">
+            &lt;CategoryTabs
+              categories={categories}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              goToManagerView={goToManagerView}
+              receipt={receipt}
+              sides={menuItems.sides}
+              entrees={menuItems.entrees}
+              categoryLimits={categoryLimits}
+            />
+
+            {selectedCategory === 'Bowl' &amp;&amp; (
+              &lt;p className="selection-message">
+                Select &lt;span className="side-text">1 Side&lt;/span> and &lt;span className="entree-text">1 Entree&lt;/span>
+              &lt;/p>
+            )}
+            {selectedCategory === 'Plate' &amp;&amp; (
+              &lt;p className="selection-message">
+                Select &lt;span className="side-text">1 Side&lt;/span> and &lt;span className="entree-text">2 Entrees&lt;/span>
+              &lt;/p>
+            )}
+            {selectedCategory === 'Bigger Plate' &amp;&amp; (
+              &lt;p className="selection-message">
+                Select &lt;span className="side-text">1 Side&lt;/span> and &lt;span className="entree-text">3 Entrees&lt;/span>
+              &lt;/p>
+            )}
+            {selectedCategory === 'Appetizers' &amp;&amp; (
+              &lt;p className="selection-message">
+                Select the Customer's &lt;span className="appetizer-text">Appetizer&lt;/span>
+              &lt;/p>
+            )}
+            {selectedCategory === 'Drinks' &amp;&amp; (
+              &lt;p className="selection-message">
+                Select the Customer's &lt;span className="drink-text">Drink&lt;/span>
+              &lt;/p>
+            )}
+            {selectedCategory === 'À la carte' &amp;&amp; (
+              &lt;p className="selection-message">
+                Each &lt;span className="side-text">Side&lt;/span> or &lt;span className="entree-text">Entree&lt;/span>, or both, can be added individually to the receipt
+              &lt;/p>
+            )}
+
+            &lt;div className="item-grid">
+              {items[selectedCategory].map((item) => (
+                &lt;button
+                  key={item}
+                  onClick={() => addItemToReceipt(item)}
+                  className={`item-button ${
+                    selectedCategory === 'Appetizers'
+                      ? 'appetizer-button'
+                      : selectedCategory === 'Drinks'
+                      ? 'drink-button'
+                      : menuItems.sides.includes(item)
+                      ? 'side-button'
+                      : 'entree-button'
+                  }`}
+                >
+                  {item}
+                &lt;/button>
+              ))}
+            &lt;/div>
+          &lt;/div>
+          &lt;div className="order-controls">
+            &lt;OrderControls
+              fetchLastReceipt={fetchLastReceipt}
+              onAddDiscount={() => setShowDiscountPopup(true)}
+              hasDiscount={discount > 0}
+              toggleTax={() => setApplyTax(!applyTax)}
+              applyTax={applyTax}
+              onClearOrder={clearOrder}
+              onPay={handlePay}
+            />
+          &lt;/div>
+        &lt;/>
+      )}
+    &lt;/div>
+  );
+};
+
+export default CashierView;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AddInventory">AddInventory</a></li><li><a href="global.html#AddItems">AddItems</a></li><li><a href="global.html#CashierView">CashierView</a></li><li><a href="global.html#CategoryTabs">CategoryTabs</a></li><li><a href="global.html#Entree1Selection">Entree1Selection</a></li><li><a href="global.html#Entree2Selection">Entree2Selection</a></li><li><a href="global.html#Entree3Selection">Entree3Selection</a></li><li><a href="global.html#EntreeSelectionProvider">EntreeSelectionProvider</a></li><li><a href="global.html#Hire">Hire</a></li><li><a href="global.html#ItemGrid">ItemGrid</a></li><li><a href="global.html#ManageEmployees">ManageEmployees</a></li><li><a href="global.html#ManageInventory">ManageInventory</a></li><li><a href="global.html#ManageStatistics">ManageStatistics</a></li><li><a href="global.html#ManagerView">ManagerView</a></li><li><a href="global.html#OrderControls">OrderControls</a></li><li><a href="global.html#Receipt">Receipt</a></li><li><a href="global.html#ReceiptProvider">ReceiptProvider</a></li><li><a href="global.html#SideSelectionProvider">SideSelectionProvider</a></li><li><a href="global.html#ZoomProvider">ZoomProvider</a></li><li><a href="global.html#addItemToReceipt">addItemToReceipt</a></li><li><a href="global.html#clearOrder">clearOrder</a></li><li><a href="global.html#fetchEmployees">fetchEmployees</a></li><li><a href="global.html#fetchInventory">fetchInventory</a></li><li><a href="global.html#fetchItemSales">fetchItemSales</a></li><li><a href="global.html#fetchItems">fetchItems</a></li><li><a href="global.html#fetchLastReceipt">fetchLastReceipt</a></li><li><a href="global.html#fetchMenuItems">fetchMenuItems</a></li><li><a href="global.html#fetchPaymentStats">fetchPaymentStats</a></li><li><a href="global.html#fetchStatistics">fetchStatistics</a></li><li><a href="global.html#getPriceByItem">getPriceByItem</a></li><li><a href="global.html#goToManagerView">goToManagerView</a></li><li><a href="global.html#handleAdd">handleAdd</a></li><li><a href="global.html#handleAddDiscount">handleAddDiscount</a></li><li><a href="global.html#handleAddInventorySubmit">handleAddInventorySubmit</a></li><li><a href="global.html#handleCategoryChange">handleCategoryChange</a></li><li><a href="global.html#handleChange">handleChange</a></li><li><a href="global.html#handleConfirmPayment">handleConfirmPayment</a></li><li><a href="global.html#handleFireEmployee">handleFireEmployee</a></li><li><a href="global.html#handleHireSubmit">handleHireSubmit</a></li><li><a href="global.html#handleLogout">handleLogout</a></li><li><a href="global.html#handleLogoutAndReturn">handleLogoutAndReturn</a></li><li><a href="global.html#handleMonthChange">handleMonthChange</a></li><li><a href="global.html#handlePay">handlePay</a></li><li><a href="global.html#handleRemove">handleRemove</a></li><li><a href="global.html#handleResetInventory">handleResetInventory</a></li><li><a href="global.html#handleSubmit">handleSubmit</a></li><li><a href="global.html#importAll">importAll</a></li><li><a href="global.html#isComboComplete">isComboComplete</a></li><li><a href="global.html#removeItemFromReceipt">removeItemFromReceipt</a></li><li><a href="global.html#resetForm">resetForm</a></li><li><a href="global.html#useEntreeSelection">useEntreeSelection</a></li><li><a href="global.html#useReceipt">useReceipt</a></li><li><a href="global.html#useSideSelection">useSideSelection</a></li><li><a href="global.html#useZoom">useZoom</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Dec 11 2024 23:14:43 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: views/CustomerView/Checkout.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: views/CustomerView/Checkout.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Checkout Component
+ *
+ * This component represents the checkout page where customers can review their receipt, 
+ * calculate the tax, and choose a payment method to complete their transaction.
+ * It provides options to cancel the checkout process or proceed with payment.
+ *
+ * @author Siddhi Mittal
+ */
+import React, { useState } from "react";
+import { useNavigate, useLocation } from 'react-router-dom';
+import './CustomerView.css';
+import { useReceipt } from '../../contexts/ReceiptContext';
+import { useZoom, ZoomProvider } from "./ZoomContext";
+
+const Checkout = () => {
+    const navigate = useNavigate(); // Hook for navigating between pages
+    const location = useLocation(); // Hook to access the current location and state
+    const { receipt, total } = location.state || {}; // Get receipt and total from state
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+    const { clearReceipt } = useReceipt(); // Using context for receipt data
+
+    const { zoomLevel, updateZoomLevel } = useZoom(); // Access zoom level and update functions from context
+    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2)); // Handles zoom in functionality with a maximum zoom level of 2
+    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5));// Handles zoom out functionality with a minimum zoom level of 0.5
+    const handleResetZoom = () => updateZoomLevel(1); // Resets zoom to the default level (1)
+
+    const API_URL = process.env.REACT_APP_API_URL; // Base API URL from enviroment variables
+
+    // Tax rate and tax calculation
+    const taxRate = 0.0825;
+    const taxAmount = total * taxRate;
+
+    /**
+     * Handles the "Cancel" button click by navigating back to the CustomerView page.
+     * Resets the checkout process if canceled.
+     */
+    const handleCancel = () => {
+        navigate('/customer');
+    };
+
+    /**
+     * Handles the "Pay" button click to process the payment.
+     */
+    const handlePay = async () => {
+        if (!selectedPaymentMethod) {
+            alert("Please select a payment method before proceeding.");
+            return;
+        }
+    
+        try {
+            const response = await fetch(`${API_URL}/order`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ total: (total + taxAmount).toFixed(2), method: selectedPaymentMethod }),
+            });
+    
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || "Order creation failed");
+            }
+    
+            // Update inventory for each receipt item
+            for (const item of receipt) {
+                await fetch(`${API_URL}/updateInventory`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ menuItemName: item.name, quantity: 1 }),
+                });
+            }
+    
+            alert(`Payment successful! Order #${data.orderNumber} confirmed.`);
+            clearReceipt(); // Clear the receipt after a successful payment
+            navigate('/customer');
+        } catch (error) {
+            console.error("Error processing payment:", error);
+            alert(error.message || "Payment failed. Please try again.");
+        }
+    };    
+
+    const handleSelectPaymentMethod = (method) => {
+        setSelectedPaymentMethod(method);
+    };
+
+    return (
+        &lt;div className="checkout-layout">
+            {/* Title bar */}
+            &lt;div className="top-bar">
+                &lt;h1>Checkout&lt;/h1>
+            &lt;/div>
+
+            &lt;div className="checkout-content">
+                {/* Left column for receipt */}
+                &lt;div className="checkout-left-section">
+                    &lt;h2>Receipt&lt;/h2>
+                    &lt;div className="checkout-receipt-customer">
+                        {receipt?.map((item, index) => (
+                            &lt;div key={index} className="checkout-receipt-item-checkout">
+                                &lt;span className="checkout-item-name">{item.name}&lt;/span>
+                                &lt;span className="checkout-item-price">${item.price.toFixed(2)}&lt;/span>
+
+                                {/* Display sides if available */}
+                                {item.sides &amp;&amp; &lt;div className="checkout-item-details">Sides: {item.sides}&lt;/div>}
+                                
+                                {/* Display entrees if available */}
+                                {item.entrees &amp;&amp; &lt;div className="checkout-item-details">Entrees: {item.entrees}&lt;/div>}
+                            &lt;/div>
+                        ))}
+                    &lt;/div>
+                    &lt;div className="checkout-receipt-summary-customer">
+                        &lt;p>Subtotal: ${total.toFixed(2)}&lt;/p>
+                        &lt;p>Tax: ${taxAmount.toFixed(2)}&lt;/p>
+                        &lt;p>Total: ${(total + taxAmount).toFixed(2)}&lt;/p>
+                    &lt;/div>
+                &lt;/div>
+
+                {/* Middle column for payment methods */}
+                &lt;div className="middle-section-checkout">
+                    &lt;h2>Payment Method&lt;/h2>
+                    &lt;div className="category-buttons">
+                        {["Credit Card", "Cash", "Gift Card", "Student Swipe"].map((method) => (
+                            &lt;button
+                                key={method}
+                                className={`category-button ${
+                                    selectedPaymentMethod === method ? "selected" : ""
+                                }`}
+                                onClick={() => handleSelectPaymentMethod(method)}
+                            >
+                                {method}
+                            &lt;/button>
+                        ))}
+                    &lt;/div>
+                &lt;/div>
+                
+            &lt;/div>
+
+            {/* Bottom buttons for cancel/pay */}
+            &lt;div className="bottom-bar">
+                &lt;button className="cancel-button" onClick={handleCancel}>Cancel&lt;/button>
+                &lt;button onClick={handleZoomIn}>Zoom In&lt;/button>
+                &lt;button onClick={handleZoomOut}>Zoom Out&lt;/button>
+                &lt;button onClick={handleResetZoom}>Reset Zoom&lt;/button>
+                &lt;button className="pay-button" onClick={handlePay}>Pay&lt;/button>
+            &lt;/div>
+        &lt;/div>
+    );
+};
+
+// Wraps the Checkout component with the ZoomProvider for zoom context
+const WrappedCheckout = () => (
+    &lt;ZoomProvider>
+        &lt;Checkout />
+    &lt;/ZoomProvider>
+);
+
+export default WrappedCheckout;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AddInventory">AddInventory</a></li><li><a href="global.html#AddItems">AddItems</a></li><li><a href="global.html#CashierView">CashierView</a></li><li><a href="global.html#CategoryTabs">CategoryTabs</a></li><li><a href="global.html#Entree1Selection">Entree1Selection</a></li><li><a href="global.html#Entree2Selection">Entree2Selection</a></li><li><a href="global.html#Entree3Selection">Entree3Selection</a></li><li><a href="global.html#EntreeSelectionProvider">EntreeSelectionProvider</a></li><li><a href="global.html#Hire">Hire</a></li><li><a href="global.html#ItemGrid">ItemGrid</a></li><li><a href="global.html#ManageEmployees">ManageEmployees</a></li><li><a href="global.html#ManageInventory">ManageInventory</a></li><li><a href="global.html#ManageStatistics">ManageStatistics</a></li><li><a href="global.html#ManagerView">ManagerView</a></li><li><a href="global.html#OrderControls">OrderControls</a></li><li><a href="global.html#Receipt">Receipt</a></li><li><a href="global.html#ReceiptProvider">ReceiptProvider</a></li><li><a href="global.html#SideSelectionProvider">SideSelectionProvider</a></li><li><a href="global.html#ZoomProvider">ZoomProvider</a></li><li><a href="global.html#addItemToReceipt">addItemToReceipt</a></li><li><a href="global.html#clearOrder">clearOrder</a></li><li><a href="global.html#fetchEmployees">fetchEmployees</a></li><li><a href="global.html#fetchInventory">fetchInventory</a></li><li><a href="global.html#fetchItemSales">fetchItemSales</a></li><li><a href="global.html#fetchItems">fetchItems</a></li><li><a href="global.html#fetchLastReceipt">fetchLastReceipt</a></li><li><a href="global.html#fetchMenuItems">fetchMenuItems</a></li><li><a href="global.html#fetchPaymentStats">fetchPaymentStats</a></li><li><a href="global.html#fetchStatistics">fetchStatistics</a></li><li><a href="global.html#getPriceByItem">getPriceByItem</a></li><li><a href="global.html#goToManagerView">goToManagerView</a></li><li><a href="global.html#handleAdd">handleAdd</a></li><li><a href="global.html#handleAddDiscount">handleAddDiscount</a></li><li><a href="global.html#handleAddInventorySubmit">handleAddInventorySubmit</a></li><li><a href="global.html#handleCategoryChange">handleCategoryChange</a></li><li><a href="global.html#handleChange">handleChange</a></li><li><a href="global.html#handleConfirmPayment">handleConfirmPayment</a></li><li><a href="global.html#handleFireEmployee">handleFireEmployee</a></li><li><a href="global.html#handleHireSubmit">handleHireSubmit</a></li><li><a href="global.html#handleLogout">handleLogout</a></li><li><a href="global.html#handleLogoutAndReturn">handleLogoutAndReturn</a></li><li><a href="global.html#handleMonthChange">handleMonthChange</a></li><li><a href="global.html#handlePay">handlePay</a></li><li><a href="global.html#handleRemove">handleRemove</a></li><li><a href="global.html#handleResetInventory">handleResetInventory</a></li><li><a href="global.html#handleSubmit">handleSubmit</a></li><li><a href="global.html#importAll">importAll</a></li><li><a href="global.html#isComboComplete">isComboComplete</a></li><li><a href="global.html#removeItemFromReceipt">removeItemFromReceipt</a></li><li><a href="global.html#resetForm">resetForm</a></li><li><a href="global.html#useEntreeSelection">useEntreeSelection</a></li><li><a href="global.html#useReceipt">useReceipt</a></li><li><a href="global.html#useSideSelection">useSideSelection</a></li><li><a href="global.html#useZoom">useZoom</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Dec 11 2024 23:14:43 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

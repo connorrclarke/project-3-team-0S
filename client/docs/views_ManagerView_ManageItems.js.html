@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: views/ManagerView/ManageItems.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: views/ManagerView/ManageItems.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, useState } from 'react';
+import './Manager.css';
+import { useNavigate } from "react-router-dom";
+import AddItems from './AddItems';
+
+const API_URL = process.env.REACT_APP_API_URL;
+//const API_URL = "http://localhost:5555/api";
+
+/**
+ * @function ManageInventory
+ * @description Component for managing menu items, including availability toggling.
+ * @returns {JSX.Element}
+ */
+const ManageInventory = () => {
+    const [items, setItems] = useState([]);
+    const [error, setError] = useState(null);
+    const [showAddItemsModal, setShowAddItemsModal] = useState(false);
+    const navigate = useNavigate();
+
+    /**
+     * @function fetchItems
+     * @description Fetches menu items data from the backend API.
+     * @returns {Promise&lt;void>}
+     */
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const response = await fetch(`${API_URL}/items`);
+                // const response = await fetch('http://localhost:5555/api/items');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setItems(data);
+            } catch (err) {
+                setError(err.message);
+                console.error('Error fetching items:', err);
+            }
+        };
+
+        fetchItems();
+    }, []);
+
+    /**
+     * @function handleAddInventorySubmit
+     * @description Submits a new menu item to the backend API.
+     * @param {Object} formData - The details of the menu item.
+     * @returns {Promise&lt;void>}
+     */
+    const handleAddInventorySubmit = async (formData) => {
+        try {
+            const response = await fetch(`${API_URL}/items`, {
+            //const response = await fetch('http://localhost:5555/api/items', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+            if (!response.ok) {
+                throw new Error('Error adding inventory item');
+            }
+            const newItem = await response.json();
+            setItems((prevInventory) => [...prevInventory, newItem]);
+        } catch (err) {
+            console.error('Error adding inventory item:', err);
+        }
+    };
+
+    /**
+     * @function handleAdd
+     * @description Marks a menu item as available.
+     * @param {number} id - The ID of the menu item.
+     * @returns {Promise&lt;void>}
+     */
+    const handleAdd = async (id) => {
+        try {
+            const response = await fetch(`${API_URL}/items/${id}`, {
+            //const response = await fetch(`http://localhost:5555/api/items/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Available: true }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update item availability');
+            }
+
+            const updatedItem = await response.json();
+            setItems((prevItems) =>
+                prevItems.map((item) => (item.MenuItemId === id ? updatedItem.item : item))
+            );
+        } catch (err) {
+            console.error('Error making item available:', err);
+        }
+    };
+
+    /**
+     * @function handleRemove
+     * @description Marks a menu item as unavailable.
+     * @param {number} id - The ID of the menu item.
+     * @returns {Promise&lt;void>}
+     */
+    const handleRemove = async (id) => {
+        try {
+            const response = await fetch(`${API_URL}/items/${id}`, {
+            //const response = await fetch(`http://localhost:5555/api/items/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Available: false }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update item availability');
+            }
+
+            const updatedItem = await response.json();
+            setItems((prevItems) =>
+                prevItems.map((item) => (item.MenuItemId === id ? updatedItem.item : item))
+            );
+        } catch (err) {
+            console.error('Error making item unavailable:', err);
+        }
+    };
+
+    return (
+        &lt;div className="manager-view">
+            &lt;button onClick={() => navigate('/manager')}>Return to ManagerView&lt;/button>
+            &lt;button onClick={() => setShowAddItemsModal(true)}>Add Item&lt;/button>
+            {error &amp;&amp; &lt;div>Error fetching items: {error}&lt;/div>}
+
+            &lt;div className="table-wrapper">
+                &lt;table>
+                    &lt;thead>
+                    &lt;tr>
+                        &lt;th>Item ID&lt;/th>
+                        &lt;th>Item Name&lt;/th>
+                        &lt;th>Price&lt;/th>
+                        &lt;th>Seasonal&lt;/th>
+                        &lt;th>Calories&lt;/th>
+                        &lt;th>Category&lt;/th>
+                        &lt;th>Available&lt;/th>
+                        &lt;th>Action&lt;/th>
+                    &lt;/tr>
+                    &lt;/thead>
+                    &lt;tbody>
+                    {items.map((item) => (
+                        &lt;tr key={item.MenuItemId}>
+                            &lt;td>{item.MenuItemId}&lt;/td>
+                            &lt;td>{item.Name}&lt;/td>
+                            &lt;td>{item.Price}&lt;/td>
+                            &lt;td>{item.Seasonal ? 'Yes' : 'No'}&lt;/td>
+                            &lt;td>{item.Calories}&lt;/td>
+                            &lt;td>{item.Category}&lt;/td>
+                            &lt;td>{item.available ? 'Yes' : 'No'}&lt;/td>
+                            &lt;td>
+                                &lt;div className="options">
+                                    &lt;button className="add-item-button" onClick={() => handleAdd(item.MenuItemId)}>Add
+                                    &lt;/button>
+
+
+                                    &lt;button className="rem-item-button" onClick={() => handleRemove(item.MenuItemId)}>Remove
+                                    &lt;/button>
+
+                                &lt;/div>
+                            &lt;/td>
+                        &lt;/tr>
+                    ))}
+                    &lt;/tbody>
+                &lt;/table>
+            &lt;/div>
+
+            {showAddItemsModal &amp;&amp; (
+                &lt;AddItems
+                    onClose={() => setShowAddItemsModal(false)}
+                    onSubmit={handleAddInventorySubmit}
+                />
+            )}
+        &lt;/div>
+    );
+};
+
+export default ManageInventory;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AddInventory">AddInventory</a></li><li><a href="global.html#AddItems">AddItems</a></li><li><a href="global.html#CashierView">CashierView</a></li><li><a href="global.html#CategoryTabs">CategoryTabs</a></li><li><a href="global.html#Entree1Selection">Entree1Selection</a></li><li><a href="global.html#Entree2Selection">Entree2Selection</a></li><li><a href="global.html#Entree3Selection">Entree3Selection</a></li><li><a href="global.html#EntreeSelectionProvider">EntreeSelectionProvider</a></li><li><a href="global.html#Hire">Hire</a></li><li><a href="global.html#ItemGrid">ItemGrid</a></li><li><a href="global.html#ManageEmployees">ManageEmployees</a></li><li><a href="global.html#ManageInventory">ManageInventory</a></li><li><a href="global.html#ManageStatistics">ManageStatistics</a></li><li><a href="global.html#ManagerView">ManagerView</a></li><li><a href="global.html#OrderControls">OrderControls</a></li><li><a href="global.html#Receipt">Receipt</a></li><li><a href="global.html#ReceiptProvider">ReceiptProvider</a></li><li><a href="global.html#SideSelectionProvider">SideSelectionProvider</a></li><li><a href="global.html#ZoomProvider">ZoomProvider</a></li><li><a href="global.html#addItemToReceipt">addItemToReceipt</a></li><li><a href="global.html#clearOrder">clearOrder</a></li><li><a href="global.html#fetchEmployees">fetchEmployees</a></li><li><a href="global.html#fetchInventory">fetchInventory</a></li><li><a href="global.html#fetchItemSales">fetchItemSales</a></li><li><a href="global.html#fetchItems">fetchItems</a></li><li><a href="global.html#fetchLastReceipt">fetchLastReceipt</a></li><li><a href="global.html#fetchMenuItems">fetchMenuItems</a></li><li><a href="global.html#fetchPaymentStats">fetchPaymentStats</a></li><li><a href="global.html#fetchStatistics">fetchStatistics</a></li><li><a href="global.html#getPriceByItem">getPriceByItem</a></li><li><a href="global.html#goToManagerView">goToManagerView</a></li><li><a href="global.html#handleAdd">handleAdd</a></li><li><a href="global.html#handleAddDiscount">handleAddDiscount</a></li><li><a href="global.html#handleAddInventorySubmit">handleAddInventorySubmit</a></li><li><a href="global.html#handleCategoryChange">handleCategoryChange</a></li><li><a href="global.html#handleChange">handleChange</a></li><li><a href="global.html#handleConfirmPayment">handleConfirmPayment</a></li><li><a href="global.html#handleFireEmployee">handleFireEmployee</a></li><li><a href="global.html#handleHireSubmit">handleHireSubmit</a></li><li><a href="global.html#handleLogout">handleLogout</a></li><li><a href="global.html#handleLogoutAndReturn">handleLogoutAndReturn</a></li><li><a href="global.html#handleMonthChange">handleMonthChange</a></li><li><a href="global.html#handlePay">handlePay</a></li><li><a href="global.html#handleRemove">handleRemove</a></li><li><a href="global.html#handleResetInventory">handleResetInventory</a></li><li><a href="global.html#handleSubmit">handleSubmit</a></li><li><a href="global.html#importAll">importAll</a></li><li><a href="global.html#isComboComplete">isComboComplete</a></li><li><a href="global.html#removeItemFromReceipt">removeItemFromReceipt</a></li><li><a href="global.html#resetForm">resetForm</a></li><li><a href="global.html#useEntreeSelection">useEntreeSelection</a></li><li><a href="global.html#useReceipt">useReceipt</a></li><li><a href="global.html#useSideSelection">useSideSelection</a></li><li><a href="global.html#useZoom">useZoom</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Dec 11 2024 23:14:43 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

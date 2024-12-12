@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: views/CustomerView/Biggerplate.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: views/CustomerView/Biggerplate.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Biggerplate Component
+ *
+ * This component represents the page where customers can customize their "Bigger Plate" order.
+ * It allows users to select sides and three entrees for their meal. The page includes options 
+ * to either add the customized meal to their order or cancel and return to the main view.
+ *
+ * @author Siddhi Mittal and Meenalika Singh
+ */
+
+import React, {} from 'react';
+import { useNavigate } from 'react-router-dom';
+import './CustomerView.css';
+import { useSideSelection } from "../../contexts/SideSelectionContext";
+import { useEntreeSelection } from "../../contexts/EntreeSelectionContext";
+import { useReceipt } from "../../contexts/ReceiptContext";
+import { useZoom, ZoomProvider } from "./ZoomContext";
+
+function Biggerplate({ dishType = 'Bigger Plate' }) {
+    const navigate = useNavigate(); // Hook for navigating between pages
+    const { selectedSide, resetSideSelection} = useSideSelection(); // Context for managing side selection
+    const { selectedEntree1, selectedEntree2, selectedEntree3, resetEntreeSelection } = useEntreeSelection(); // Context for managing entree selection
+    const { addItem } = useReceipt(); // Access addItem from context
+
+    const { zoomLevel, updateZoomLevel } = useZoom(); // Access zoom level and update functions from context
+    const handleZoomIn = () => updateZoomLevel(Math.min(zoomLevel + 0.1, 2)); // Handles zoom in functionality with a maximum zoom level of 2
+    const handleZoomOut = () => updateZoomLevel(Math.max(zoomLevel - 0.1, 0.5)); // Handles zoom out functionality with a minimum zoom level of 0.5
+    const handleResetZoom = () => updateZoomLevel(1); // Resets zoom to the default level (1)
+
+    /**
+     * Handles the "Cancel" button click by navigating back to the CustomerView page
+     * without saving the current selection.
+     */
+    const handleCancel = () => {
+        resetSideSelection(); // Reset the side button to "Sides"
+        resetEntreeSelection(); // Reset the entree button to "Entree"
+        navigate('/customer'); // Redirecting back to the CustomerView page
+    };
+
+    /**
+     * Handles the "Add" button click. Validates user input to ensure all fields
+     * are filled out, then adds the customized "Bigger Plate" to the receipt.
+     */
+    const handleAdd = () => {
+        if (!selectedSide || selectedSide === "Sides") {
+            alert("Please select a side."); 
+        } 
+        else if (selectedEntree1 === "Entree" || selectedEntree2 === "Entree" || selectedEntree3 === "Entree") {
+            alert("Please select all entrees."); 
+        }
+        else {
+            const item = {
+                name:`${dishType}`,
+                price: 11.30,
+                sides: selectedSide,
+                entrees: `${selectedEntree1} &amp; ${selectedEntree2} &amp;  ${selectedEntree3}`,
+            };
+            addItem(item); // Call addItem to add the item to the receipt
+
+            // Reset selections after adding to avoid duplicate bowl add
+            resetSideSelection();
+            resetEntreeSelection();
+            navigate('/customer');
+        }
+    };
+
+    // Navigates to sides page
+    const goToSide = () => {
+        navigate('/sides');
+    };
+
+   // Navigates to the first entree page
+    const goToEntree1 = () => {
+        navigate('/entree1');
+    };
+
+    // Navigates to the second entree page
+    const goToEntree2 = () => {
+        navigate('/entree2');
+    };
+
+    // Navigates to the third entree page
+    const goToEntree3 = () => {
+        navigate('/entree3');
+    };
+
+    return (
+        &lt;div className="plate-layout">
+            &lt;div className="title-bar">
+                &lt;h1>{dishType}&lt;/h1>
+            &lt;/div>
+
+            &lt;div className="middle-section">
+                &lt;div className="category-description">
+                    &lt;p>Choose your side:&lt;/p>
+                    &lt;button onClick={goToSide} className="sides-circle">{selectedSide}&lt;/button>
+                &lt;/div>
+
+                &lt;div className="category-description">
+                    &lt;p>Choose your 1st entree:&lt;/p>
+                    &lt;button onClick={goToEntree1} className="entree-circle">{selectedEntree1}&lt;/button>
+                &lt;/div>
+
+                &lt;div className="category-description">
+                    &lt;p>Choose your 2nd entree:&lt;/p>
+                    &lt;button onClick={goToEntree2} className="entree-circle">{selectedEntree2}&lt;/button>
+                &lt;/div>
+
+
+                &lt;div classNae="category-description">
+                    &lt;p>Choose your 3rd entree:&lt;/p>
+                    &lt;button onClick={goToEntree3} className="entree-circle">{selectedEntree3}&lt;/button>
+                &lt;/div>
+            &lt;/div>
+
+            &lt;div className="bottom-bar">
+                &lt;button onClick={handleCancel} className="cancel-button">Cancel&lt;/button>
+                &lt;button onClick={handleZoomIn}>Zoom In&lt;/button>
+                &lt;button onClick={handleZoomOut}>Zoom Out&lt;/button>
+                &lt;button onClick={handleResetZoom}>Reset Zoom&lt;/button>
+                &lt;button onClick={handleAdd} className="add-button">Add&lt;/button>
+            &lt;/div>
+        &lt;/div>
+    );
+}
+
+// Wraps the Biggerplate component with the ZoomProvider for zoom context
+const WrappedBiggerplate = () => (
+    &lt;ZoomProvider>
+        &lt;Biggerplate />
+    &lt;/ZoomProvider>
+);
+
+export default WrappedBiggerplate;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AddInventory">AddInventory</a></li><li><a href="global.html#AddItems">AddItems</a></li><li><a href="global.html#CashierView">CashierView</a></li><li><a href="global.html#CategoryTabs">CategoryTabs</a></li><li><a href="global.html#Entree1Selection">Entree1Selection</a></li><li><a href="global.html#Entree2Selection">Entree2Selection</a></li><li><a href="global.html#Entree3Selection">Entree3Selection</a></li><li><a href="global.html#EntreeSelectionProvider">EntreeSelectionProvider</a></li><li><a href="global.html#Hire">Hire</a></li><li><a href="global.html#ItemGrid">ItemGrid</a></li><li><a href="global.html#ManageEmployees">ManageEmployees</a></li><li><a href="global.html#ManageInventory">ManageInventory</a></li><li><a href="global.html#ManageStatistics">ManageStatistics</a></li><li><a href="global.html#ManagerView">ManagerView</a></li><li><a href="global.html#OrderControls">OrderControls</a></li><li><a href="global.html#Receipt">Receipt</a></li><li><a href="global.html#ReceiptProvider">ReceiptProvider</a></li><li><a href="global.html#SideSelectionProvider">SideSelectionProvider</a></li><li><a href="global.html#ZoomProvider">ZoomProvider</a></li><li><a href="global.html#addItemToReceipt">addItemToReceipt</a></li><li><a href="global.html#clearOrder">clearOrder</a></li><li><a href="global.html#fetchEmployees">fetchEmployees</a></li><li><a href="global.html#fetchInventory">fetchInventory</a></li><li><a href="global.html#fetchItemSales">fetchItemSales</a></li><li><a href="global.html#fetchItems">fetchItems</a></li><li><a href="global.html#fetchLastReceipt">fetchLastReceipt</a></li><li><a href="global.html#fetchMenuItems">fetchMenuItems</a></li><li><a href="global.html#fetchPaymentStats">fetchPaymentStats</a></li><li><a href="global.html#fetchStatistics">fetchStatistics</a></li><li><a href="global.html#getPriceByItem">getPriceByItem</a></li><li><a href="global.html#goToManagerView">goToManagerView</a></li><li><a href="global.html#handleAdd">handleAdd</a></li><li><a href="global.html#handleAddDiscount">handleAddDiscount</a></li><li><a href="global.html#handleAddInventorySubmit">handleAddInventorySubmit</a></li><li><a href="global.html#handleCategoryChange">handleCategoryChange</a></li><li><a href="global.html#handleChange">handleChange</a></li><li><a href="global.html#handleConfirmPayment">handleConfirmPayment</a></li><li><a href="global.html#handleFireEmployee">handleFireEmployee</a></li><li><a href="global.html#handleHireSubmit">handleHireSubmit</a></li><li><a href="global.html#handleLogout">handleLogout</a></li><li><a href="global.html#handleLogoutAndReturn">handleLogoutAndReturn</a></li><li><a href="global.html#handleMonthChange">handleMonthChange</a></li><li><a href="global.html#handlePay">handlePay</a></li><li><a href="global.html#handleRemove">handleRemove</a></li><li><a href="global.html#handleResetInventory">handleResetInventory</a></li><li><a href="global.html#handleSubmit">handleSubmit</a></li><li><a href="global.html#importAll">importAll</a></li><li><a href="global.html#isComboComplete">isComboComplete</a></li><li><a href="global.html#removeItemFromReceipt">removeItemFromReceipt</a></li><li><a href="global.html#resetForm">resetForm</a></li><li><a href="global.html#useEntreeSelection">useEntreeSelection</a></li><li><a href="global.html#useReceipt">useReceipt</a></li><li><a href="global.html#useSideSelection">useSideSelection</a></li><li><a href="global.html#useZoom">useZoom</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Dec 11 2024 23:14:43 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
