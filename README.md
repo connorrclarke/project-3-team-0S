@@ -72,7 +72,7 @@ To clone, build, and run the project locally, follow these steps:
 
 ## 📖 Documentation
 - **High-Level Details**: Refer to this `README.md`.
-- **Code Documentation**: Generated with TypeDoc, hosted in the `docs/` directory.
+- **Code Documentation**: Generated with JSDoc, hosted in the `docs/` directory.
 
 ## 🧑‍💻 Contributors
 - Connor Clarke, Luke Lopez, Meenalika Singh, Siddhi Mittal
