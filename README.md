@@ -3,8 +3,8 @@
 This repository contains the implementation of a Panda Express Point-of-Sale (POS) system for CSCE 331.
 
 ## 🌐 Live Website
-https://project-3-team-0-s.vercel.app/cashier
-Code Documentation: [https://connorrclarke.github.io/project-3-team-0S/](https://connorrclarke.github.io/project-3-team-0S/)
+- https://project-3-team-0-s.vercel.app/cashier
+- Code Documentation: [https://connorrclarke.github.io/project-3-team-0S/](https://connorrclarke.github.io/project-3-team-0S/)
 
 ## 🛠️ Features
 - **Cashier Interface**: Streamlined for fast order entry and payment processing.
