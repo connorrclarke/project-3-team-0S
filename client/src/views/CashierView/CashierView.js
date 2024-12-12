@@ -6,6 +6,12 @@ import './CashierView.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 
+/**
+ * Main Cashier View.
+ * @function CashierView
+ * @description Component for the cashier interface to manage orders, payments, and receipt generation.
+ * @returns {JSX.Element} The rendered CashierView component.
+ */
 const CashierView = () => {
   const navigate = useNavigate();
   const { logout } = useAuth0();
@@ -33,6 +39,12 @@ const CashierView = () => {
   });
 
   useEffect(() => {
+    /**
+     * Fetches menu items from the API and categorizes them by type.
+     * @async
+     * @function fetchMenuItems
+     * @returns {Promise<void>}
+     */
     const fetchMenuItems = async () => {
       try {
         const response = await fetch(`${API_URL}/menu-items`);
@@ -79,6 +91,12 @@ const CashierView = () => {
     "Bigger Plate": { sides: 1, entrees: 3 },
   };
 
+  /**
+   * Calculates the price of an item based on its category.
+   * @function getPriceByItem
+   * @param {string} item - The name of the item.
+   * @returns {number} The price of the item.
+   */
   const getPriceByItem = (item) => {
     if (menuItems?.sides?.includes(item)) {
       return 4.4;
@@ -88,6 +106,12 @@ const CashierView = () => {
     return 0;
   };
 
+  /**
+   * Adds an item to the receipt.
+   * @function addItemToReceipt
+   * @param {string} item - The name of the item to add.
+   * @returns {void}
+   */
   const addItemToReceipt = (item) => {
     const price = categoryPrices[selectedCategory] || getPriceByItem(item);
     if (['Appetizers', 'Drinks', 'À la carte'].includes(selectedCategory)) {
@@ -140,6 +164,12 @@ const CashierView = () => {
     }
   };  
 
+  /**
+   * Removes an item from the receipt by index.
+   * @function removeItemFromReceipt
+   * @param {number} index - The index of the item to remove.
+   * @returns {void}
+   */
   const removeItemFromReceipt = (index) => {
     const updatedReceipt = receipt.filter((_, i) => i !== index);
     setReceipt(updatedReceipt);
@@ -158,6 +188,11 @@ const CashierView = () => {
   const taxAmount = applyTax ? discountAdjustedSubtotal * taxRate : 0;
   const finalTotal = discountAdjustedSubtotal + taxAmount;
 
+  /**
+   * Applies a discount to the order.
+   * @function handleAddDiscount
+   * @returns {void}
+   */
   const handleAddDiscount = () => {
     const discountValue = parseFloat(discountInput);
     if (isNaN(discountValue) || discountValue <= 0) {
@@ -173,6 +208,11 @@ const CashierView = () => {
     }
   };
 
+  /**
+   * Checks if the combo is complete.
+   * @function isComboComplete
+   * @returns {boolean} True if the combo is complete; false otherwise.
+   */
   const isComboComplete = () => {
     return receipt.every((item) => {
       if (item.category === 'Bowl') {
@@ -186,6 +226,11 @@ const CashierView = () => {
     });
   };
 
+  /**
+   * Handles the payment process for the order.
+   * @function handlePay
+   * @returns {void}
+   */
   const handlePay = () => {
     if (!isComboComplete()) {
       setErrorMessage('You must finish building combo before you can checkout.');
@@ -195,6 +240,12 @@ const CashierView = () => {
     setShowPay(true);
   };
 
+  /**
+   * Confirms the payment and sends the order to the backend.
+   * @async
+   * @function handleConfirmPayment
+   * @returns {Promise<void>}
+   */
   const handleConfirmPayment = async () => {
     if (!selectedPaymentMethod) {
       setErrorMessage("Please select a payment method.");
@@ -265,16 +316,31 @@ const CashierView = () => {
     }
   };
 
+  /**
+   * Navigates to the Manager View.
+   * @function goToManagerView
+   * @returns {void}
+   */
   const goToManagerView = () => {
     navigate('/manager');
   };
 
+  /**
+   * Clears the current order.
+   * @function clearOrder
+   * @returns {void}
+   */
   const clearOrder = () => {
     setReceipt([]);
     setDiscount(0);
     setApplyTax(true);
   };
 
+  /**
+   * Fetches the last receipt.
+   * @function fetchLastReceipt
+   * @returns {void}
+   */
   const fetchLastReceipt = () => {
     if (!lastReceipt) {
       setErrorMessage("No orders have been placed today. A receipt is not available.");
@@ -284,6 +350,11 @@ const CashierView = () => {
     setShowLastReceiptPopup(true);
   };
 
+  /**
+   * Logs out the user and redirects to the Customer View.
+   * @function handleLogoutAndReturn
+   * @returns {void}
+   */
   const handleLogoutAndReturn = () => {
     logout({ returnTo: window.location.origin }); // Auth0 logout
     navigate('/customer'); // Navigate to the Customer View

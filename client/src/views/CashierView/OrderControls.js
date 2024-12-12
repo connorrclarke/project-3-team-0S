@@ -1,6 +1,18 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 
+/**
+ * Controls for managing the order, including payment, discount, and logout.
+ * @function OrderControls
+ * @param {Function} fetchLastReceipt - Function to fetch the last receipt.
+ * @param {Function} onAddDiscount - Function to open the discount popup.
+ * @param {boolean} hasDiscount - Whether a discount is applied.
+ * @param {Function} toggleTax - Function to toggle tax application.
+ * @param {boolean} applyTax - Whether tax is applied.
+ * @param {Function} onClearOrder - Function to clear the current order.
+ * @param {Function} onPay - Function to initiate payment.
+ * @returns {JSX.Element}
+ */
 const OrderControls = ({
   fetchLastReceipt,
   onAddDiscount,
@@ -12,6 +24,11 @@ const OrderControls = ({
 }) => {
   const { logout } = useAuth0();
 
+  /**
+   * Logs out the user and returns to the customer view.
+   * @function handleLogout
+   * @returns {void}
+   */
   const handleLogout = () => {
     logout({
       logoutParams: {

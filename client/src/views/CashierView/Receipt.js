@@ -1,5 +1,19 @@
 import React from "react";
 
+/**
+ * Displays the receipt with order details, subtotal, tax, and total.
+ * @function Receipt
+ * @param {Array<Object>} receipt - List of receipt items.
+ * @param {Function} onRemove - Function to remove an item from the receipt.
+ * @param {boolean} applyTax - Whether tax is applied.
+ * @param {number} subtotal - The subtotal amount.
+ * @param {number} discountAdjustedSubtotal - Subtotal after discount is applied.
+ * @param {number} taxAmount - The tax amount.
+ * @param {number} discount - The discount amount.
+ * @param {number} total - The final total amount.
+ * @param {boolean} showRemoveButtons - Whether to show remove buttons for receipt items.
+ * @returns {JSX.Element}
+ */
 const Receipt = ({
   receipt,
   onRemove,

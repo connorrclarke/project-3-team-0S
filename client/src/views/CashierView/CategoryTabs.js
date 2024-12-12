@@ -1,5 +1,18 @@
 import React, { useState } from 'react';
 
+/**
+ * Category Tabs for navigating different order categories.
+ * @function CategoryTabs
+ * @param {Array<string>} categories - The list of categories.
+ * @param {string} selectedCategory - The currently selected category.
+ * @param {Function} setSelectedCategory - Function to update the selected category.
+ * @param {Function} goToManagerView - Function to navigate to the manager view.
+ * @param {Array<Object>} receipt - The current receipt data.
+ * @param {Array<string>} sides - List of available side items.
+ * @param {Array<string>} entrees - List of available entree items.
+ * @param {Object} categoryLimits - Limits for sides and entrees per category.
+ * @returns {JSX.Element}
+ */
 const CategoryTabs = ({
   categories,
   selectedCategory,
@@ -13,6 +26,12 @@ const CategoryTabs = ({
   const [showIncompleteComboPopup, setShowIncompleteComboPopup] = useState(false);
   const [incompleteComboMessage, setIncompleteComboMessage] = useState('');
 
+  /**
+   * Changes the selected category and validates combo completion.
+   * @function handleCategoryChange
+   * @param {string} newCategory - The new category to select.
+   * @returns {void}
+   */
   const handleCategoryChange = (newCategory) => {
     if (['Bowl', 'Plate', 'Bigger Plate'].includes(selectedCategory)) {
       const limit = categoryLimits[selectedCategory];
