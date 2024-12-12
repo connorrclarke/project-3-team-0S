@@ -65,7 +65,7 @@ To clone, build, and run the project locally, follow these steps:
      npm run dev
      ```
 
-4. **Access the application**:
+4. **Access the application** (You will need the .env file to run locally - You can email me for this):
    - Frontend: [http://localhost:3000](http://localhost:3000)
    - Backend API: [http://localhost:5555/api](http://localhost:5555/api)
 
