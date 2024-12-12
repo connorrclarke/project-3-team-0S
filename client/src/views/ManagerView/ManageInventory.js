@@ -7,14 +7,9 @@ const API_URL = process.env.REACT_APP_API_URL;
 //const API_URL = "http://localhost:5555/api";
 
 /**
- * A component for managing the inventory, displaying a list of inventory items and allowing new items to be added.
- *
- * @component
- * @example
- * // Usage Example:
- * <ManageInventory />
- * @author Luke Lopez
- * @returns {JSX.Element} The rendered ManageInventory component.
+ * @function ManageInventory
+ * @description Component for managing inventory, allowing addition and reset of inventory items.
+ * @returns {JSX.Element}
  */
 const ManageInventory = () => {
     const [inventory, setInventory] = useState([]);  // Inventory state to store list of inventory items
@@ -23,12 +18,9 @@ const ManageInventory = () => {
     const navigate = useNavigate(); // Hook for navigating to different routes
 
     /**
-     * Fetches the inventory items from the backend API when the component mounts.
-     * Handles errors if the fetch operation fails.
-     *
-     * @async
-     * @function
-     * @returns {void}
+     * @function fetchInventory
+     * @description Fetches inventory data from the backend API.
+     * @returns {Promise<void>}
      */
     const fetchInventory = async () => {
         try {
@@ -50,13 +42,10 @@ const ManageInventory = () => {
     }, []);
 
     /**
-     * Handles the submission of a new inventory item through the AddInventory component.
-     * Sends the new inventory data to the backend API and updates the inventory list.
-     *
-     * @async
-     * @function
-     * @param {Object} formData - The data for the new inventory item.
-     * @returns {void}
+     * @function handleAddInventorySubmit
+     * @description Submits a new inventory item to the backend API.
+     * @param {Object} formData - The details of the inventory item.
+     * @returns {Promise<void>}
      */
     const handleAddInventorySubmit = async (formData) => {
         try {
@@ -76,6 +65,11 @@ const ManageInventory = () => {
         }
     };
 
+    /**
+     * @function handleResetInventory
+     * @description Resets the inventory to its initial state.
+     * @returns {Promise<void>}
+     */
     const handleResetInventory = async () => {
         try {
             const response = await fetch(`${API_URL}/resetInventory`, {

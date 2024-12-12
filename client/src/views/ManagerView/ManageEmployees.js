@@ -7,11 +7,22 @@ import Hire from './Hire';
 const API_URL = process.env.REACT_APP_API_URL;
 //const API_URL = "http://localhost:5555/api";
 
+/**
+ * @function ManageEmployees
+ * @description Component for managing employees, including hiring and firing.
+ * @returns {JSX.Element}
+ */
 const ManageEmployees = () => {
     const [employees, setEmployees] = useState([]);
     const [error, setError] = useState(null);
     const [showHireModal, setShowHireModal] = useState(false);
     const navigate = useNavigate();
+
+    /**
+     * @function fetchEmployees
+     * @description Fetches the employee list from the backend API.
+     * @returns {Promise<void>}
+     */
     const fetchEmployees = async () => {
         try {
             const response = await fetch(`${API_URL}/employees`);  // Use API_URL here
@@ -31,6 +42,12 @@ const ManageEmployees = () => {
         fetchEmployees();
     }, []);
 
+    /**
+     * @function handleHireSubmit
+     * @description Submits the data of a newly hired employee to the backend.
+     * @param {Object} formData - The employee's details.
+     * @returns {Promise<void>}
+     */
     const handleHireSubmit = async (formData) => {
         try {
             const response = await fetch(`${API_URL}/hire`, {
@@ -51,6 +68,12 @@ const ManageEmployees = () => {
 
     };
 
+    /**
+     * @function handleFireEmployee
+     * @description Sends a request to terminate an employee by their ID.
+     * @param {number} employeeId - The ID of the employee to terminate.
+     * @returns {Promise<void>}
+     */
     const handleFireEmeployee = async (employeeId)=>
         {
             try {

@@ -6,21 +6,11 @@ import './Manager.css';
 //const API_URL =  'http://localhost:5555/api';
 
 /**
- * Modal component for adding a new inventory item.
- *
- * @component
- * @example
- * const handleAddInventorySubmit = (formData) => {
- *   // Handle form submission to API or state
- * };
- *
- * return <AddInventory onClose={handleClose} onSubmit={handleAddInventorySubmit} />;
- *
- * @param {Object} props - The props for the AddInventory component.
- * @param {Function} props.onClose - A function to close the modal after submission or cancellation.
- * @param {Function} props.onSubmit - A function to handle the form submission with the form data.
- *
- * @returns {JSX.Element} A modal form for adding inventory.
+ * @function AddInventory
+ * @description Modal component for adding a new inventory item.
+ * @param {Function} onClose - Function to close the modal.
+ * @param {Function} onSubmit - Function to handle the submission of form data.
+ * @returns {JSX.Element}
  */
 const AddInventory = ({ onClose, onSubmit }) => {
     const [ingredient, setIngredient] = useState('');
@@ -29,9 +19,10 @@ const AddInventory = ({ onClose, onSubmit }) => {
     const [error, setError] = useState(null);
 
     /**
-     * Handles the form submission.
-     *
+     * @function handleSubmit
+     * @description Handles the form submission to add a new inventory item.
      * @param {Object} e - The event object.
+     * @returns {void}
      */
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -42,9 +33,6 @@ const AddInventory = ({ onClose, onSubmit }) => {
         };
 
         try {
-
-
-
             onSubmit(formData); // Notify parent component
             resetForm();
             onClose();
@@ -55,7 +43,9 @@ const AddInventory = ({ onClose, onSubmit }) => {
     };
 
     /**
-     * Resets the form inputs and error state.
+     * @function resetForm
+     * @description Resets the form inputs and error state.
+     * @returns {void}
      */
     const resetForm = () => {
         setIngredient('');

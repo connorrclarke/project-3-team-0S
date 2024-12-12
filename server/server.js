@@ -1,9 +1,9 @@
 // Import required packages
-const express = require('express');
-const { auth } = require('express-openid-connect');
-const { Pool } = require('pg');
-const cors = require('cors');
-const dotenv = require('dotenv').config();
+const express = require('express'); // Express framework
+const { auth, requiresAuth } = require('express-openid-connect'); // Auth0 middleware
+const { Pool } = require('pg'); // PostgreSQL client
+const cors = require('cors'); // Cross-Origin Resource Sharing middleware
+const dotenv = require('dotenv').config(); // Environment variable loader
 
 // Initialize the app
 const app = express();
@@ -32,10 +32,23 @@ const config = {
 };
 app.use(auth(config));
 
+/**
+ * Root route.
+ * @name GET /
+ * @description Checks if the user is authenticated and returns a message accordingly.
+ * @returns {string} "Logged in" if authenticated, otherwise "Logged out".
+ */
 app.get('/', (req, res) => {
     res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
 });
 
+/**
+ * Protected route.
+ * @name GET /protected
+ * @description Returns a personalized message if the user is authenticated.
+ * @throws {401} Unauthorized if the user is not logged in.
+ * @returns {Object} Greeting message for the authenticated user.
+ */
 app.get('/protected', (req, res) => {
     if (!req.oidc.isAuthenticated()) {
         return res.status(401).send('Unauthorized');
@@ -43,15 +56,21 @@ app.get('/protected', (req, res) => {
     res.json({ message: `Hello, ${req.oidc.user.name}!` });
 });
 
-const { requiresAuth } = require('express-openid-connect');
-
+/**
+ * Profile route.
+ * @name GET /profile
+ * @description Returns the user's profile information. Authentication required.
+ * @returns {Object} JSON representation of the user's profile.
+ */
 app.get('/profile', requiresAuth(), (req, res) => {
   res.send(JSON.stringify(req.oidc.user));
 });
 
-
 /**
- * Handles server shutdown and cleans up database connections.
+ * Graceful shutdown handler.
+ *
+ * @event SIGINT
+ * @description Closes the database pool when the application is terminated.
  */
 process.on('SIGINT', () => {
     pool.end().then(() => {
@@ -65,13 +84,12 @@ process.on('SIGINT', () => {
 
 /**
  * Test database connection endpoint.
- *
  * @async
- * @function
  * @name testDbConnection
  * @route GET /api/test-db
- * @returns {Object} A simple confirmation of the database connection.
- * @throws {Error} If there is an issue connecting to the database.
+ * @description Verifies database connectivity by fetching sample data.
+ * @returns {Object} A JSON response with database rows.
+ * @throws {500} Internal server error if the connection fails.
  */
 app.get('/api/test-db', async (req, res) => {
     try {
@@ -84,14 +102,13 @@ app.get('/api/test-db', async (req, res) => {
 });
 
 /**
- * Endpoint to get all menu items.
- *
+ * Fetch all menu items.
  * @async
- * @function
  * @name getMenuItems
  * @route GET /api/menu-items
+ * @description Retrieves all menu items from the database.
  * @returns {Object} JSON object containing menu items.
- * @throws {Error} If there is an issue fetching menu items from the database.
+ * @throws {500} Internal server error on failure.
  */
 app.get('/api/menu-items', async (req, res) => {
     try {
@@ -104,14 +121,13 @@ app.get('/api/menu-items', async (req, res) => {
 });
 
 /**
- * Endpoint to get all menu items that are entrees.
- * 
+ * Fetch entree items.
  * @async
- * @function
  * @name getEntrees
  * @route GET /api/menu-items/entrees
- * @returns {Object} JSON object containing entree menu items.
- * @throws {Error} If there is an issue fetching entree menu items from the database.
+ * @description Retrieves all entree items from the database.
+ * @returns {Object} JSON object containing entree items.
+ * @throws {500} Internal server error on failure.
  */
 app.get('/api/menu-items/entrees', async (req, res) => {
     try {
@@ -124,14 +140,13 @@ app.get('/api/menu-items/entrees', async (req, res) => {
 });
 
 /**
- * Endpoint to get all menu items that are sides.
- * 
+ * Fetch side items.
  * @async
- * @function
  * @name getSides
  * @route GET /api/menu-items/sides
- * @returns {Object} JSON object containing side menu items.
- * @throws {Error} If there is an issue fetching side menu items from the database.
+ * @description Retrieves all side items from the database.
+ * @returns {Object} JSON object containing side items.
+ * @throws {500} Internal server error on failure.
  */
 app.get('/api/menu-items/sides', async (req, res) => {
     try {
@@ -144,14 +159,13 @@ app.get('/api/menu-items/sides', async (req, res) => {
 });
 
 /**
- * Endpoint to get all menu items that are appetizers.
- * 
+ * Fetch appetizer items.
  * @async
- * @function
  * @name getAppetizers
  * @route GET /api/menu-items/appetizers
- * @returns {Object} JSON object containing appetizer menu items.
- * @throws {Error} If there is an issue fetching appetizer menu items from the database.
+ * @description Retrieves all appetizer items from the database.
+ * @returns {Object} JSON object containing appetizer items.
+ * @throws {500} Internal server error on failure.
  */
 app.get('/api/menu-items/appetizers', async (req, res) => {
     try {
@@ -164,14 +178,13 @@ app.get('/api/menu-items/appetizers', async (req, res) => {
 });
 
 /**
- * Endpoint to get all menu items that are drinks.
- * 
+ * Fetch drink items.
  * @async
- * @function
  * @name getDrinks
  * @route GET /api/menu-items/drinks
- * @returns {Object} JSON object containing drink menu items.
- * @throws {Error} If there is an issue fetching drink menu items from the database.
+ * @description Retrieves all drink items from the database.
+ * @returns {Object} JSON object containing drink items.
+ * @throws {500} Internal server error on failure.
  */
 app.get('/api/menu-items/drinks', async (req, res) => {
     try {
@@ -184,14 +197,13 @@ app.get('/api/menu-items/drinks', async (req, res) => {
 });
 
 /**
- * Endpoint to get all employees.
- *
+ * Fetch employee list.
  * @async
- * @function
  * @name getEmployees
  * @route GET /api/employees
+ * @description Retrieves all employees from the database.
  * @returns {Object} JSON object containing employee details.
- * @throws {Error} If there is an issue fetching employee data from the database.
+ * @throws {500} Internal server error on failure.
  */
 app.get('/api/employees', async (req, res) => {
     try {
@@ -204,16 +216,14 @@ app.get('/api/employees', async (req, res) => {
 });
 
 /**
- * Endpoint to fire an employee by updating their employment status.
- *
+ * Fire an employee.
  * @async
- * @function
  * @name fireEmployee
  * @route GET /api/fire/:employeeId
- * @param {Object} req - The request object containing the employee's ID.
- * @param {Object} res - The response object that will send the status of the operation.
- * @returns {Object} A message confirming the firing of the employee.
- * @throws {Error} If there is an issue with the database operation.
+ * @description Updates the employment status of an employee to 'false'.
+ * @param {string} employeeId - The ID of the employee to fire.
+ * @returns {Object} A confirmation message.
+ * @throws {500} Internal server error on failure.
  */
 app.get('/api/fire/:employeeId', async (req, res) => {
     try {
@@ -227,16 +237,14 @@ app.get('/api/fire/:employeeId', async (req, res) => {
 });
 
 /**
- * Endpoint to hire a new employee.
- *
+ * Hire a new employee.
  * @async
- * @function
  * @name hireEmployee
  * @route POST /api/hire
- * @param {Object} req - The request object containing the new employee's details.
- * @param {Object} res - The response object that will send a confirmation message.
- * @returns {Object} A message and the newly hired employee's information.
- * @throws {Error} If there is an issue with hiring the employee in the database.
+ * @description Adds a new employee to the database.
+ * @param {Object} req.body - The employee's details.
+ * @returns {Object} Confirmation message and the new employee's information.
+ * @throws {500} Internal server error on failure.
  */
 app.post('/api/hire', async (req, res) => {
     try {
@@ -253,14 +261,13 @@ app.post('/api/hire', async (req, res) => {
 });
 
 /**
- * Endpoint to fetch all inventory items.
- *
+ * Fetch inventory items.
  * @async
- * @function
  * @name getInventory
  * @route GET /api/inventory
+ * @description Retrieves all inventory items from the database.
  * @returns {Object} JSON object containing inventory items.
- * @throws {Error} If there is an issue fetching inventory data from the database.
+ * @throws {500} Internal server error on failure.
  */
 app.get('/api/inventory', async (req, res) => {
     try {
@@ -273,16 +280,14 @@ app.get('/api/inventory', async (req, res) => {
 });
 
 /**
- * Endpoint to add a new inventory item.
- *
+ * Add an inventory item.
  * @async
- * @function
  * @name addInventoryItem
  * @route POST /api/inventory
- * @param {Object} req - The request object containing the inventory item details.
- * @param {Object} res - The response object that will send a confirmation and the added item.
+ * @description Adds a new inventory item to the database.
+ * @param {Object} req.body - The inventory item's details.
  * @returns {Object} The newly added inventory item.
- * @throws {Error} If there is an issue adding the inventory item to the database.
+ * @throws {500} Internal server error on failure.
  */
 app.post('/api/inventory', async (req, res) => {
     try {
@@ -309,7 +314,13 @@ app.post('/api/inventory', async (req, res) => {
 
 
 /**
- * Endpoint to get all menu items (use this for the frontend to get the list).
+ * Fetch all menu items for the frontend.
+ * @async
+ * @name getItems
+ * @route GET /api/items
+ * @description Retrieves all menu items from the database.
+ * @returns {Object} JSON object containing menu items.
+ * @throws {500} Internal server error on failure.
  */
 app.get('/api/items', async (req, res) => {
     try {
@@ -321,6 +332,16 @@ app.get('/api/items', async (req, res) => {
     }
 });
 
+/**
+ * Add a menu item.
+ * @async
+ * @name addMenuItem
+ * @route POST /api/items
+ * @description Adds a new menu item and links it to inventory.
+ * @param {Object} req.body - The menu item's details.
+ * @returns {Object} JSON object with the new menu and inventory item.
+ * @throws {500} Internal server error on failure.
+ */
 app.post('/api/items', async (req, res) => {
     const { Name, Price, Seasonal, Calories, Category, Available } = req.body;
 
@@ -364,8 +385,18 @@ app.post('/api/items', async (req, res) => {
     }
 });
 
-
-// Update the availability of a menu item
+/**
+ * Update menu item availability.
+ * @async
+ * @name updateItemAvailability
+ * @route PATCH /api/items/:id
+ * @description Updates the availability status of a menu item.
+ * @param {string} id - The menu item's ID.
+ * @param {boolean} req.body.Available - Availability status.
+ * @returns {Object} Confirmation message and the updated item.
+ * @throws {400} Invalid input.
+ * @throws {500} Internal server error on failure.
+ */
 app.patch('/api/items/:id', async (req, res) => {
     const { id } = req.params;
     const { Available } = req.body;
@@ -397,16 +428,15 @@ app.patch('/api/items/:id', async (req, res) => {
 });
 
 /**
- * Endpoint to create a new order.
- * 
+ * Create a new order.
  * @async
- * @function
  * @name createOrder
  * @route POST /api/order
- * @param {Object} req - The request object containing the order details.
- * @param {Object} res - The response object that will send a confirmation message.
- * @returns {Object} A message confirming the order creation and the order ID.
- * @throws {Error} If there is an issue creating the order in the database.
+ * @description Adds a new order to the database.
+ * @param {Object} req.body - The order details.
+ * @returns {Object} Confirmation message and order ID.
+ * @throws {400} Missing or invalid input.
+ * @throws {500} Internal server error on failure.
  */
 app.post('/api/order', async (req, res) => {
     const { total, method } = req.body;
@@ -438,16 +468,15 @@ app.post('/api/order', async (req, res) => {
 });
 
 /**
- * Endpoint to update inventory based on a menu item order.
- * 
+ * Update inventory for menu items.
  * @async
- * @function
  * @name updateInventory
  * @route POST /api/updateInventory
- * @param {Object} req - The request object containing the menu item name and quantity.
- * @param {Object} res - The response object that will send a confirmation message.
- * @returns {Object} A message confirming the inventory update.
- * @throws {Error} If there is an issue updating the inventory in the database.
+ * @description Updates inventory quantities based on menu item orders.
+ * @param {Object} req.body - The menu item's name and quantity.
+ * @returns {Object} Confirmation message.
+ * @throws {400} Invalid input.
+ * @throws {500} Internal server error on failure.
  */
 app.post('/api/updateInventory', async (req, res) => {
     const { menuItemName, quantity } = req.body;
@@ -494,7 +523,15 @@ app.post('/api/updateInventory', async (req, res) => {
     }
 });
 
-// Endpoint to get least popular items
+/**
+ * Fetch least popular items.
+ * @async
+ * @name getLeastPopularItems
+ * @route GET /api/stats/least-popular
+ * @description Retrieves the least popular menu items.
+ * @returns {Object} JSON object containing items.
+ * @throws {500} Internal server error on failure.
+ */
 app.get('/api/stats/least-popular', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM get_least_popular_item();');
@@ -505,7 +542,15 @@ app.get('/api/stats/least-popular', async (req, res) => {
     }
 });
 
-// Endpoint to get most popular item on a specific day
+/**
+ * Fetch most popular item by day.
+ * @async
+ * @name getMostPopularDay
+ * @route GET /api/stats/most-popular-day
+ * @description Retrieves the most popular item for a specific day.
+ * @returns {Object} JSON object containing the item.
+ * @throws {500} Internal server error on failure.
+ */
 app.get('/api/stats/most-popular-day', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM get_most_popular_item_on_day($1);', [new Date()]);
@@ -516,7 +561,15 @@ app.get('/api/stats/most-popular-day', async (req, res) => {
     }
 });
 
-// Endpoint to get top employee sales for a month
+/**
+ * Fetch top employee sales for the month.
+ * @async
+ * @name getTopEmployeeSales
+ * @route GET /api/stats/top-employee-sales
+ * @description Retrieves employee sales statistics for the month.
+ * @returns {Object} JSON object containing sales data.
+ * @throws {500} Internal server error on failure.
+ */
 app.get('/api/stats/top-employee-sales', async (req, res) => {
     try {
         const currentDate = new Date();
@@ -529,6 +582,15 @@ app.get('/api/stats/top-employee-sales', async (req, res) => {
     }
 });
 
+/**
+ * Fetch sales in a specific month.
+ * @async
+ * @name getSalesInMonth
+ * @route GET /api/stats/salesinMonth/:month
+ * @param {string} month - The month for which sales data is requested.
+ * @returns {Object} JSON object containing sales data.
+ * @throws {500} Internal server error on failure.
+ */
 app.get('/api/stats/salesinMonth/:month', async (req, res) => {
     try {
         const { month } = req.params;
@@ -544,6 +606,18 @@ app.get('/api/stats/salesinMonth/:month', async (req, res) => {
     }
 });
 
+/**
+ * Fetch top employee sales for a specific month.
+ * @async
+ * @name getTopEmployeeSalesByMonth
+ * @route GET /api/stats/top-employee-sales/:month
+ * @description Retrieves the total sales for each employee in the specified month.
+ * @param {Object} req - The request object containing the month as a URL parameter.
+ * @param {Object} res - The response object that sends back the sales data or an error.
+ * @returns {Object} JSON object containing employee IDs and their total sales.
+ * @throws {404} If no sales data is found for the given month.
+ * @throws {500} Internal server error on failure.
+ */
 app.get('/api/stats/top-employee-sales/:month', async (req, res) => {
     try {
         const { month } = req.params; // Get the month parameter from the URL
@@ -571,6 +645,18 @@ app.get('/api/stats/top-employee-sales/:month', async (req, res) => {
     }
 });
 
+/**
+ * Fetch payment statistics for a specific month.
+ * @async
+ * @name getDailyPaymentStats
+ * @route GET /api/stats/dailypayment/:month
+ * @description Retrieves the payment types used, their usage counts, and total amounts for the specified month.
+ * @param {Object} req - The request object containing the month as a URL parameter.
+ * @param {Object} res - The response object that sends back the payment statistics or an error.
+ * @returns {Object} JSON object containing payment type statistics.
+ * @throws {404} If no data is found for the given month.
+ * @throws {500} Internal server error on failure.
+ */
 app.get('/api/stats/dailypayment/:month', async (req, res) => {
     try {
         const { month } = req.params; // Get the month parameter from the URL
@@ -601,6 +687,18 @@ app.get('/api/stats/dailypayment/:month', async (req, res) => {
     }
 });
 
+/**
+ * Fetch the most frequently ordered menu items.
+ * @async
+ * @name getTopItemSales
+ * @route GET /api/stats/top-item-sales/
+ * @description Retrieves the top menu items based on the number of times they were ordered.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object that sends back the item sales data or an error.
+ * @returns {Object} JSON object containing menu items and their order counts.
+ * @throws {404} If no sales data is found.
+ * @throws {500} Internal server error on failure.
+ */
 app.get('/api/stats/top-item-sales/', async (req, res) => {
     try {
 
@@ -633,14 +731,13 @@ app.get('/api/stats/top-item-sales/', async (req, res) => {
 });
 
 /**
- * Endpoint to reset inventory to initial values.
- *
+ * Reset inventory to initial values.
  * @async
- * @function
  * @name resetInventory
- * @route POST /api/reset-inventory
- * @returns {Object} A confirmation message that the inventory has been reset.
- * @throws {Error} If there is an issue resetting the inventory.
+ * @route POST /api/resetInventory
+ * @description Resets the inventory database to predefined values.
+ * @returns {Object} Confirmation message.
+ * @throws {500} Internal server error on failure.
  */
 app.post('/api/resetInventory', async (req, res) => {
     const resetInventorySQL = `

@@ -18,6 +18,11 @@ Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 const API_URL = process.env.REACT_APP_API_URL;
 //const API_URL = "http://localhost:5555/api";
 
+/**
+ * @function ManageStatistics
+ * @description Component for viewing and managing monthly sales statistics.
+ * @returns {JSX.Element}
+ */
 const ManageStatistics = () => {
     const navigate = useNavigate();
 
@@ -28,9 +33,12 @@ const ManageStatistics = () => {
     const [loading, setLoading] = useState(true);
     const [itemSales, setItemSales] = useState([]);
 
-
-
-
+    /**
+     * @function fetchStatistics
+     * @description Fetches employee sales statistics for a specific month.
+     * @param {number} month - The month for which data is requested.
+     * @returns {Promise<void>}
+     */
     const fetchStatistics = async (month) => {
         try {
             setLoading(true);
@@ -47,6 +55,13 @@ const ManageStatistics = () => {
             setLoading(false);
         }
     };
+
+    /**
+     * @function fetchPaymentStats
+     * @description Fetches payment method statistics for a specific month.
+     * @param {number} month - The month for which data is requested.
+     * @returns {Promise<void>}
+     */
     const fetchPaymentStats = async (month) => {
         try {
             setLoading(true);
@@ -64,6 +79,11 @@ const ManageStatistics = () => {
         }
     };
 
+    /**
+     * @function fetchItemSales
+     * @description Fetches top-selling items data.
+     * @returns {Promise<void>}
+     */
     const fetchItemSales = async () => {
         try {
             const response = await fetch(`${API_URL}/stats/top-item-sales/`);
@@ -87,6 +107,12 @@ const ManageStatistics = () => {
         fetchItemSales(); // Fetch item sales when the component mounts
     }, []);
 
+    /**
+     * @function handleMonthChange
+     * @description Updates the displayed statistics based on the selected month.
+     * @param {Object} event - The event object from the month selector.
+     * @returns {void}
+     */
     const handleMonthChange = (event) => {
         const selectedMonth = parseInt(event.target.value, 10); // Convert month to integer
         setMonth(selectedMonth);
@@ -137,7 +163,6 @@ const ManageStatistics = () => {
             },
         },
     };
-    
 
     const EmployeeSalesChartData = {
         labels: employeeSales.map((employee) => `Employee ${employee.EmployeeId}`),

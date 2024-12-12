@@ -2,15 +2,11 @@ import React, { useState } from 'react';
 import './Manager.css';
 
 /**
- * A modal component for adding new menu items to the inventory, including a manual ID input.
- *
- * @component
- * @example
- * // Usage Example:
- * <AddItems onClose={handleClose} onSubmit={handleSubmit} />
+ * @function AddItems
+ * @description Modal component for adding a new menu item.
  * @param {Function} onClose - Function to close the modal.
- * @param {Function} onSubmit - Function to handle form submission.
- * @returns {JSX.Element} The rendered AddItems component.
+ * @param {Function} onSubmit - Function to handle the submission of form data.
+ * @returns {JSX.Element}
  */
 const AddItems = ({ onClose, onSubmit }) => {
     const [formData, setFormData] = useState({
@@ -23,9 +19,10 @@ const AddItems = ({ onClose, onSubmit }) => {
     });
 
     /**
-     * Handles form input changes and updates the state.
-     *
-     * @param {Object} event - The input change event.
+     * @function handleChange
+     * @description Updates the form state on input change.
+     * @param {Object} event - The event object.
+     * @returns {void}
      */
     const handleChange = (event) => {
         const { name, value, type, checked } = event.target;
@@ -36,9 +33,10 @@ const AddItems = ({ onClose, onSubmit }) => {
     };
 
     /**
-     * Handles form submission and triggers the parent onSubmit function.
-     *
+     * @function handleSubmit
+     * @description Submits the form data for a new menu item.
      * @param {Object} event - The form submission event.
+     * @returns {void}
      */
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -51,7 +49,6 @@ const AddItems = ({ onClose, onSubmit }) => {
             <div className="modal-content">
                 <h2>Add New Menu Item</h2>
                 <form onSubmit={handleSubmit}>
-
                     <label>
                         Item Name:
                         <input

@@ -11,6 +11,11 @@ import React from 'react';
 import './Manager.css';
 import { useNavigate } from "react-router-dom";
 
+/**
+ * @function ManagerView
+ * @description Main view for a manager, allowing navigation to different management areas.
+ * @returns {JSX.Element}
+ */
 const ManagerView = ({ setView }) => {
 
     const navigate = useNavigate();

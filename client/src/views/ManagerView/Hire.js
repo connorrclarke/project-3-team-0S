@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import './Manager.css';
 
+/**
+ * @function Hire
+ * @description Modal component for hiring a new employee.
+ * @param {Function} onClose - Function to close the modal.
+ * @param {Function} onSubmit - Function to handle the submission of form data.
+ * @returns {JSX.Element}
+ */
 const Hire = ({ onClose, onSubmit }) => {
     const [formData, setFormData] = useState({
         firstName: '',
@@ -10,6 +17,12 @@ const Hire = ({ onClose, onSubmit }) => {
         employed: true,
     });
 
+    /**
+     * @function handleChange
+     * @description Updates the form state when input fields are modified.
+     * @param {Object} e - The input change event.
+     * @returns {void}
+     */
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
@@ -18,6 +31,12 @@ const Hire = ({ onClose, onSubmit }) => {
         }));
     };
 
+    /**
+     * @function handleSubmit
+     * @description Handles the form submission to add a new employee.
+     * @param {Object} e - The event object.
+     * @returns {void}
+     */
     const handleSubmit = (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         onSubmit(formData); // Call the parent-provided function with formData
@@ -28,7 +47,7 @@ const Hire = ({ onClose, onSubmit }) => {
         <div className="modal">
             <div className="modal-content">
                 <h2>Hire Employee</h2>
-                <form>
+                <form onSubmit={handleSubmit}>
                     <input
                         type="text"
                         name="firstName"
@@ -69,7 +88,7 @@ const Hire = ({ onClose, onSubmit }) => {
                     <button
                         type="button"
                         className="submit-button"
-                        onClick={handleSubmit} // Use the custom handler
+                        onClick={handleSubmit}
                     >
                         Submit
                     </button>

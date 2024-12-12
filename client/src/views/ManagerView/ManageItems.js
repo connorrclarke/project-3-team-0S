@@ -6,13 +6,22 @@ import AddItems from './AddItems';
 const API_URL = process.env.REACT_APP_API_URL;
 //const API_URL = "http://localhost:5555/api";
 
-
+/**
+ * @function ManageInventory
+ * @description Component for managing menu items, including availability toggling.
+ * @returns {JSX.Element}
+ */
 const ManageInventory = () => {
     const [items, setItems] = useState([]);
     const [error, setError] = useState(null);
     const [showAddItemsModal, setShowAddItemsModal] = useState(false);
     const navigate = useNavigate();
 
+    /**
+     * @function fetchItems
+     * @description Fetches menu items data from the backend API.
+     * @returns {Promise<void>}
+     */
     useEffect(() => {
         const fetchItems = async () => {
             try {
@@ -32,6 +41,12 @@ const ManageInventory = () => {
         fetchItems();
     }, []);
 
+    /**
+     * @function handleAddInventorySubmit
+     * @description Submits a new menu item to the backend API.
+     * @param {Object} formData - The details of the menu item.
+     * @returns {Promise<void>}
+     */
     const handleAddInventorySubmit = async (formData) => {
         try {
             const response = await fetch(`${API_URL}/items`, {
@@ -50,6 +65,12 @@ const ManageInventory = () => {
         }
     };
 
+    /**
+     * @function handleAdd
+     * @description Marks a menu item as available.
+     * @param {number} id - The ID of the menu item.
+     * @returns {Promise<void>}
+     */
     const handleAdd = async (id) => {
         try {
             const response = await fetch(`${API_URL}/items/${id}`, {
@@ -72,6 +93,12 @@ const ManageInventory = () => {
         }
     };
 
+    /**
+     * @function handleRemove
+     * @description Marks a menu item as unavailable.
+     * @param {number} id - The ID of the menu item.
+     * @returns {Promise<void>}
+     */
     const handleRemove = async (id) => {
         try {
             const response = await fetch(`${API_URL}/items/${id}`, {
@@ -93,7 +120,6 @@ const ManageInventory = () => {
             console.error('Error making item unavailable:', err);
         }
     };
-
 
     return (
         <div className="manager-view">
