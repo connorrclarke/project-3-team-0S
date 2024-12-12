@@ -4,6 +4,7 @@ This repository contains the implementation of a Panda Express Point-of-Sale (PO
 
 ## 🌐 Live Website
 https://project-3-team-0-s.vercel.app/cashier
+Code Documentation: [https://connorrclarke.github.io/project-3-team-0S/](https://connorrclarke.github.io/project-3-team-0S/)
 
 ## 🛠️ Features
 - **Cashier Interface**: Streamlined for fast order entry and payment processing.
@@ -71,7 +72,7 @@ To clone, build, and run the project locally, follow these steps:
 
 ## 📖 Documentation
 - **High-Level Details**: Refer to this `README.md`.
-- **Code Documentation**: Generated with TypeDoc, hosted in the `docs/` directory. [https://connorrclarke.github.io/project-3-team-0S/](https://connorrclarke.github.io/project-3-team-0S/)
+- **Code Documentation**: Generated with TypeDoc, hosted in the `docs/` directory.
 
 ## 🧑‍💻 Contributors
 - Connor Clarke, Luke Lopez, Meenalika Singh, Siddhi Mittal
